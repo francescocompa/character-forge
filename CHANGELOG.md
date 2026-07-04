@@ -3,6 +3,22 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T03 checkpoint review + spell swap-history model
+
+- **T03 UNCONFIRMED items resolved with Francesco** (all 8; see
+  `Characters/vice.compile-notes.md`, kept local). Corrections applied to the
+  local Vice reference file: GOO subclass → RAW `unlockLevel: 3` (features grayed
+  at L2), skill fix (Investigation not Persuasion), psychic resistance recorded
+  as grayed L10 content, currency 24 gp, "Number's Kit"→Climber's Kit, companion
+  Tinesia→**Tiresia**. Validator stays clean on Vice.
+- **Spell contract reshaped (F1) — full swap-history model.** `Spell.origin` →
+  `origins[]` (dual-source = two-tone dot), added `role`, `swapOutLevel`, and
+  `spellcasting.swaps[]` (explicit out→in replacement links for fixed-known
+  casters). Schema + `types.ts` + validator (referential + sanity) + both
+  synthetic fixtures + the four invalid fixtures + schema/fixtures READMEs all
+  updated; `verify` green (66 tests). Breaking change kept at `formatVersion: 1`
+  (pre-release, no shipped consumer). Consumed later by the spells view (T10).
+
 ## 2026-07-04 — Phase 0 audit & closeout (pre-design review)
 
 - Committed the `{dtype:TYPE}` markup tag (bare damage-type reference, no dice
