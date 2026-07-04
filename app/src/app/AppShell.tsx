@@ -4,13 +4,14 @@ import { LibraryProvider } from '../library'
 import { CharacterProvider, useCharacter } from '../character/CharacterProvider'
 import { SessionProvider } from '../session/SessionProvider'
 import { MainSheet } from '../views/MainSheet'
+import { Features } from '../views/Features'
 import './appShell.css'
 
 type Tab = 'main' | 'features' | 'spells' | 'equipment' | 'companion'
 
 const TABS: { id: Tab; label: string; ready?: boolean }[] = [
   { id: 'main', label: 'Main', ready: true },
-  { id: 'features', label: 'Features' },
+  { id: 'features', label: 'Features', ready: true },
   { id: 'spells', label: 'Spells' },
   { id: 'equipment', label: 'Equipment' },
   { id: 'companion', label: 'Companion' },
@@ -81,7 +82,7 @@ function Shell() {
 
       <main className="app-shell__view">
         {tab === 'main' && <MainSheet />}
-        {tab === 'features' && <ComingSoon label="Features" task="T09" />}
+        {tab === 'features' && <Features />}
         {tab === 'spells' && <ComingSoon label="Spells" task="T10" />}
         {tab === 'equipment' && <ComingSoon label="Equipment" task="T11" />}
         {tab === 'companion' && <ComingSoon label="Companion" task="T12" />}

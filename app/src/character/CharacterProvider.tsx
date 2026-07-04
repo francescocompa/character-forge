@@ -38,12 +38,14 @@ const modeMemory = new Map<string, ViewMode>()
 export interface CharacterProviderProps {
   character: CharacterFile
   children: ReactNode
+  /** Seeds the mode before the per-character memory takes over; tests only. */
+  initialViewMode?: ViewMode
 }
 
-export function CharacterProvider({ character, children }: CharacterProviderProps) {
+export function CharacterProvider({ character, children, initialViewMode }: CharacterProviderProps) {
   const characterId = character.meta.characterId
   const [viewMode, setViewModeState] = useState<ViewMode>(
-    () => modeMemory.get(characterId) ?? 'level',
+    () => modeMemory.get(characterId) ?? initialViewMode ?? 'level',
   )
 
   const setViewMode = useCallback(

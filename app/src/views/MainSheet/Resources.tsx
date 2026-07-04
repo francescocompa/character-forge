@@ -12,7 +12,7 @@ const REST_ICON: Record<string, RecoverTrigger | undefined> = {
 }
 
 /** Recovery icons for a resource/pool — one per rule, so mixed recovery reads at a glance. */
-function RecoverBadges({ recover }: { recover: RecoverModel }) {
+export function RecoverBadges({ recover }: { recover: RecoverModel }) {
   return (
     <span className="recover-badges">
       {recover.map((rule, i) => {
@@ -31,7 +31,7 @@ function RecoverBadges({ recover }: { recover: RecoverModel }) {
 }
 
 /** Resolve a resource `max` to a box count; a non-numeric formula renders as text only. */
-function maxCount(max: number | string, proficiencyBonus: number): number | null {
+export function maxCount(max: number | string, proficiencyBonus: number): number | null {
   if (typeof max === 'number') return max
   if (max.trim().toUpperCase() === 'PB') return proficiencyBonus
   return null

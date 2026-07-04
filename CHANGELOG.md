@@ -3,6 +3,50 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T09: features view
+
+- `app/src/views/Features/group.ts`: pure, unit-tested grouping of
+  `progression[]` into the Features IA. Documents the modeling convention this
+  task needed (the schema has no per-item "which section" field): `classRef`
+  sorts an item into that class's section; among classless items, `kind:
+  'feature'` is a species trait (only species grants classless features —
+  2024-style backgrounds grant proficiencies + a feat, not features); `kind:
+  'feat' | 'asi'` always lands in the top-level Feats section regardless of
+  `classRef`. No schema change — this is a rendering-layer convention the
+  compiler (T18/T19) should also follow when it starts emitting real files.
+- `app/src/views/Features/`: one collapsible section per class (level badge,
+  subclass grayed until unlocked, the compiled `kind: 'proficiency'` header
+  line, then core → subclass → invocation sub-lists in unlock order), a species
+  section (reflavored name + source tag, speed line, modifications, traits),
+  a background section (granted tools, a link to its feat), and a top-level
+  Feats section (every feat/ASI item with an origin tag, future slots grayed).
+  `ProgressionRow`/`FeatureList` are shared across every section — future
+  content wraps in `FutureWrap` exactly like the main sheet, and limited-use
+  features get the same MAX/recover-icons/tick-boxes treatment via a
+  `LimitedUse` component built on the now-exported `RecoverBadges`/`maxCount`
+  helpers from `MainSheet/Resources.tsx` (single implementation, no drift).
+  `CollapsibleSection` folds on mobile (≥ 44 px header, chevron) and forces
+  expanded on desktop (≥ 768 px) regardless of fold state — state is per
+  section instance, in memory only, matching the T09 spec.
+- `app/src/character/CharacterProvider.tsx`: added an optional
+  `initialViewMode` prop (test-only, mirrors `SessionProvider`'s `store`
+  injection) so Build-view rendering can be exercised without touching a
+  React state setter mid-render.
+- `fixtures/synthetic.character.json`: extended (still schema-valid, `verify`
+  clean) with a `kind: 'proficiency'` item per class (Fighter starting-class
+  grants vs Wizard's reduced multiclass grant — exercises "starting-class vs
+  multiclass already resolved"), a classless species trait (Umbral Step), a
+  classless background feat + its library entry (Tireless Cartographer), and a
+  future `kind: 'asi'` item at level 4 (> currentLevel 3) to exercise Build-view
+  graying in the Feats section.
+- Wired into `AppShell.tsx`, replacing the T09 `ComingSoon` placeholder.
+- Verified in-browser at 1400 px (both class sections, proficiency lines,
+  ticks working through the session store, Level view hiding the level-5
+  subclass and level-4 ASI, Build view showing both grayed + badged, popovers
+  opening with the Homebrew footer) and 375 px (mobile collapse toggles
+  independently per section, ≥ 44 px tap targets). `verify` green (schema 41,
+  validate 30, app 88 across 11 files).
+
 ## 2026-07-04 — T08: main sheet + view modes
 
 - `app/src/character/CharacterProvider.tsx` + `visibility.ts`: the shared

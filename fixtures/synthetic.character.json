@@ -115,6 +115,43 @@
       "ref": "eldritch-knight",
       "summary": "{lvl:5} gain limited wizard spellcasting drawn from the Wizard spell list",
       "unlockLevel": 5
+    },
+    {
+      "name": "Fighter proficiencies",
+      "kind": "proficiency",
+      "classRef": "fighter",
+      "ref": "fighter",
+      "summary": "Starting class. Saves: {save:STR} {save:CON}. Armor: light, medium, heavy, shields. Weapons: simple, martial. Skills: choose 2 — Athletics, Acrobatics, Intimidation, Survival.",
+      "unlockLevel": 1
+    },
+    {
+      "name": "Wizard proficiencies",
+      "kind": "proficiency",
+      "classRef": "wizard",
+      "ref": "wizard",
+      "summary": "Multiclass grant (no new saves). Armor: none. Weapons: daggers, quarterstaffs. Skills: none from this class.",
+      "unlockLevel": 1
+    },
+    {
+      "name": "Umbral Step",
+      "kind": "feature",
+      "ref": "duskling",
+      "summary": "Move through dim light and darkness without provoking opportunity attacks.",
+      "unlockLevel": 1
+    },
+    {
+      "name": "Tireless Cartographer",
+      "kind": "feat",
+      "ref": "tireless-cartographer",
+      "summary": "Granted by {ref:ember-cartographer|Ember Cartographer}. Ignore difficult terrain while you can see a route you've already mapped; +1 {a:INT}.",
+      "unlockLevel": 1
+    },
+    {
+      "name": "Ability Score Improvement",
+      "kind": "asi",
+      "classRef": "wizard",
+      "summary": "+2 to one ability score, or +1 to two.",
+      "unlockLevel": 4
     }
   ],
   "actionEconomy": {
@@ -492,6 +529,13 @@
       "type": "creature",
       "source": "Homebrew",
       "markdown": "Invented familiar. A tiny fire elemental sprite bound as a companion."
+    },
+    "tireless-cartographer": {
+      "name": "Tireless Cartographer",
+      "edition": "Homebrew",
+      "type": "feat",
+      "source": "Homebrew",
+      "markdown": "Invented feat, granted by the Ember Cartographer background. Ignore difficult terrain along a route you've already mapped; +1 Intelligence."
     },
     "ashwalker-lore": {
       "name": "Ashwalker lore",
