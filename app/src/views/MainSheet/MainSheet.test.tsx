@@ -3,6 +3,11 @@ import { describe, expect, it } from 'vitest'
 import type { CharacterFile } from '@character-forge/schema/types.ts'
 import fixture from '../../../../fixtures/synthetic.character.json'
 import { AppShell } from '../../app/AppShell'
+import { LibraryProvider } from '../../library'
+import { CharacterProvider } from '../../character/CharacterProvider'
+import { SessionProvider } from '../../session/SessionProvider'
+import type { ViewMode } from '../../character/visibility'
+import { MainSheet } from './MainSheet'
 
 const character = fixture as unknown as CharacterFile
 
@@ -14,6 +19,19 @@ const character = fixture as unknown as CharacterFile
  */
 function render(char: CharacterFile = character): string {
   return renderToStaticMarkup(<AppShell character={char} />)
+}
+
+/** Renders just the MainSheet under a given view mode (bypasses the shell/tabs). */
+function renderMainSheet(viewMode: ViewMode): string {
+  return renderToStaticMarkup(
+    <LibraryProvider library={character.library}>
+      <CharacterProvider character={character} initialViewMode={viewMode}>
+        <SessionProvider character={character}>
+          <MainSheet />
+        </SessionProvider>
+      </CharacterProvider>
+    </LibraryProvider>,
+  )
 }
 
 describe('MainSheet — synthetic multiclass fixture', () => {
@@ -57,8 +75,13 @@ describe('MainSheet — synthetic multiclass fixture', () => {
     expect(html).toContain('<button')
   })
 
-  it('leaves a clean T13 actions slot', () => {
+  it('renders the actions/bonus actions/reactions groups (T13)', () => {
     expect(html).toContain('t13-actions')
+    expect(html).toContain('Longsword Strike')
+    expect(html).toContain('Second Wind')
+    expect(html).toContain('Shield')
+    expect(html).toContain('Bonus actions')
+    expect(html).toContain('Reactions')
   })
 })
 
@@ -66,5 +89,18 @@ describe('MainSheet — Level view (default) hides future content', () => {
   it('omits a planned subclass unlocked above the current level', () => {
     // Eldritch Knight is the Fighter subclass planned at level 5; currentLevel is 3.
     expect(render()).not.toContain('Eldritch Knight')
+  })
+
+  it('omits a future action-economy entry unlocked above the current level', () => {
+    // Bound Weapon Strike unlocks at level 5; currentLevel is 3.
+    expect(render()).not.toContain('Bound Weapon Strike')
+  })
+})
+
+describe('MainSheet — Build view shows future content grayed + badged', () => {
+  it('shows the future action with its unlock-level badge', () => {
+    const html = renderMainSheet('build')
+    expect(html).toContain('Bound Weapon Strike')
+    expect(html).toContain('Unlocks at level 5')
   })
 })

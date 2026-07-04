@@ -161,6 +161,19 @@
         "ref": "longsword",
         "summary": "{dmg:slashing|1d8+2}",
         "unlockLevel": 1
+      },
+      {
+        "name": "Bound Weapon Strike",
+        "ref": "eldritch-knight",
+        "summary": "{lvl:5} conjure your bonded weapon into your hand from anywhere on the same plane",
+        "unlockLevel": 5
+      }
+    ],
+    "bonusActions": [
+      {
+        "name": "Second Wind",
+        "summary": "Regain {dice:1d10+3} HP",
+        "unlockLevel": 1
       }
     ],
     "reactions": [
