@@ -3,5 +3,25 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
-  "description": "Validator CLI: ajv + referential integrity + markup lint (built in T04)."
+  "description": "Validator CLI: ajv schema + referential integrity + markup lint + sanity checks (T04).",
+  "bin": {
+    "character-forge-validate": "./src/cli.ts"
+  },
+  "scripts": {
+    "validate": "node --import tsx src/cli.ts",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "verify": "npm run typecheck && npm run test"
+  },
+  "dependencies": {
+    "@character-forge/schema": "*",
+    "ajv": "^8.20.0",
+    "ajv-formats": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^3.0.0"
+  }
 }

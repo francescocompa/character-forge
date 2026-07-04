@@ -8,13 +8,15 @@ the finalized contract. Where they differ, **this folder wins** — deviations f
 
 ## Files
 
-| File                    | What it is                                                                                                                                  |
-| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `character.schema.json` | JSON Schema (draft 2020-12) for `*.character.json`, `formatVersion: 1`.                                                                     |
-| `session.schema.json`   | JSON Schema for `*.session.json` — the play-time layer.                                                                                     |
-| `types.ts`              | Hand-written TS types mirroring **both** schemas + the `SessionStore` interface. Single source of truth for the app; kept in sync manually. |
-| `markup-grammar.md`     | Formal spec of the inline sheet-markup used in every `summary`/`damage`/`note`.                                                             |
-| `schema.test.ts`        | Ajv strict meta-validation of both schemas + example instances. Runs under `npm run verify`.                                                |
+| File                    | What it is                                                                                                                                                                                                                                                                                                         |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `character.schema.json` | JSON Schema (draft 2020-12) for `*.character.json`, `formatVersion: 1`.                                                                                                                                                                                                                                            |
+| `session.schema.json`   | JSON Schema for `*.session.json` — the play-time layer.                                                                                                                                                                                                                                                            |
+| `types.ts`              | Hand-written TS types mirroring **both** schemas + the `SessionStore` interface. Single source of truth for the app; kept in sync manually.                                                                                                                                                                        |
+| `markup-grammar.md`     | Formal spec of the inline sheet-markup used in every `summary`/`damage`/`note`.                                                                                                                                                                                                                                    |
+| `markup.ts`             | Shared implementation of `markup-grammar.md`: `parseMarkup` (never throws; returns nodes + diagnostics) and `collectRefTags`. Lives here — rather than in `app/src/markup/` — because the validator (T04) needed it before the renderer (T06) existed; T06 imports this module instead of duplicating the grammar. |
+| `schema.test.ts`        | Ajv strict meta-validation of both schemas + example instances. Runs under `npm run verify`.                                                                                                                                                                                                                       |
+| `markup.test.ts`        | Unit tests for `markup.ts` against the grammar doc's worked examples and error cases.                                                                                                                                                                                                                              |
 
 ## The two files, and who writes them
 

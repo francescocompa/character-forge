@@ -1,1 +1,11 @@
-Synthetic test character only — invented homebrew content, never WotC text (scope §4). The synthetic fixture is added in T03.
+Synthetic test characters only — invented homebrew content, never WotC text (scope §4). Built in T04, alongside the validator CLI that exercises them.
+
+- `synthetic.character.json` — "Fenn Larkspur," a small but complete invented Fighter/Wizard build. Exercises: two edition labels (`2014` species, `2024` classes), a reflavored + modified species, a homebrew background, a companion, multiclass with per-class hit dice, a planned/grayed subclass (`unlockLevel` above `currentLevel`), two spellcasting sources with two slot pools at the same spell level and different recovery, spell origins (including an innate always-available spell with no `poolRef`), a `preparedSpells` pool and a `weaponMasteries` pool with defaults, a mixed-recovery resource (Second Wind), a consumable (arrows), an attack with riders, and every sheet-markup tag at least once. It also carries one deliberately unreferenced library entry (`ashwalker-lore`) to demonstrate the validator's "unused library entry" warning — the file is still valid (warnings don't affect validity).
+- `synthetic-variant.character.json` — same `characterId` (`fenn-larkspur`), different `variantLabel` ("Duelist" vs "Battle Mage") and one different build choice (Bladesinging instead of War Magic as the wizard subclass), per D12.
+- `invalid/*.character.json` — each breaks exactly one validator layer against the same base build:
+  - `invalid-schema.character.json` — `formatVersion: 2` (must be the const `1`).
+  - `invalid-referential.character.json` — `chassis.background.ref` points at a typo'd key not in `library`.
+  - `invalid-markup.character.json` — `{a:XXX}` is not a valid ability abbreviation.
+  - `invalid-sanity.character.json` — `currentLevel` exceeds the sum of `chassis.classes[].levels`.
+
+Run `npx character-forge-validate fixtures/synthetic.character.json` (or any of the above) from the repo root to see the four layers in action; see `pipeline/validate/README.md` for the CLI and `--json` output format.

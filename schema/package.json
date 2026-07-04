@@ -4,6 +4,12 @@
   "private": true,
   "type": "module",
   "description": "JSON Schema + shared TypeScript types for the character and session files (T02).",
+  "exports": {
+    "./types.ts": "./types.ts",
+    "./markup.ts": "./markup.ts",
+    "./character.schema.json": "./character.schema.json",
+    "./session.schema.json": "./session.schema.json"
+  },
   "scripts": {
     "test": "vitest run",
     "typecheck": "tsc --noEmit",

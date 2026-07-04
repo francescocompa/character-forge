@@ -1,0 +1,481 @@
+{
+  "formatVersion": 1,
+  "meta": {
+    "name": "Fenn Larkspur",
+    "characterId": "fenn-larkspur",
+    "variantLabel": "Battle Mage",
+    "createdAt": "2026-07-04T00:00:00Z",
+    "updatedAt": "2026-07-04T00:00:00Z"
+  },
+  "chassis": {
+    "species": {
+      "ref": "duskling",
+      "displayName": "Ashwalker",
+      "modifications": [
+        {
+          "field": "speed",
+          "from": "30 ft",
+          "to": "35 ft",
+          "note": "Recolored to match *Ashwalker* lore; mechanics unchanged aside from the noted speed bump."
+        }
+      ]
+    },
+    "background": { "ref": "ember-cartographer" },
+    "classes": [
+      {
+        "ref": "fighter",
+        "levels": 1,
+        "hitDie": "d10",
+        "classOrder": 1,
+        "subclass": { "ref": "eldritch-knight", "unlockLevel": 5 }
+      },
+      {
+        "ref": "wizard",
+        "levels": 2,
+        "hitDie": "d6",
+        "classOrder": 2,
+        "subclass": { "ref": "war-magic", "unlockLevel": 2 }
+      }
+    ]
+  },
+  "abilities": {
+    "STR": { "base": 10, "final": 10, "modifier": 0 },
+    "DEX": { "base": 14, "final": 14, "modifier": 2 },
+    "CON": { "base": 14, "final": 14, "modifier": 2 },
+    "INT": { "base": 16, "final": 17, "modifier": 3, "note": "+1 from ASI" },
+    "WIS": { "base": 10, "final": 10, "modifier": 0 },
+    "CHA": { "base": 8, "final": 8, "modifier": -1 }
+  },
+  "stats": {
+    "ac": { "value": 16, "note": "10 + DEX (2) + studded leather (4)" },
+    "maxHp": { "value": 24 },
+    "initiative": { "value": 2 },
+    "proficiencyBonus": 2,
+    "speeds": [{ "type": "walk", "value": 35 }],
+    "hitDice": [
+      { "classRef": "fighter", "die": "d10", "count": 1 },
+      { "classRef": "wizard", "die": "d6", "count": 2 }
+    ],
+    "saves": [
+      { "ability": "STR", "modifier": 2, "proficient": true },
+      { "ability": "CON", "modifier": 2, "proficient": false },
+      { "ability": "INT", "modifier": 5, "proficient": true }
+    ],
+    "skills": [
+      { "name": "Arcana", "ability": "INT", "proficiency": "proficient", "modifier": 5 },
+      { "name": "Investigation", "ability": "INT", "proficiency": "expertise", "modifier": 7 }
+    ],
+    "passives": { "perception": 10, "investigation": 15 },
+    "senses": ["Darkvision 60 ft"],
+    "languages": ["Common", "Ignan"],
+    "proficiencies": {
+      "armor": ["light", "medium", "shields"],
+      "weapons": ["simple", "martial"],
+      "tools": ["cartographer's tools"]
+    }
+  },
+  "currentLevel": 3,
+  "progression": [
+    {
+      "name": "Fighting Style: Defense",
+      "kind": "feature",
+      "classRef": "fighter",
+      "summary": "**{a:DEX}**-based AC gains a **+1** bonus while wearing armor",
+      "unlockLevel": 1
+    },
+    {
+      "name": "Second Wind",
+      "kind": "feature",
+      "classRef": "fighter",
+      "summary": "Regain {dice:1d10+3} HP. {recover:LR} restores all uses; regain 1 on {recover:SR}.",
+      "limitedUseRef": "second-wind",
+      "unlockLevel": 1
+    },
+    {
+      "name": "Arcane Recovery",
+      "kind": "feature",
+      "classRef": "wizard",
+      "summary": "{note:once per day} recover spell slots totalling half your wizard level, {recover:LR}",
+      "limitedUseRef": "arcane-recovery",
+      "unlockLevel": 1
+    },
+    {
+      "name": "War Magic",
+      "kind": "subclass",
+      "classRef": "wizard",
+      "ref": "war-magic",
+      "summary": "{ref:war-magic|War Magic} tradition: {adv} on {save:INT} to avoid one spell's effect per turn",
+      "unlockLevel": 2
+    },
+    {
+      "name": "Eldritch Knight",
+      "kind": "subclass",
+      "classRef": "fighter",
+      "ref": "eldritch-knight",
+      "summary": "{lvl:5} gain limited wizard spellcasting drawn from the Wizard spell list",
+      "unlockLevel": 5
+    }
+  ],
+  "actionEconomy": {
+    "actions": [
+      {
+        "name": "Longsword Strike",
+        "ref": "longsword",
+        "summary": "{dmg:slashing|1d8+2}",
+        "unlockLevel": 1
+      }
+    ],
+    "reactions": [
+      {
+        "name": "Shield",
+        "ref": "shield-spell",
+        "summary": "{note:when hit} +5 AC until the start of your next turn",
+        "unlockLevel": 2
+      }
+    ]
+  },
+  "attacks": [
+    {
+      "name": "Longsword",
+      "ref": "longsword",
+      "toHit": { "modifier": 4 },
+      "range": "5 ft",
+      "damage": "{dmg:slashing|1d8+2}",
+      "riders": [
+        {
+          "name": "Riposte",
+          "summary": "{note:on parry} deal {dice:1d4} extra with your {ref:longsword}"
+        }
+      ],
+      "unlockLevel": 1
+    },
+    {
+      "name": "Shortbow",
+      "ref": "shortbow",
+      "toHit": { "modifier": 4 },
+      "range": "80/320 ft",
+      "damage": "{dmg:piercing|1d6+2}",
+      "consumableRef": "arrows",
+      "riders": [
+        {
+          "name": "Exposed",
+          "summary": "target grants {dis} to your next ally's attack against it until your next turn"
+        }
+      ],
+      "unlockLevel": 1
+    }
+  ],
+  "spellcasting": {
+    "sources": [
+      {
+        "id": "wizard",
+        "name": "Wizard",
+        "classRef": "wizard",
+        "ability": "INT",
+        "saveDc": 13,
+        "attackMod": 5,
+        "prepareRule": "Prepare INT mod + wizard level"
+      },
+      {
+        "id": "ember-charm",
+        "name": "Ember Cartographer's Compass",
+        "originRef": "ember-cartographer",
+        "ability": "INT",
+        "saveDc": 13,
+        "attackMod": 5,
+        "note": "Innate; always prepared, not part of the wizard-prepared pool"
+      }
+    ],
+    "slotPools": [
+      {
+        "id": "wizard-1",
+        "name": "Wizard Slots",
+        "sourceId": "wizard",
+        "slotLevel": 1,
+        "count": 3,
+        "recover": [{ "on": "long", "amount": "all" }]
+      },
+      {
+        "id": "arcane-font-1",
+        "name": "Arcane Font",
+        "sourceId": "wizard",
+        "slotLevel": 1,
+        "count": 1,
+        "recover": [{ "on": "short", "amount": "all" }],
+        "note": "Homebrew feat slot"
+      }
+    ],
+    "spells": [
+      {
+        "name": "Mending Charm",
+        "ref": "mending-charm",
+        "level": 1,
+        "school": "Transmutation",
+        "origin": "wizard",
+        "poolRef": "wizard-prepared",
+        "unlockLevel": 1,
+        "summary": "{dice:2d4} HP {ref:mending-charm|healing} to an object or willing creature"
+      },
+      {
+        "name": "Ashen Bolt",
+        "ref": "ashen-bolt",
+        "level": 1,
+        "school": "Evocation",
+        "origin": "wizard",
+        "poolRef": "wizard-prepared",
+        "unlockLevel": 1,
+        "summary": "{dmg:fire|2d6} & {save:DEX|13} for half"
+      },
+      {
+        "name": "Guiding Flame",
+        "ref": "guiding-flame",
+        "level": 0,
+        "school": "Evocation",
+        "origin": "ember-charm",
+        "unlockLevel": 1,
+        "summary": "{dice:1d6} light guiding an ally's next {save:WIS}"
+      }
+    ]
+  },
+  "pools": {
+    "wizard-prepared": {
+      "kind": "preparedSpells",
+      "name": "Wizard prepared spells",
+      "sourceId": "wizard",
+      "chooseCount": 4,
+      "options": [
+        { "ref": "mending-charm", "name": "Mending Charm" },
+        { "ref": "ashen-bolt", "name": "Ashen Bolt" },
+        { "ref": "featherfall-ward", "name": "Featherfall Ward" }
+      ],
+      "defaults": ["mending-charm", "ashen-bolt"]
+    },
+    "weapon-masteries": {
+      "kind": "weaponMasteries",
+      "name": "Weapon Masteries",
+      "chooseCount": 2,
+      "options": [
+        { "ref": "longsword", "name": "Longsword", "summary": "Sap" },
+        { "ref": "shortbow", "name": "Shortbow", "summary": "Slow" }
+      ],
+      "defaults": ["longsword", "shortbow"]
+    }
+  },
+  "resources": [
+    {
+      "id": "second-wind",
+      "name": "Second Wind",
+      "max": 2,
+      "recover": [
+        { "on": "long", "amount": "all" },
+        { "on": "short", "amount": 1 }
+      ],
+      "unlockLevel": 1
+    },
+    {
+      "id": "arcane-recovery",
+      "name": "Arcane Recovery",
+      "max": 1,
+      "recover": [{ "on": "long", "amount": "all" }],
+      "unlockLevel": 1
+    }
+  ],
+  "consumables": [
+    {
+      "id": "arrows",
+      "name": "Arrows",
+      "max": 20,
+      "notes": "{note:ranged ammo} tally after each shot"
+    }
+  ],
+  "equipment": {
+    "items": [
+      {
+        "id": "longsword-item",
+        "name": "Longsword",
+        "ref": "longsword",
+        "quantity": 1,
+        "weightLb": 3,
+        "cost": "15 gp",
+        "equipped": true,
+        "carried": true
+      },
+      {
+        "id": "shortbow-item",
+        "name": "Shortbow",
+        "ref": "shortbow",
+        "quantity": 1,
+        "weightLb": 2,
+        "cost": "25 gp",
+        "equipped": true,
+        "carried": true
+      },
+      {
+        "id": "studded-leather-item",
+        "name": "Studded Leather Armor",
+        "ref": "studded-leather-armor",
+        "quantity": 1,
+        "weightLb": 13,
+        "cost": "45 gp",
+        "equipped": true,
+        "carried": true
+      }
+    ],
+    "currency": { "gp": 32, "sp": 5 },
+    "attunement": { "max": 3 },
+    "carryingCapacity": { "lb": 150 }
+  },
+  "companions": [
+    {
+      "id": "ember-sprite",
+      "name": "Ember Sprite",
+      "ref": "ember-sprite-familiar",
+      "abilities": {
+        "STR": { "base": 3, "final": 3, "modifier": -4 },
+        "DEX": { "base": 16, "final": 16, "modifier": 3 },
+        "CON": { "base": 10, "final": 10, "modifier": 0 },
+        "INT": { "base": 10, "final": 10, "modifier": 0 },
+        "WIS": { "base": 12, "final": 12, "modifier": 1 },
+        "CHA": { "base": 11, "final": 11, "modifier": 0 }
+      },
+      "ac": { "value": 13 },
+      "maxHp": { "value": 5 },
+      "speeds": [{ "type": "fly", "value": 30 }],
+      "saves": [{ "ability": "DEX", "modifier": 5, "proficient": true }],
+      "skills": [
+        { "name": "Stealth", "ability": "DEX", "proficiency": "proficient", "modifier": 7 }
+      ],
+      "attacks": [
+        {
+          "name": "Ember Touch",
+          "toHit": { "modifier": 4 },
+          "range": "5 ft",
+          "damage": "{dmg:fire|1d4}"
+        }
+      ],
+      "features": [
+        {
+          "name": "Flicker",
+          "summary": "{adv} on {save:DEX} against being {cond:restrained}",
+          "ref": "ember-sprite-familiar"
+        }
+      ],
+      "senses": ["Darkvision 60 ft"],
+      "languages": ["Ignan"]
+    }
+  ],
+  "library": {
+    "duskling": {
+      "name": "Duskling",
+      "edition": "2014",
+      "type": "species",
+      "source": "Test",
+      "markdown": "Invented species. Small nocturnal humanoid, darkvision 60 ft, base speed 30 ft."
+    },
+    "ember-cartographer": {
+      "name": "Ember Cartographer",
+      "edition": "Homebrew",
+      "type": "background",
+      "source": "Homebrew",
+      "markdown": "Invented background. Grants cartographer's tools proficiency and an innate cantrip, Guiding Flame."
+    },
+    "fighter": {
+      "name": "Fighter",
+      "edition": "2024",
+      "type": "class",
+      "source": "Test",
+      "markdown": "Invented stand-in for the Fighter class."
+    },
+    "wizard": {
+      "name": "Wizard",
+      "edition": "2024",
+      "type": "class",
+      "source": "Test",
+      "markdown": "Invented stand-in for the Wizard class."
+    },
+    "eldritch-knight": {
+      "name": "Eldritch Knight",
+      "edition": "2024",
+      "type": "subclass",
+      "source": "Test",
+      "markdown": "Invented stand-in for the Eldritch Knight subclass."
+    },
+    "war-magic": {
+      "name": "War Magic",
+      "edition": "2024",
+      "type": "subclass",
+      "source": "Test",
+      "markdown": "Invented stand-in for the War Magic subclass."
+    },
+    "longsword": {
+      "name": "Longsword",
+      "edition": "2014",
+      "type": "item",
+      "source": "Test",
+      "markdown": "Invented stand-in weapon entry. Versatile slashing weapon."
+    },
+    "shortbow": {
+      "name": "Shortbow",
+      "edition": "2014",
+      "type": "item",
+      "source": "Test",
+      "markdown": "Invented stand-in weapon entry. Ranged piercing weapon."
+    },
+    "shield-spell": {
+      "name": "Shield",
+      "edition": "2024",
+      "type": "spell",
+      "source": "Test",
+      "markdown": "Invented stand-in spell entry. Reaction, +5 AC until the start of your next turn."
+    },
+    "studded-leather-armor": {
+      "name": "Studded Leather Armor",
+      "edition": "2014",
+      "type": "item",
+      "source": "Test",
+      "markdown": "Invented stand-in armor entry."
+    },
+    "mending-charm": {
+      "name": "Mending Charm",
+      "edition": "Homebrew",
+      "type": "spell",
+      "source": "Homebrew",
+      "markdown": "Invented spell. Restores 2d4 HP to an object or willing creature."
+    },
+    "ashen-bolt": {
+      "name": "Ashen Bolt",
+      "edition": "Homebrew",
+      "type": "spell",
+      "source": "Homebrew",
+      "markdown": "Invented spell. 2d6 fire damage, DEX save for half."
+    },
+    "featherfall-ward": {
+      "name": "Featherfall Ward",
+      "edition": "Homebrew",
+      "type": "spell",
+      "source": "Homebrew",
+      "markdown": "Invented spell. Prevents fall damage for one creature until the start of your next turn."
+    },
+    "guiding-flame": {
+      "name": "Guiding Flame",
+      "edition": "Homebrew",
+      "type": "spell",
+      "source": "Homebrew",
+      "markdown": "Invented cantrip. A mote of light grants an ally advantage on their next Wisdom save."
+    },
+    "ember-sprite-familiar": {
+      "name": "Ember Sprite",
+      "edition": "Homebrew",
+      "type": "creature",
+      "source": "Homebrew",
+      "markdown": "Invented familiar. A tiny fire elemental sprite bound as a companion."
+    },
+    "ashwalker-lore": {
+      "name": "Ashwalker lore",
+      "edition": "Homebrew",
+      "type": "lore",
+      "source": "Homebrew",
+      "markdown": "Flavor-only entry, intentionally not referenced anywhere — exercises the validator's unused-library-entry warning (schema/README.md invariant #2)."
+    }
+  }
+}

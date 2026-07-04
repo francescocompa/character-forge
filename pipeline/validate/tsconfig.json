@@ -19,5 +19,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["types.ts", "schema.test.ts", "markup.ts", "markup.test.ts"]
+  "include": ["src"]
 }
