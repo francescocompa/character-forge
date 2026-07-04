@@ -1,0 +1,141 @@
+/*
+ * character-forge design tokens (T05).
+ *
+ * Dark-first (D10): this is the only theme in v1. Values are hue anchors
+ * sampled from the audited paper sheets (scope §2.1), lifted in lightness and
+ * tamed in saturation to hold contrast on dark surfaces without glowing.
+ *
+ * Structure: semantic tokens (used by components) point at raw hue/scale
+ * values defined here. A future light theme remaps this file's values only —
+ * component CSS never changes (scope D10, T05 acceptance).
+ *
+ * Tune freely in-browser (decision D7). See tokens/README.md for the map.
+ */
+
+:root {
+  /* ---------------------------------------------------------------------
+   * Surfaces & ink (dark scale)
+   * ------------------------------------------------------------------- */
+  --surface-bg: #0b0b0f;
+  --surface-raised: #15151d;
+  --surface-overlay: #1f1f2b;
+  --border-subtle: hsl(240 10% 24%);
+
+  --ink-primary: hsl(255 25% 96%);
+  --ink-secondary: hsl(255 12% 74%);
+  --ink-muted: hsl(255 8% 54%);
+  /* Text/numerals sitting on a solid accent-colored chip (§ability/§dmg below
+     are all high-lightness, so dark ink reads best on all of them). */
+  --ink-on-accent: hsl(240 20% 10%);
+
+  /* ---------------------------------------------------------------------
+   * Ability colors (canon: STR red, DEX blue, CON orange, INT purple,
+   * WIS green, CHA magenta) — solid + soft (background-tint) variants.
+   * ------------------------------------------------------------------- */
+  --ability-str: hsl(4 88% 68%);
+  --ability-str-soft: hsl(4 88% 68% / 0.16);
+  --ability-dex: hsl(212 88% 68%);
+  --ability-dex-soft: hsl(212 88% 68% / 0.16);
+  --ability-con: hsl(28 92% 62%);
+  --ability-con-soft: hsl(28 92% 62% / 0.16);
+  --ability-int: hsl(268 70% 74%);
+  --ability-int-soft: hsl(268 70% 74% / 0.16);
+  --ability-wis: hsl(142 55% 60%);
+  --ability-wis-soft: hsl(142 55% 60% / 0.16);
+  --ability-cha: hsl(322 78% 70%);
+  --ability-cha-soft: hsl(322 78% 70% / 0.16);
+
+  /* ---------------------------------------------------------------------
+   * Damage type palette (13 recognized types, markup-grammar.md §3).
+   * Poison and INT are both "purple" per the paper canon — kept as
+   * distinct hues (poison leans magenta-violet) so the two families read
+   * apart even though both are named "purple".
+   * ------------------------------------------------------------------- */
+  --dmg-acid: hsl(72 60% 58%);
+  --dmg-bludgeoning: hsl(30 10% 68%);
+  --dmg-cold: hsl(195 70% 68%);
+  --dmg-fire: hsl(16 85% 62%);
+  --dmg-force: hsl(258 55% 78%);
+  --dmg-lightning: hsl(50 85% 62%);
+  --dmg-necrotic: hsl(95 22% 55%);
+  --dmg-piercing: hsl(0 65% 62%);
+  --dmg-poison: hsl(280 45% 68%);
+  --dmg-psychic: hsl(322 80% 72%);
+  --dmg-radiant: hsl(45 90% 65%);
+  --dmg-slashing: hsl(220 8% 74%);
+  --dmg-thunder: hsl(245 55% 72%);
+  /* Fallback for {dice:} (untyped) and any unrecognized {dmg:}/{dtype:} type. */
+  --dmg-neutral: hsl(220 8% 76%);
+
+  /* ---------------------------------------------------------------------
+   * Semantic: advantage/disadvantage, recovery, conditions.
+   * ------------------------------------------------------------------- */
+  --adv: hsl(142 55% 55%);
+  --dis: hsl(14 75% 58%);
+
+  --recover-lr: hsl(230 45% 70%);
+  --recover-sr: hsl(38 90% 62%);
+  --recover-dawn: hsl(20 80% 68%);
+
+  --cond-bg: hsl(220 10% 22%);
+  --cond-ink: hsl(220 15% 90%);
+
+  /* ---------------------------------------------------------------------
+   * Structural: unlock-level badge, Build-view "future" graying.
+   * The paper's black unlock-badge square inverts on a dark surface — a
+   * light square with dark numeral holds contrast better than a dark
+   * square would here.
+   * ------------------------------------------------------------------- */
+  --lvl-badge-bg: hsl(240 15% 92%);
+  --lvl-badge-ink: hsl(240 15% 10%);
+
+  --future-opacity: 0.45;
+  --future-saturate: 0.4;
+
+  /* ---------------------------------------------------------------------
+   * Origin-dot palette (multiclass spell/feature source tagging, §2.8).
+   * Deliberately its own accent set, not reused from ability/damage.
+   * ------------------------------------------------------------------- */
+  --origin-1: hsl(174 55% 55%);
+  --origin-2: hsl(38 70% 58%);
+  --origin-3: hsl(243 60% 70%);
+  --origin-4: hsl(340 60% 68%);
+  --origin-5: hsl(84 40% 55%);
+  --origin-6: hsl(200 60% 62%);
+
+  /* ---------------------------------------------------------------------
+   * Focus ring
+   * ------------------------------------------------------------------- */
+  --focus-ring-color: hsl(243 70% 74%);
+  --focus-ring: 0 0 0 2px var(--surface-bg), 0 0 0 4px var(--focus-ring-color);
+
+  /* ---------------------------------------------------------------------
+   * Spacing & radius scale
+   * ------------------------------------------------------------------- */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-pill: 999px;
+
+  /* ---------------------------------------------------------------------
+   * Typography — one stack, two roles: "chrome" (printed-template labels,
+   * small caps) vs "content" (filled-in values). Weight/size/color carry
+   * the distinction, not a handwriting font (scope §9 / T05 notes).
+   * ------------------------------------------------------------------- */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
+
+  --font-size-chrome: 0.6875rem;
+  --letter-spacing-chrome: 0.06em;
+  --weight-chrome: 600;
+
+  --font-size-sm: 0.8125rem;
+  --font-size-md: 0.9375rem;
+  --weight-content: 400;
+}

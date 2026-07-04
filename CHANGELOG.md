@@ -3,6 +3,35 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T05: design tokens + chip/badge component set
+
+- `app/src/tokens/tokens.css`: dark-first CSS custom properties — ability
+  colors (+ soft variants), the 13 recognized damage types + neutral
+  fallback, semantic (adv/dis/recovery/condition), structural (unlock-level
+  badge, Build-view future-graying), a 6-slot origin-dot palette (§2.8), and
+  the spacing/radius/typography scales. All values are hue anchors from the
+  paper canon, lifted for dark surfaces; layered as one semantic-token file
+  so a future light theme is a value remap only.
+- `app/src/components/chips/`: 11 typed, state-free chip/badge components
+  (`AbilityChip`, `SaveDCBadge`, `DamageText`, `AdvBadge`/`DisBadge`,
+  `ConditionChip`, `RecoverIcon`, `LevelBadge`, `OriginDot`, `SchoolLabel`,
+  `RefLink`, `FutureWrap`) plus shared color-lookup helpers. `DamageText`
+  deliberately covers all three damage tags (`{dmg:}`/`{dice:}`/`{dtype:}`)
+  via optional `type`/`dice` props, so T06 has one component for the whole
+  damage family. Tappable chips get a ≥44px hit area via a pseudo-element,
+  independent of visual size.
+- `Gallery.tsx`: dev-only route (wired into `App.tsx` behind
+  `import.meta.env.DEV`) rendering every chip variant plus a token swatch
+  board — Francesco's in-browser tuning surface (D7). Verified in the
+  preview browser; spot-checked contrast on the tightest cases (ability chip
+  text on its soft background, save-badge dark-on-accent text) at ~5:1 and
+  ~6.3:1 against `--surface-raised`.
+- Added the missing `vite-env.d.ts` (`/// <reference types="vite/client" />`)
+  — required for `import.meta.env` and CSS-module-less `.css` imports to
+  typecheck; the T01 scaffold had omitted it.
+- `verify` green across all workspaces (13 new component tests via
+  `react-dom/server` static rendering, no jsdom needed).
+
 ## 2026-07-04 — T03 checkpoint review + spell swap-history model
 
 - **T03 UNCONFIRMED items resolved with Francesco** (all 8; see

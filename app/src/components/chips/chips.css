@@ -1,0 +1,189 @@
+/*
+ * Chip/badge component styles (T05). Presentational only — every color here
+ * is a CSS custom property, either from tokens.css directly or set per
+ * instance as a local `--chip-*` variable by the component (see colorMaps.ts).
+ */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-family: var(--font-family);
+  line-height: 1;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+/* Expands the hit area to >=44px without growing the visible chip
+   (T05 acceptance: touch targets >=44px on mobile via padding/pseudo-element). */
+.chip--tappable {
+  position: relative;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+}
+
+.chip--tappable::before {
+  content: '';
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: max(100%, 44px);
+  height: max(100%, 44px);
+  transform: translate(-50%, -50%);
+}
+
+.chip--tappable:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+/* Ability chip: soft background tint, solid-colored text/label. */
+.ability-chip {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--chip-bg);
+  color: var(--chip-fg);
+  font-size: var(--font-size-chrome);
+  font-weight: var(--weight-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+}
+
+.ability-chip__value {
+  color: var(--ink-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--weight-content);
+  letter-spacing: normal;
+}
+
+/* Save DC badge: solid accent pill, dark ink (all accent tokens are
+   high-lightness, so --ink-on-accent holds >=4.5:1 on every one of them). */
+.save-badge {
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--chip-fg);
+  color: var(--ink-on-accent);
+  font-size: var(--font-size-chrome);
+  font-weight: var(--weight-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+}
+
+.save-badge__dc {
+  margin-left: var(--space-1);
+  font-weight: 700;
+}
+
+/* Damage text: colored dice/type words on the ambient background, no chip shell. */
+.damage-text {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-1);
+  color: var(--chip-fg);
+  font-weight: var(--weight-chrome);
+}
+
+.damage-text__type {
+  text-transform: lowercase;
+  font-size: var(--font-size-sm);
+}
+
+.damage-text__dice {
+  font-size: var(--font-size-md);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Advantage / disadvantage badges. */
+.state-badge {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  font-size: var(--font-size-chrome);
+  font-weight: var(--weight-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  color: var(--ink-on-accent);
+}
+
+.state-badge--adv {
+  background: var(--adv);
+}
+
+.state-badge--dis {
+  background: var(--dis);
+}
+
+/* Condition chip. */
+.condition-chip {
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-pill);
+  background: var(--cond-bg);
+  color: var(--cond-ink);
+  font-size: var(--font-size-sm);
+}
+
+/* Recovery icon — inline SVG, sized to sit in running text next to numbers. */
+.recover-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  flex: none;
+}
+
+/* Unlock-level badge. */
+.level-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  padding: 0 var(--space-1);
+  border-radius: var(--radius-sm);
+  background: var(--lvl-badge-bg);
+  color: var(--lvl-badge-ink);
+  font-size: var(--font-size-chrome);
+  font-weight: 700;
+}
+
+/* Origin dot — multiclass spell/feature source tag. */
+.origin-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--chip-fg);
+  flex: none;
+}
+
+/* School label — small gray caps, like the printed template's "chrome". */
+.school-label {
+  color: var(--ink-muted);
+  font-size: var(--font-size-chrome);
+  font-weight: var(--weight-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  text-transform: uppercase;
+}
+
+/* Ref link — tappable term, styled distinctly from plain content text. */
+.ref-link {
+  color: var(--ability-dex);
+  text-decoration: underline dotted;
+  text-underline-offset: 2px;
+}
+
+.ref-link.chip--tappable:hover,
+.ref-link.chip--tappable:focus-visible {
+  color: var(--ink-primary);
+}
+
+/* Future-content wrapper — Build-view graying (D14). Defined once here so
+   every view applies the identical treatment. */
+.future-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  opacity: var(--future-opacity);
+  filter: saturate(var(--future-saturate));
+}
