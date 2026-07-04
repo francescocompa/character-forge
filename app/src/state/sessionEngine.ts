@@ -9,34 +9,35 @@ import type {
 } from '@character-forge/schema/types.ts'
 
 /**
- * In-memory {@link SessionStore} (T08 stub). Implements the full T02 contract
- * against a plain object + listener set — no persistence. T14 swaps in the
- * IndexedDB-backed engine; every view (T08–T13) codes against this interface so
- * that swap is invisible to them.
+ * The pure, synchronous session-state engine (T14): rest semantics, tick
+ * trackers, loadout, undo. This is the same in-memory core the T08 stub used
+ * (`createMemorySessionStore`), now shared by the real IndexedDB-backed store
+ * ({@link ../state/IndexedDbSessionStore}) so persistence is a thin wrapper
+ * around one well-tested mutation core rather than a second implementation.
  *
- * It clamps ticks and applies rest-recovery rules by reading maxes straight from
- * the character file (the file is the single source of truth for limits; the
- * session only holds "how much is spent"). Undo restores the pre-mutation
- * snapshot.
+ * The file is the single source of truth for limits (maxes, recover rules);
+ * the engine only ever interprets those structures — it never hardcodes a 5e
+ * formula (e.g. "half your hit dice"). See `HitDiceGroup.recover` (T14 schema
+ * addition) and `Trackers.maxHpOverride` (T03 review item F2).
  */
 
 const HISTORY_LIMIT = 50
 
-/** Resolve a resource's displayed `max` to a number for clamping, when possible. */
-function resolveMax(max: number | string, character: CharacterFile): number | undefined {
-  if (typeof max === 'number') return max
+/** Resolve a displayed `max`/`chooseCount` to a number for clamping, when possible. */
+function resolveFormula(value: number | string, character: CharacterFile): number | undefined {
+  if (typeof value === 'number') return value
   // The only formula token the compiler currently emits is "PB"; anything else
   // is a free-form display string we can't clamp against, so we don't try.
-  if (max.trim().toUpperCase() === 'PB') return character.stats.proficiencyBonus
+  if (value.trim().toUpperCase() === 'PB') return character.stats.proficiencyBonus
   return undefined
 }
 
-/** Apply one recovery rule to a current `used` value. */
+/** Apply one recovery rule to a current `used`/`spent` value. */
 function recoverUsed(used: number, rule: RecoverRule): number {
   if (rule.amount === 'all') return 0
   if (typeof rule.amount === 'number') return Math.max(0, used - rule.amount)
-  // String amount = a displayed formula (e.g. "half your level"); left to the
-  // player until the real engine (T14) can interpret it.
+  // String amount = a displayed formula (e.g. "half your level") — left to the
+  // player to apply manually; the engine only interprets structured amounts.
   return used
 }
 
@@ -45,7 +46,8 @@ function clamp(value: number, min: number, max: number | undefined): number {
   return max === undefined ? lower : Math.min(lower, max)
 }
 
-function seedState(character: CharacterFile): SessionFile {
+/** Fresh session state seeded from a character file's compiled defaults (first import). */
+export function seedSessionState(character: CharacterFile): SessionFile {
   const maxHp = typeof character.stats.maxHp.value === 'number' ? character.stats.maxHp.value : 0
 
   const consumables: SessionFile['trackers']['consumables'] = {}
@@ -81,11 +83,107 @@ function seedState(character: CharacterFile): SessionFile {
   }
 }
 
-export function createMemorySessionStore(character: CharacterFile): SessionStore {
+/**
+ * Reconciles a previously-saved session against the (possibly re-imported)
+ * character file: drops refs the file no longer has (resources, slot pools,
+ * hit-dice groups, consumables, loadout pools/options, companions) and seeds
+ * defaults for anything new. Orphan drops are logged so a refresh is never a
+ * silent surprise (T14 deliverable 4). Pure — callers own persistence.
+ */
+export function reconcileSessionState(saved: SessionFile, character: CharacterFile): SessionFile {
+  const next = structuredClone(saved)
+  const dropped: string[] = []
+
+  const resourceIds = new Set((character.resources ?? []).map((r) => r.id))
+  for (const id of Object.keys(next.trackers.resources ?? {})) {
+    if (!resourceIds.has(id)) {
+      delete next.trackers.resources![id]
+      dropped.push(`resource:${id}`)
+    }
+  }
+
+  const slotIds = new Set((character.spellcasting?.slotPools ?? []).map((p) => p.id))
+  for (const id of Object.keys(next.trackers.slotPools ?? {})) {
+    if (!slotIds.has(id)) {
+      delete next.trackers.slotPools![id]
+      dropped.push(`slotPool:${id}`)
+    }
+  }
+
+  const classRefs = new Set((character.stats.hitDice ?? []).map((g) => g.classRef))
+  for (const ref of Object.keys(next.trackers.hitDice ?? {})) {
+    if (!classRefs.has(ref)) {
+      delete next.trackers.hitDice![ref]
+      dropped.push(`hitDice:${ref}`)
+    }
+  }
+
+  const consumables = character.consumables ?? []
+  const consumableIds = new Set(consumables.map((c) => c.id))
+  const consumableBag = (next.trackers.consumables ??= {})
+  for (const id of Object.keys(consumableBag)) {
+    if (!consumableIds.has(id)) {
+      delete consumableBag[id]
+      dropped.push(`consumable:${id}`)
+    }
+  }
+  for (const c of consumables) {
+    if (!(c.id in consumableBag)) consumableBag[c.id] = { count: c.max ?? 0 }
+  }
+
+  const poolDefs = character.pools ?? {}
+  const loadoutPools = (next.loadout.pools ??= {})
+  for (const poolId of Object.keys(loadoutPools)) {
+    const pool = poolDefs[poolId]
+    if (!pool) {
+      delete loadoutPools[poolId]
+      dropped.push(`pool:${poolId}`)
+      continue
+    }
+    const validRefs = new Set(pool.options.map((o) => o.ref))
+    const filtered = loadoutPools[poolId].selected.filter((ref) => {
+      const ok = validRefs.has(ref)
+      if (!ok) dropped.push(`pool:${poolId}:${ref}`)
+      return ok
+    })
+    loadoutPools[poolId] = { selected: filtered }
+  }
+  for (const [poolId, pool] of Object.entries(poolDefs)) {
+    if (!(poolId in loadoutPools) && pool.defaults) {
+      loadoutPools[poolId] = { selected: [...pool.defaults] }
+    }
+  }
+
+  const companionIds = new Set((character.companions ?? []).map((c) => c.id))
+  for (const id of Object.keys(next.companions ?? {})) {
+    if (!companionIds.has(id)) {
+      delete next.companions![id]
+      dropped.push(`companion:${id}`)
+    }
+  }
+
+  next.characterFormatVersion = character.formatVersion
+  next.updatedAt = new Date().toISOString()
+
+  if (dropped.length > 0 && typeof console !== 'undefined') {
+    console.info(`[character-forge] session refresh dropped orphaned refs: ${dropped.join(', ')}`)
+  }
+
+  return next
+}
+
+/** A {@link SessionStore} plus a hydration hook for async persistence wrappers. */
+export interface SessionEngine extends SessionStore {
+  /** Replace the whole state (e.g. after async IndexedDB load). Not an undo-able step. */
+  hydrate(next: SessionFile): void
+}
+
+/** Builds the synchronous mutation engine. Callers supply the starting state (fresh seed or hydrated). */
+export function createSessionEngine(character: CharacterFile, initialState: SessionFile): SessionEngine {
   // `state` is the live working copy (mutated in place); `snapshot` is the
   // immutable value handed to callers. `snapshot` changes reference only on
   // commit, which is what makes it a valid `useSyncExternalStore` getSnapshot.
-  let state = seedState(character)
+  let state = initialState
   let snapshot = structuredClone(state)
   const listeners = new Set<(state: SessionFile) => void>()
   const history: SessionFile[] = []
@@ -93,9 +191,7 @@ export function createMemorySessionStore(character: CharacterFile): SessionStore
   const slotMax = new Map(character.spellcasting?.slotPools.map((p) => [p.id, p.count]) ?? [])
   const resourceById = new Map((character.resources ?? []).map((r) => [r.id, r]))
   const consumableMax = new Map((character.consumables ?? []).map((c) => [c.id, c.max]))
-  const hitDiceMax = new Map(
-    (character.stats.hitDice ?? []).map((g) => [g.classRef, g.count]),
-  )
+  const hitDiceMax = new Map((character.stats.hitDice ?? []).map((g) => [g.classRef, g.count]))
 
   function pushHistory() {
     history.push(structuredClone(state))
@@ -119,6 +215,45 @@ export function createMemorySessionStore(character: CharacterFile): SessionStore
   function companion(owner: string) {
     const companions = (state.companions ??= {})
     return (companions[owner] ??= {})
+  }
+
+  /** Apply every resource's / slot pool's / hit-dice group's `recover` rule for the given rest. */
+  function applyRest(kind: 'short' | 'long') {
+    const on = kind === 'long' ? 'long' : 'short'
+    const resources = (state.trackers.resources ??= {})
+    for (const resource of character.resources ?? []) {
+      for (const rule of resource.recover) {
+        if (rule.on === on) {
+          resources[resource.id] = { used: recoverUsed(resources[resource.id]?.used ?? 0, rule) }
+        }
+      }
+    }
+    const slots = (state.trackers.slotPools ??= {})
+    for (const pool of character.spellcasting?.slotPools ?? []) {
+      for (const rule of pool.recover) {
+        if (rule.on === on) {
+          slots[pool.id] = { used: recoverUsed(slots[pool.id]?.used ?? 0, rule) }
+        }
+      }
+    }
+    if (kind === 'long') {
+      // Hit dice: only groups the file declares a long-rest recover rule for are
+      // touched — no hardcoded "half your hit dice" default (T14 scope).
+      const hitDice = (state.trackers.hitDice ??= {})
+      for (const group of character.stats.hitDice ?? []) {
+        for (const rule of group.recover ?? []) {
+          if (rule.on === 'long') {
+            hitDice[group.classRef] = { spent: recoverUsed(hitDice[group.classRef]?.spent ?? 0, rule) }
+          }
+        }
+      }
+      // HP to max: the active override (rolled/hand-edited, F2) takes precedence
+      // over the compiled value when set.
+      const compiledMax = typeof character.stats.maxHp.value === 'number' ? character.stats.maxHp.value : 0
+      const maxHp = state.trackers.maxHpOverride ?? compiledMax
+      state.trackers.hp = { current: maxHp, temp: 0 }
+      state.trackers.deathSaves = { successes: 0, failures: 0 }
+    }
   }
 
   return {
@@ -149,6 +284,12 @@ export function createMemorySessionStore(character: CharacterFile): SessionStore
         state.trackers.deathSaves = { successes, failures }
       })
     },
+    setMaxHpOverride(value) {
+      mutate(() => {
+        if (value === undefined) delete state.trackers.maxHpOverride
+        else state.trackers.maxHpOverride = value
+      })
+    },
 
     tick(kind, id, scope) {
       mutate(() => {
@@ -167,7 +308,7 @@ export function createMemorySessionStore(character: CharacterFile): SessionStore
         }
         const bag = (state.trackers.resources ??= {})
         const resource = resourceById.get(id)
-        const max = resource ? resolveMax(resource.max, character) : undefined
+        const max = resource ? resolveFormula(resource.max, character) : undefined
         bag[id] = { used: clamp((bag[id]?.used ?? 0) + 1, 0, max) }
       })
     },
@@ -179,9 +320,7 @@ export function createMemorySessionStore(character: CharacterFile): SessionStore
           return
         }
         const bag =
-          kind === 'slotPool'
-            ? (state.trackers.slotPools ??= {})
-            : (state.trackers.resources ??= {})
+          kind === 'slotPool' ? (state.trackers.slotPools ??= {}) : (state.trackers.resources ??= {})
         bag[id] = { used: Math.max(0, (bag[id]?.used ?? 0) - 1) }
       })
     },
@@ -236,7 +375,13 @@ export function createMemorySessionStore(character: CharacterFile): SessionStore
       mutate(() => {
         const pools = (state.loadout.pools ??= {})
         const selected = pools[poolId]?.selected ?? []
-        if (!selected.includes(ref)) pools[poolId] = { selected: [...selected, ref] }
+        if (selected.includes(ref)) return
+        // Enforce the pool's chooseCount (D13 — the UI already disables past the
+        // cap; this is the engine-level safety net for any other caller).
+        const pool = character.pools?.[poolId]
+        const limit = pool ? resolveFormula(pool.chooseCount, character) : undefined
+        if (limit !== undefined && selected.length >= limit) return
+        pools[poolId] = { selected: [...selected, ref] }
       })
     },
     deselect(poolId, ref) {
@@ -282,37 +427,16 @@ export function createMemorySessionStore(character: CharacterFile): SessionStore
       for (const listener of listeners) listener(snapshot)
     },
 
+    hydrate(next) {
+      state = structuredClone(next)
+      history.length = 0
+      snapshot = structuredClone(state)
+      for (const listener of listeners) listener(snapshot)
+    },
+
     subscribe(listener) {
       listeners.add(listener)
       return () => listeners.delete(listener)
     },
-  }
-
-  /** Apply every resource's / slot pool's `recover` rule for the given rest. */
-  function applyRest(kind: 'short' | 'long') {
-    const on = kind === 'long' ? 'long' : 'short'
-    const resources = (state.trackers.resources ??= {})
-    for (const resource of character.resources ?? []) {
-      for (const rule of resource.recover) {
-        if (rule.on === on) {
-          resources[resource.id] = { used: recoverUsed(resources[resource.id]?.used ?? 0, rule) }
-        }
-      }
-    }
-    const slots = (state.trackers.slotPools ??= {})
-    for (const pool of character.spellcasting?.slotPools ?? []) {
-      for (const rule of pool.recover) {
-        if (rule.on === on) {
-          slots[pool.id] = { used: recoverUsed(slots[pool.id]?.used ?? 0, rule) }
-        }
-      }
-    }
-    // A long rest also restores HP to full and clears death saves (SRD baseline;
-    // hit-dice recovery math is deferred to T14's real rest engine).
-    if (kind === 'long') {
-      const maxHp = typeof character.stats.maxHp.value === 'number' ? character.stats.maxHp.value : 0
-      state.trackers.hp = { current: maxHp, temp: 0 }
-      state.trackers.deathSaves = { successes: 0, failures: 0 }
-    }
   }
 }

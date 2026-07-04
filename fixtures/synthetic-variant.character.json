@@ -53,8 +53,18 @@
     "proficiencyBonus": 2,
     "speeds": [{ "type": "walk", "value": 35 }],
     "hitDice": [
-      { "classRef": "fighter", "die": "d10", "count": 1 },
-      { "classRef": "wizard", "die": "d6", "count": 2 }
+      {
+        "classRef": "fighter",
+        "die": "d10",
+        "count": 1,
+        "recover": [{ "on": "long", "amount": 1, "note": "Half of 1, minimum 1" }]
+      },
+      {
+        "classRef": "wizard",
+        "die": "d6",
+        "count": 2,
+        "recover": [{ "on": "long", "amount": 1, "note": "Half of 2" }]
+      }
     ],
     "saves": [
       { "ability": "STR", "modifier": 2, "proficient": true },

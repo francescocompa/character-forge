@@ -13,6 +13,44 @@ function statText(stat: StatValue, sign = false): string {
   return stat.value
 }
 
+/**
+ * MaxHP override (T03 review item F2): the compiled `stats.maxHp` may be an
+ * average/standard value, but Francesco often rolls it (Vice's 26). The
+ * session layer lets the player record that rolled/hand-edited total without
+ * touching the character file; when set, it — not the compiled value — is
+ * what "HP to max" restores on a long rest.
+ */
+function MaxHpOverrideControl({ compiled }: { compiled: number | undefined }) {
+  const store = useSession()
+  const { trackers } = useSessionState()
+  const override = trackers.maxHpOverride
+  if (compiled === undefined) return null
+  return (
+    <label className="hp-max-override">
+      <input
+        type="checkbox"
+        checked={override !== undefined}
+        onChange={(e) => store.setMaxHpOverride(e.target.checked ? compiled : undefined)}
+      />
+      Rolled/edited max
+      {override !== undefined && (
+        <input
+          type="number"
+          className="hp-max-override__input"
+          value={override}
+          min={1}
+          aria-label="Override max HP"
+          onChange={(e) => {
+            const n = Number(e.target.value)
+            if (Number.isFinite(n) && n >= 1) store.setMaxHpOverride(Math.round(n))
+          }}
+        />
+      )}
+      {override !== undefined && <span className="hp-max-override__compiled">compiled: {compiled}</span>}
+    </label>
+  )
+}
+
 /** HP with interactive current/temp, plus death saves. */
 function HpBlock() {
   const { character } = useCharacter()
@@ -20,6 +58,8 @@ function HpBlock() {
   const { trackers } = useSessionState()
   const maxHp = character.stats.maxHp
   const maxNumeric = typeof maxHp.value === 'number' ? maxHp.value : undefined
+  const override = trackers.maxHpOverride
+  const effectiveMax = override ?? maxNumeric
   const current = trackers.hp?.current ?? 0
   const temp = trackers.hp?.temp ?? 0
   const successes = trackers.deathSaves?.successes ?? 0
@@ -36,15 +76,16 @@ function HpBlock() {
               label="Current hit points"
               onChange={(v) => store.setCurrentHp(v, { owner: 'character' })}
               min={0}
-              max={maxNumeric}
+              max={effectiveMax}
             />
-            <span className="hp-current__max">/ {statText(maxHp)}</span>
+            <span className="hp-current__max">/ {override ?? statText(maxHp)}</span>
           </div>
           {maxHp.note && (
             <span className="stat__note">
               <MarkupText source={maxHp.note} />
             </span>
           )}
+          <MaxHpOverrideControl compiled={maxNumeric} />
         </div>
         <div className="hp-temp">
           <span className="stat__label">Temp HP</span>

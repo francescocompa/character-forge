@@ -3,6 +3,55 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T14: session state engine (IndexedDB + rest logic)
+
+- `app/src/state/`: the real `SessionStore`, replacing the T08 in-memory
+  stub (`app/src/session/memoryStore.ts`, deleted). `sessionEngine.ts` is the
+  pure, synchronous mutation core (ticks, rests, loadout, undo — ported
+  from the stub) shared by `IndexedDbSessionStore.ts`, which wraps it with
+  `idb` persistence keyed by `characterId::variantLabel::characterFormatVersion`
+  (`db.ts`). Returns synchronously with a fresh in-memory seed — first paint
+  never blocks on IndexedDB, and it degrades gracefully where IndexedDB
+  doesn't exist (this repo's Node-environment unit tests included) — then
+  hydrates any saved session in the background. Writes are debounced (400ms)
+  and flushed on `visibilitychange`/`pagehide`.
+- **`reconcileSessionState`**: on hydration, drops refs the character file no
+  longer has (resources, slot pools, hit-dice groups, consumables, loadout
+  pool/option selections, companions), seeds defaults for anything new, and
+  logs what it dropped — the "refresh from file" contract T16 will call into.
+- **maxHP override (T03 review item F2), schema addition**: `stats.maxHp` may
+  be an average or a rolled value (Vice's 26 is rolled); `Trackers.maxHpOverride`
+  (session.schema.json + types.ts) lets the player record a rolled/hand-edited
+  total without touching the character file. `applyLongRest`'s "HP to max"
+  uses the override when set. Wired into `MainSheet/Defense.tsx` (`MaxHpOverrideControl`):
+  a checkbox + number input showing both the active override and the compiled
+  value.
+- **Hit-dice long-rest recovery, schema addition**: `HitDiceGroup.recover?:
+  RecoverModel` (character.schema.json + types.ts) — the compiler pre-resolves
+  how many hit dice a long rest regains per class (no hardcoded "half your hit
+  dice, minimum 1" in the engine); both synthetic fixtures updated with a
+  concrete rule per class group.
+- **Loadout selection now enforces the pool's `chooseCount`** at the engine
+  level (`select` refuses past the cap) — the ManageMode UI already disabled
+  it; this is the safety net for any other caller.
+- Companion namespacing (T12) carried over unchanged; two variants of one
+  character get fully independent engines/keys (D12).
+- Tests: `sessionEngine.test.ts` (29, rest logic 100% stmt/line coverage) +
+  `IndexedDbSessionStore.test.ts` (4, round-trip via `fake-indexeddb`, new
+  devDependency). `Equipment.test.tsx`/`Companion.test.tsx` updated off the
+  deleted stub onto `createSessionEngine`. `verify` green across all
+  workspaces (239 tests).
+
+## 2026-07-04 — Advantage/disadvantage badges → dice icons
+
+- `AdvBadge`/`DisBadge` (`app/src/components/chips/`) now render a shared
+  d20-outline icon (`DiceStateIcon.tsx`) with an up/down chevron — green for
+  advantage, orange/red for disadvantage (scope §2.1's `--adv`/`--dis`
+  tokens) — instead of the "EDGE"/"DIS" text pills. Same call sites
+  (`SheetMarkup.tsx`'s `{adv}`/`{dis}`, `tokens/Gallery.tsx`), same a11y
+  contract (`role="img"` + `aria-label`, now "Advantage (EDGE)" /
+  "Disadvantage").
+
 ## 2026-07-04 — T12: companion sheet view
 
 - `app/src/views/Companion/`: a full mini-sheet per companion (familiars,

@@ -7,12 +7,11 @@ import {
   type ReactNode,
 } from 'react'
 import type { CharacterFile, SessionFile, SessionStore } from '@character-forge/schema/types.ts'
-import { createMemorySessionStore } from './memoryStore'
+import { createIndexedDbSessionStore } from '../state/IndexedDbSessionStore'
 
 /**
- * Provides the session-layer {@link SessionStore} to the view tree. In v1 this
- * is the in-memory stub ({@link createMemorySessionStore}); T14 replaces the
- * implementation, not this wiring. `useSessionState` subscribes a component to
+ * Provides the session-layer {@link SessionStore} to the view tree: the real,
+ * IndexedDB-backed store (T14). `useSessionState` subscribes a component to
  * the live snapshot so trackers re-render on every mutation.
  */
 const SessionContext = createContext<SessionStore | null>(null)
@@ -44,7 +43,7 @@ export function SessionProvider({ character, store, children }: SessionProviderP
   const value = useMemo(() => {
     if (store) return store
     if (!ref.current || ref.current.id !== id) {
-      ref.current = { id, store: createMemorySessionStore(character) }
+      ref.current = { id, store: createIndexedDbSessionStore(character) }
     }
     return ref.current.store
   }, [id, store, character])

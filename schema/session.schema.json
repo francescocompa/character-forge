@@ -109,6 +109,11 @@
           "description": "Absolute currency, seeded from the character file on first import and mutated here thereafter (see schema/README.md for the rationale).",
           "$ref": "#/$defs/Currency"
         },
+        "maxHpOverride": {
+          "description": "Player override for max HP (a manually rolled or hand-edited total), taking precedence over the character file's compiled stats.maxHp for display and for 'HP to max' on long rest (T03 review item F2). Absent = use the compiled value.",
+          "type": "integer",
+          "minimum": 1
+        },
         "conditions": {
           "description": "Active condition names or library refs.",
           "type": "array",

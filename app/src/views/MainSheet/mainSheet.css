@@ -341,6 +341,27 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* MaxHP override (F2): rolled/hand-edited total, session-layer only. */
+.hp-max-override {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+}
+.hp-max-override__input {
+  width: 3.5rem;
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--ink-primary);
+  font: inherit;
+  padding: 0 var(--space-1);
+}
+.hp-max-override__compiled {
+  color: var(--ink-muted);
+}
+
 .death-saves__rows {
   display: flex;
   flex-direction: column;

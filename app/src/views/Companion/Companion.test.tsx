@@ -7,7 +7,7 @@ import { AppShell } from '../../app/AppShell'
 import { LibraryProvider } from '../../library'
 import { CharacterProvider } from '../../character/CharacterProvider'
 import { SessionProvider } from '../../session/SessionProvider'
-import { createMemorySessionStore } from '../../session/memoryStore'
+import { createSessionEngine, seedSessionState } from '../../state/sessionEngine'
 import type { SessionStore } from '@character-forge/schema/types.ts'
 import { Companion } from './Companion'
 
@@ -60,7 +60,7 @@ describe('Companion — synthetic fixture (Ember Sprite, the CI path)', () => {
 
 describe('Companion — HP tracking is independent of the main character', () => {
   it('setting the companion HP does not touch the main character HP tracker', () => {
-    const store = createMemorySessionStore(character)
+    const store = createSessionEngine(character, seedSessionState(character))
     store.setCurrentHp(2, { owner: 'ember-sprite' })
     const state = store.getState()
     expect(state.companions?.['ember-sprite']?.hp?.current).toBe(2)

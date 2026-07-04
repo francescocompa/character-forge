@@ -185,6 +185,10 @@ export interface HitDiceGroup {
   classRef: Ref
   die: HitDie
   count: number
+  /** Long-rest recovery for this class's hit-dice pool, pre-resolved by the compiler
+   *  (e.g. half the group's count, minimum 1). Absent = the engine does not
+   *  auto-recover this group on long rest — no hardcoded SRD formula (T14). */
+  recover?: RecoverModel
 }
 
 export interface Save {
@@ -499,6 +503,9 @@ export interface Trackers {
   currency?: Currency
   conditions?: string[]
   inspiration?: boolean
+  /** Player override for max HP (rolled/hand-edited), takes precedence over the
+   *  compiled `stats.maxHp` (T03 review item F2). Absent = use the compiled value. */
+  maxHpOverride?: number
 }
 
 export interface Loadout {
@@ -552,6 +559,8 @@ export interface SessionStore {
   setCurrentHp(value: number, scope?: TrackerScope): void
   setTempHp(value: number, scope?: TrackerScope): void
   setDeathSaves(successes: number, failures: number): void
+  /** Set/clear the rolled-or-edited maxHP override (F2); `undefined` reverts to the compiled value. */
+  setMaxHpOverride(value: number | undefined): void
 
   // -- tick trackers (slots, resources, hit dice) -------------------------
   /** Spend one use from a slot pool / resource; `spend` clamps at max. */

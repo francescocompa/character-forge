@@ -362,7 +362,11 @@
       "properties": {
         "classRef": { "$ref": "#/$defs/Ref" },
         "die": { "type": "string", "enum": ["d6", "d8", "d10", "d12"] },
-        "count": { "type": "integer", "minimum": 0 }
+        "count": { "type": "integer", "minimum": 0 },
+        "recover": {
+          "description": "Long-rest hit-dice recovery for this class's pool, pre-resolved by the compiler (e.g. half the group's count, minimum 1, per the 5e rule). Absent = the session engine does not auto-recover this group on long rest; the app never hardcodes the SRD formula (scope T14).",
+          "$ref": "#/$defs/RecoverModel"
+        }
       }
     },
     "Save": {

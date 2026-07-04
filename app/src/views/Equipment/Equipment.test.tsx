@@ -6,7 +6,7 @@ import { LibraryProvider } from '../../library'
 import { CharacterProvider } from '../../character/CharacterProvider'
 import { SessionProvider } from '../../session/SessionProvider'
 import type { ViewMode } from '../../character/visibility'
-import { createMemorySessionStore } from '../../session/memoryStore'
+import { createSessionEngine, seedSessionState } from '../../state/sessionEngine'
 import type { SessionStore } from '@character-forge/schema/types.ts'
 import { Equipment } from './Equipment'
 
@@ -111,14 +111,14 @@ describe('Equipment — Build view shows future gear grayed + badged', () => {
 
 describe('Equipment — session-layer edits reflect in the view', () => {
   it('reflects a currency edit made through the SessionStore', () => {
-    const store = createMemorySessionStore(character)
+    const store = createSessionEngine(character, seedSessionState(character))
     store.setCurrency({ ...store.getState().trackers.currency, gp: 99 })
     const html = render('level', store)
     expect(html).toContain('value="99"')
   })
 
   it('reflects an equipped-state override made through the SessionStore', () => {
-    const store = createMemorySessionStore(character)
+    const store = createSessionEngine(character, seedSessionState(character))
     store.setEquipped('dagger-item', { equipped: true })
     const html = render('level', store)
     // Both the dagger's own checkbox and the identically-shaped longsword row
@@ -128,7 +128,7 @@ describe('Equipment — session-layer edits reflect in the view', () => {
   })
 
   it('renders a seeded in-session "found item" addition with its session marker', () => {
-    const store = createMemorySessionStore(character)
+    const store = createSessionEngine(character, seedSessionState(character))
     store.addAddition({ kind: 'item', name: 'Potion of Climbing (found)', summary: 'Found in a cache.' })
     const html = render('level', store)
     expect(html).toContain('Potion of Climbing (found)')
