@@ -1,0 +1,851 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://character-forge.local/schema/character.schema.json",
+  "title": "character-forge character file",
+  "description": "Self-contained, compiled D&D 5e character. Written only by the compile and KB-audit pipelines; the app never writes this file. Every `ref` is a kebab-case key into `library`; the schema does not enforce ref resolution (the validator CLI does — see schema/README.md).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["formatVersion", "meta", "chassis", "abilities", "stats", "currentLevel", "library"],
+  "properties": {
+    "formatVersion": {
+      "description": "Bumped only on a breaking change. The app refuses files whose formatVersion it does not understand.",
+      "const": 1
+    },
+    "meta": { "$ref": "#/$defs/Meta" },
+    "chassis": { "$ref": "#/$defs/Chassis" },
+    "abilities": { "$ref": "#/$defs/Abilities" },
+    "stats": { "$ref": "#/$defs/Stats" },
+    "currentLevel": {
+      "description": "Total character level. Level view renders only items with unlockLevel <= currentLevel.",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
+    },
+    "progression": {
+      "description": "Flat list of everything the build grants, each tagged with the class that granted it and the level it unlocks. Order is display order.",
+      "type": "array",
+      "items": { "$ref": "#/$defs/ProgressionItem" }
+    },
+    "actionEconomy": { "$ref": "#/$defs/ActionEconomy" },
+    "attacks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Attack" }
+    },
+    "spellcasting": { "$ref": "#/$defs/Spellcasting" },
+    "pools": {
+      "description": "Volatile-element pools (D13): swap-at-rest choices whose current selection lives in the session layer. Keyed by a stable pool id. Generic by design so new pool kinds need no schema change.",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/Pool" }
+    },
+    "resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Resource" }
+    },
+    "consumables": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Consumable" }
+    },
+    "equipment": { "$ref": "#/$defs/Equipment" },
+    "companions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/CompanionSheet" }
+    },
+    "library": {
+      "description": "Keyed extracts. Every `ref` in the file must resolve here. This is what popovers render.",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/Extract" }
+    }
+  },
+
+  "$defs": {
+    "Markup": {
+      "description": "Sheet-markup string: plain text with inline semantic tags (see markup-grammar.md). Unknown tags render as plain text.",
+      "type": "string"
+    },
+    "Ref": {
+      "description": "kebab-case key into `library`. Not resolved by the schema; the validator CLI checks resolution.",
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "Ability": {
+      "description": "Ability score abbreviation.",
+      "type": "string",
+      "enum": ["STR", "DEX", "CON", "INT", "WIS", "CHA"]
+    },
+    "Edition": {
+      "type": "string",
+      "enum": ["2014", "2024", "UA", "Homebrew"]
+    },
+    "ActionCost": {
+      "description": "Where an item sits in the action economy.",
+      "type": "string",
+      "enum": ["action", "bonus", "reaction", "free", "passive", "special"]
+    },
+    "StatValue": {
+      "description": "A compiled snapshot number with an optional provenance note (e.g. AC value 13 with note '13 + DEX (Armored Casing)'). Bias to explicit numbers; the compiler does the math.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["value"],
+      "properties": {
+        "value": { "type": ["number", "string"] },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "RecoverModel": {
+      "description": "Structured recovery, not a display string. A list of rules; mixed recovery lists more than one (e.g. Second Wind: [{on:'long',amount:'all'},{on:'short',amount:1}]).",
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/RecoverRule" }
+    },
+    "RecoverRule": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["on", "amount"],
+      "properties": {
+        "on": {
+          "description": "Trigger. 'other' + note covers anything unusual.",
+          "type": "string",
+          "enum": ["long", "short", "dawn", "turn", "encounter", "other"]
+        },
+        "amount": {
+          "description": "'all' restores the resource to max; a number restores that many; a string is a displayed formula the app shows verbatim.",
+          "anyOf": [{ "const": "all" }, { "type": "integer", "minimum": 0 }, { "type": "string" }]
+        },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+
+    "Meta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "characterId", "createdAt", "updatedAt"],
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "player": { "type": "string" },
+        "characterId": {
+          "description": "Variant files of one character share this id; the app groups them under a variant switcher (D12).",
+          "type": "string",
+          "minLength": 1
+        },
+        "variantLabel": {
+          "description": "Human label for this build variant (e.g. 'Blade pact', 'Tome pact'). Absent on a single-build character.",
+          "type": "string"
+        },
+        "portrait": {
+          "description": "Optional data-URI, budget <= 200 KB.",
+          "type": "string"
+        },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+
+    "Chassis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["species", "background", "classes"],
+      "properties": {
+        "species": { "$ref": "#/$defs/SpeciesChoice" },
+        "background": { "$ref": "#/$defs/BackgroundChoice" },
+        "classes": {
+          "description": "One entry per class. Multiclass is first-class (D11).",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/ClassEntry" }
+        }
+      }
+    },
+    "SpeciesChoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref"],
+      "properties": {
+        "ref": { "$ref": "#/$defs/Ref" },
+        "displayName": {
+          "description": "Reflavor: shown instead of the library entry's name (Autognome -> 'Marionette').",
+          "type": "string"
+        },
+        "modifications": {
+          "description": "Mechanical tweaks to the base entry (e.g. Small -> Medium). Each records what changed and why.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Modification" }
+        }
+      }
+    },
+    "BackgroundChoice": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref"],
+      "properties": {
+        "ref": { "$ref": "#/$defs/Ref" },
+        "displayName": { "type": "string" },
+        "modifications": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Modification" }
+        }
+      }
+    },
+    "Modification": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["note"],
+      "properties": {
+        "field": {
+          "description": "Optional label for what was changed (e.g. 'size', 'speed').",
+          "type": "string"
+        },
+        "from": { "type": "string" },
+        "to": { "type": "string" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "ClassEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "levels", "hitDie", "classOrder"],
+      "properties": {
+        "ref": { "$ref": "#/$defs/Ref" },
+        "displayName": { "type": "string" },
+        "levels": {
+          "description": "Levels taken in this class.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "hitDie": {
+          "type": "string",
+          "enum": ["d6", "d8", "d10", "d12"]
+        },
+        "classOrder": {
+          "description": "1 = starting class. The compiler resolves starting-class vs multiclass proficiency grants; this records the order for display and audit.",
+          "type": "integer",
+          "minimum": 1
+        },
+        "subclass": { "$ref": "#/$defs/SubclassChoice" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "SubclassChoice": {
+      "description": "Subclass choice. unlockLevel lets a planned subclass be progression content — Shigen's Eldritch Knight, grayed until its level.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "unlockLevel"],
+      "properties": {
+        "ref": { "$ref": "#/$defs/Ref" },
+        "displayName": { "type": "string" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+    "UnlockLevel": {
+      "description": "Total character level at which this becomes available. Level view hides items above currentLevel; Build view grays + badges them (D14).",
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 20
+    },
+
+    "Abilities": {
+      "description": "The six ability scores. Every ability is present.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      "properties": {
+        "STR": { "$ref": "#/$defs/AbilityScore" },
+        "DEX": { "$ref": "#/$defs/AbilityScore" },
+        "CON": { "$ref": "#/$defs/AbilityScore" },
+        "INT": { "$ref": "#/$defs/AbilityScore" },
+        "WIS": { "$ref": "#/$defs/AbilityScore" },
+        "CHA": { "$ref": "#/$defs/AbilityScore" }
+      }
+    },
+    "AbilityScore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["base", "final", "modifier"],
+      "properties": {
+        "base": {
+          "description": "Score before build adjustments (species/feat/ASI).",
+          "type": "integer"
+        },
+        "final": {
+          "description": "Compiled final score at currentLevel.",
+          "type": "integer"
+        },
+        "modifier": {
+          "description": "Compiled final modifier. Explicit so no view recomputes it.",
+          "type": "integer"
+        },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+
+    "Stats": {
+      "description": "Compiled snapshot at currentLevel. Single source of truth: rendered in every view, impossible to desync (improvement #1). Explicit numbers, each allowed a note.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ac", "maxHp", "initiative", "proficiencyBonus", "speeds", "saves", "skills"],
+      "properties": {
+        "ac": { "$ref": "#/$defs/StatValue" },
+        "maxHp": { "$ref": "#/$defs/StatValue" },
+        "initiative": { "$ref": "#/$defs/StatValue" },
+        "proficiencyBonus": { "type": "integer", "minimum": 0 },
+        "speeds": {
+          "description": "Movement modes. Walk plus any alternate movement (fly, swim, climb, burrow).",
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Speed" }
+        },
+        "hitDice": {
+          "description": "Hit dice per class (kept per-class for multiclass, §2.8). Session tracks spent per class.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/HitDiceGroup" }
+        },
+        "saves": {
+          "description": "One entry per ability.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Save" }
+        },
+        "skills": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Skill" }
+        },
+        "passives": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "perception": { "type": "integer" },
+            "investigation": { "type": "integer" },
+            "insight": { "type": "integer" }
+          }
+        },
+        "resistances": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "immunities": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "vulnerabilities": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "conditionAdvantages": {
+          "description": "Advantages/immunities against conditions (markup, e.g. '{adv} vs {cond:charmed}').",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Markup" }
+        },
+        "senses": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "languages": { "type": "array", "items": { "type": "string" } },
+        "proficiencies": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "armor": { "type": "array", "items": { "type": "string" } },
+            "weapons": { "type": "array", "items": { "type": "string" } },
+            "tools": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "Speed": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["type", "value"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["walk", "fly", "swim", "climb", "burrow"]
+        },
+        "value": {
+          "description": "Feet.",
+          "type": "integer",
+          "minimum": 0
+        },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "HitDiceGroup": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["classRef", "die", "count"],
+      "properties": {
+        "classRef": { "$ref": "#/$defs/Ref" },
+        "die": { "type": "string", "enum": ["d6", "d8", "d10", "d12"] },
+        "count": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "Save": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ability", "modifier", "proficient"],
+      "properties": {
+        "ability": { "$ref": "#/$defs/Ability" },
+        "modifier": { "type": "integer" },
+        "proficient": { "type": "boolean" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "Skill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "ability", "proficiency", "modifier"],
+      "properties": {
+        "name": { "type": "string" },
+        "ability": { "$ref": "#/$defs/Ability" },
+        "proficiency": {
+          "type": "string",
+          "enum": ["none", "half", "proficient", "expertise"]
+        },
+        "modifier": { "type": "integer" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+
+    "ProgressionItem": {
+      "description": "Something the build grants at a level, tagged with the granting class.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "kind", "unlockLevel"],
+      "properties": {
+        "name": { "type": "string" },
+        "displayName": { "type": "string" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "classRef": {
+          "description": "Class that granted this item (absent for species/background/feat lines).",
+          "$ref": "#/$defs/Ref"
+        },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "feature",
+            "invocation",
+            "feat",
+            "asi",
+            "subclass",
+            "spell-learned",
+            "slot-change",
+            "mastery-change",
+            "proficiency",
+            "other"
+          ]
+        },
+        "summary": { "$ref": "#/$defs/Markup" },
+        "action": { "$ref": "#/$defs/ActionCost" },
+        "limitedUseRef": {
+          "description": "If this feature is limited-use, the id of the entry in `resources[]` that tracks it.",
+          "type": "string"
+        },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+
+    "ActionEconomy": {
+      "description": "Mirrors the paper Actions panel, grouped by economy.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "actions": { "type": "array", "items": { "$ref": "#/$defs/ActionItem" } },
+        "bonusActions": { "type": "array", "items": { "$ref": "#/$defs/ActionItem" } },
+        "reactions": { "type": "array", "items": { "$ref": "#/$defs/ActionItem" } },
+        "other": { "type": "array", "items": { "$ref": "#/$defs/ActionItem" } }
+      }
+    },
+    "ActionItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "unlockLevel"],
+      "properties": {
+        "name": { "type": "string" },
+        "summary": { "$ref": "#/$defs/Markup" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+
+    "Attack": {
+      "description": "One attack mode. The same weapon may appear as several modes (each its own entry).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "displayName": { "type": "string" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "toHit": { "$ref": "#/$defs/ToHit" },
+        "save": { "$ref": "#/$defs/AttackSave" },
+        "range": { "type": "string" },
+        "damage": {
+          "description": "Primary damage, markup (e.g. '{dmg:radiant|1d8+3}').",
+          "$ref": "#/$defs/Markup"
+        },
+        "riders": {
+          "description": "On-hit extras and modal notes: Repelling Blast push, Eldritch Smite dice, SLOW on-hit (§2.8).",
+          "type": "array",
+          "items": { "$ref": "#/$defs/AttackRider" }
+        },
+        "consumableRef": {
+          "description": "Links this attack to a consumable it spends (e.g. arrows).",
+          "type": "string"
+        },
+        "notes": { "$ref": "#/$defs/Markup" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+    "ToHit": {
+      "description": "To-hit with separable parts, so the app can show a magic bonus apart from the base (the circled +1).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["modifier"],
+      "properties": {
+        "modifier": {
+          "description": "Total to-hit modifier including magicBonus.",
+          "type": "integer"
+        },
+        "magicBonus": {
+          "description": "Portion of `modifier` from a magic item, shown separably.",
+          "type": "integer"
+        },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "AttackSave": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ability", "dc"],
+      "properties": {
+        "ability": { "$ref": "#/$defs/Ability" },
+        "dc": { "type": "integer" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "AttackRider": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "summary": { "$ref": "#/$defs/Markup" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+
+    "Spellcasting": {
+      "description": "One merged spellcasting surface with per-source rules and coexisting slot pools (§2.8).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sources", "slotPools", "spells"],
+      "properties": {
+        "sources": {
+          "description": "One per casting class/feat/item.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/SpellSource" }
+        },
+        "slotPools": {
+          "description": "Pools of slots. Pools at the same spell level can coexist with different recovery (pact SR, shared LR, bonus SR). NOT one table.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/SlotPool" }
+        },
+        "spells": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Spell" }
+        }
+      }
+    },
+    "SpellSource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "ability", "saveDc", "attackMod"],
+      "properties": {
+        "id": {
+          "description": "Stable id referenced by Spell.origin and Pool.sourceId.",
+          "type": "string",
+          "minLength": 1
+        },
+        "name": { "type": "string" },
+        "classRef": { "$ref": "#/$defs/Ref" },
+        "originRef": {
+          "description": "For non-class sources (feat/item), the library ref that granted casting.",
+          "$ref": "#/$defs/Ref"
+        },
+        "ability": { "$ref": "#/$defs/Ability" },
+        "saveDc": { "type": "integer" },
+        "attackMod": { "type": "integer" },
+        "prepareRule": {
+          "description": "Display string of how preparation works for this source (e.g. 'Prepare CHA mod + Warlock level'). The pool carries the machine-readable count.",
+          "$ref": "#/$defs/Markup"
+        },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "SlotPool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "slotLevel", "count", "recover"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "sourceId": {
+          "description": "Which SpellSource this pool belongs to (optional; shared multiclass slots may serve several).",
+          "type": "string"
+        },
+        "slotLevel": {
+          "description": "Spell level of the slots in this pool (1-9). A shared table is several pools, one per level.",
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 9
+        },
+        "count": { "type": "integer", "minimum": 0 },
+        "recover": { "$ref": "#/$defs/RecoverModel" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "Spell": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "level", "origin", "unlockLevel"],
+      "properties": {
+        "name": { "type": "string" },
+        "displayName": { "type": "string" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "level": {
+          "description": "0 = cantrip.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 9
+        },
+        "school": { "type": "string" },
+        "concentration": { "type": "boolean" },
+        "ritual": { "type": "boolean" },
+        "components": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "v": { "type": "boolean" },
+            "s": { "type": "boolean" },
+            "m": {
+              "description": "Material component text if any (false/absent = none).",
+              "type": ["string", "boolean"]
+            }
+          }
+        },
+        "summary": { "$ref": "#/$defs/Markup" },
+        "origin": {
+          "description": "SpellSource.id that granted this spell -> colored origin dot (Shigen's invention).",
+          "type": "string",
+          "minLength": 1
+        },
+        "poolRef": {
+          "description": "If this spell is a member of a preparedSpells pool, the pool id in `pools`. Absent = always available (known/innate).",
+          "type": "string"
+        },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+
+    "Pool": {
+      "description": "A volatile-element pool (D13). Generic: `kind` distinguishes preparedSpells, weaponMasteries, and future kinds without a schema change.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "name", "chooseCount", "options"],
+      "properties": {
+        "kind": {
+          "description": "Open string so new pool kinds need no schema break. Known kinds: 'preparedSpells', 'weaponMasteries'.",
+          "type": "string",
+          "minLength": 1
+        },
+        "name": { "type": "string" },
+        "sourceId": {
+          "description": "For preparedSpells, the SpellSource this pool prepares from.",
+          "type": "string"
+        },
+        "chooseCount": {
+          "description": "How many options are selected. Number, or a displayed formula string the app shows verbatim.",
+          "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "string" }]
+        },
+        "options": {
+          "description": "Full choice set. Each option is a library ref so popovers work in the pool browser.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/PoolOption" }
+        },
+        "defaults": {
+          "description": "Compiler's default selection (refs from options). Seeds the session loadout; the app may change it without recompiling.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/Ref" }
+        },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+    "PoolOption": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["ref", "name"],
+      "properties": {
+        "ref": { "$ref": "#/$defs/Ref" },
+        "name": { "type": "string" },
+        "displayName": { "type": "string" },
+        "summary": { "$ref": "#/$defs/Markup" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+
+    "Resource": {
+      "description": "A limited-use pool with structured, possibly mixed, recovery.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "max", "recover", "unlockLevel"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "max": {
+          "description": "Number, or a displayed formula string (e.g. 'PB').",
+          "anyOf": [{ "type": "integer", "minimum": 0 }, { "type": "string" }]
+        },
+        "recover": { "$ref": "#/$defs/RecoverModel" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" },
+        "note": { "$ref": "#/$defs/Markup" }
+      }
+    },
+
+    "Consumable": {
+      "description": "Tally-tracked items (ammunition etc.).",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "max": { "type": "integer", "minimum": 0 },
+        "notes": { "$ref": "#/$defs/Markup" }
+      }
+    },
+
+    "Equipment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "items": { "type": "array", "items": { "$ref": "#/$defs/Item" } },
+        "currency": {
+          "description": "Compiled starting currency. This seeds the session layer on first import; absolute currency thereafter lives in the session file (see schema/README.md).",
+          "$ref": "#/$defs/Currency"
+        },
+        "attunement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["max"],
+          "properties": {
+            "max": { "type": "integer", "minimum": 0 },
+            "note": { "$ref": "#/$defs/Markup" }
+          }
+        },
+        "carryingCapacity": {
+          "description": "Capacity in lb; the app also shows kg.",
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "lb": { "type": "number", "minimum": 0 },
+            "note": { "$ref": "#/$defs/Markup" }
+          }
+        }
+      }
+    },
+    "Item": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "quantity"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "quantity": { "type": "integer", "minimum": 0 },
+        "weightLb": { "type": "number", "minimum": 0 },
+        "cost": {
+          "description": "Displayed cost string (e.g. '50 gp').",
+          "type": "string"
+        },
+        "summary": { "$ref": "#/$defs/Markup" },
+        "equipped": {
+          "description": "Default equipped state; live state lives in the session loadout.",
+          "type": "boolean"
+        },
+        "carried": { "type": "boolean" },
+        "attuned": { "type": "boolean" },
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+      }
+    },
+    "Currency": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cp": { "type": "integer", "minimum": 0 },
+        "sp": { "type": "integer", "minimum": 0 },
+        "ep": { "type": "integer", "minimum": 0 },
+        "gp": { "type": "integer", "minimum": 0 },
+        "pp": { "type": "integer", "minimum": 0 }
+      }
+    },
+
+    "CompanionSheet": {
+      "description": "A mini-sheet for a companion (familiar, beast, construct). A subset of the main shape, not a recursive character file.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "abilities", "ac", "maxHp", "speeds"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "name": { "type": "string" },
+        "ref": { "$ref": "#/$defs/Ref" },
+        "portrait": { "type": "string" },
+        "abilities": { "$ref": "#/$defs/Abilities" },
+        "ac": { "$ref": "#/$defs/StatValue" },
+        "maxHp": { "$ref": "#/$defs/StatValue" },
+        "speeds": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/Speed" }
+        },
+        "saves": { "type": "array", "items": { "$ref": "#/$defs/Save" } },
+        "skills": { "type": "array", "items": { "$ref": "#/$defs/Skill" } },
+        "attacks": { "type": "array", "items": { "$ref": "#/$defs/Attack" } },
+        "features": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/CompanionFeature" }
+        },
+        "resistances": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "immunities": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "conditionAdvantages": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "senses": { "type": "array", "items": { "$ref": "#/$defs/Markup" } },
+        "languages": { "type": "array", "items": { "type": "string" } },
+        "resources": { "type": "array", "items": { "$ref": "#/$defs/Resource" } }
+      }
+    },
+    "CompanionFeature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name"],
+      "properties": {
+        "name": { "type": "string" },
+        "summary": { "$ref": "#/$defs/Markup" },
+        "ref": { "$ref": "#/$defs/Ref" }
+      }
+    },
+
+    "Extract": {
+      "description": "A library entry. Every ref resolves to one of these; popovers render `markdown`.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "edition", "type", "source", "markdown"],
+      "properties": {
+        "name": { "type": "string" },
+        "edition": { "$ref": "#/$defs/Edition" },
+        "type": {
+          "description": "Open string (spell, feature, feat, condition, item, species, background, class, subclass, invocation, rule, ...).",
+          "type": "string"
+        },
+        "source": {
+          "description": "Sourcebook/homebrew label. Homebrew entries use 'Homebrew'.",
+          "type": "string"
+        },
+        "page": { "type": ["integer", "string"] },
+        "markdown": {
+          "description": "Full text, compiled at build time. Markdown. May itself contain sheet-markup tags.",
+          "type": "string"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,210 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://character-forge.local/schema/session.schema.json",
+  "title": "character-forge session file",
+  "description": "Play-time state for one character variant on one device. Owned by the app; the app never writes the character file. Keyed by characterId + variantLabel + characterFormatVersion. Seeded from the character file on first import; re-import ('refresh from file') preserves this layer.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "formatVersion",
+    "characterId",
+    "characterFormatVersion",
+    "updatedAt",
+    "trackers",
+    "loadout"
+  ],
+  "properties": {
+    "formatVersion": { "const": 1 },
+    "characterId": {
+      "description": "Matches the character file's meta.characterId.",
+      "type": "string",
+      "minLength": 1
+    },
+    "variantLabel": {
+      "description": "Matches the character file's meta.variantLabel. Absent for a single-build character. Session state is independent per variant (D12).",
+      "type": "string"
+    },
+    "characterFormatVersion": {
+      "description": "The character file formatVersion this session was seeded from; part of the key so a version bump starts a fresh session.",
+      "type": "integer",
+      "minimum": 1
+    },
+    "updatedAt": { "type": "string", "format": "date-time" },
+    "trackers": { "$ref": "#/$defs/Trackers" },
+    "loadout": { "$ref": "#/$defs/Loadout" },
+    "additions": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/Addition" }
+    },
+    "companions": {
+      "description": "Per-companion trackers, keyed by CompanionSheet.id.",
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/CompanionTrackers" }
+    }
+  },
+
+  "$defs": {
+    "Trackers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["current"],
+          "properties": {
+            "current": { "type": "integer" },
+            "temp": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "deathSaves": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "successes": { "type": "integer", "minimum": 0, "maximum": 3 },
+            "failures": { "type": "integer", "minimum": 0, "maximum": 3 }
+          }
+        },
+        "slotPools": {
+          "description": "Spent slots per pool, keyed by SlotPool.id. `used` counts up to the pool's count.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["used"],
+            "properties": { "used": { "type": "integer", "minimum": 0 } }
+          }
+        },
+        "resources": {
+          "description": "Spent uses per resource, keyed by Resource.id. Mixed recovery is applied by rest buttons using the character file's RecoverModel; the session only needs the current `used` count.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["used"],
+            "properties": { "used": { "type": "integer", "minimum": 0 } }
+          }
+        },
+        "hitDice": {
+          "description": "Spent hit dice per class, keyed by classRef (matches Stats.hitDice[].classRef).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["spent"],
+            "properties": { "spent": { "type": "integer", "minimum": 0 } }
+          }
+        },
+        "consumables": {
+          "description": "Current tally per consumable, keyed by Consumable.id.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["count"],
+            "properties": { "count": { "type": "integer", "minimum": 0 } }
+          }
+        },
+        "currency": {
+          "description": "Absolute currency, seeded from the character file on first import and mutated here thereafter (see schema/README.md for the rationale).",
+          "$ref": "#/$defs/Currency"
+        },
+        "conditions": {
+          "description": "Active condition names or library refs.",
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "inspiration": { "type": "boolean" }
+      }
+    },
+    "Loadout": {
+      "description": "Current volatile-element selections, seeded from the character file's compiled defaults (D13). Changing these never touches the character file.",
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "pools": {
+          "description": "Selected options per pool, keyed by pool id (matches keys in character `pools`). Values are option refs.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["selected"],
+            "properties": {
+              "selected": {
+                "type": "array",
+                "items": { "type": "string" }
+              }
+            }
+          }
+        },
+        "equipped": {
+          "description": "Equipped/carried overrides per item, keyed by Item.id. Absent = use the character file default.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "equipped": { "type": "boolean" },
+              "carried": { "type": "boolean" }
+            }
+          }
+        }
+      }
+    },
+    "Addition": {
+      "description": "An in-session addition (DM boon, found item, note). Rendered inline with a 'session' marker; adoptable into the base file at next recompile.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "name", "addedAt"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "kind": { "type": "string", "enum": ["item", "boon", "note"] },
+        "name": { "type": "string" },
+        "summary": {
+          "description": "Sheet-markup summary (same grammar as the character file).",
+          "type": "string"
+        },
+        "addedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "CompanionTrackers": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hp": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["current"],
+          "properties": {
+            "current": { "type": "integer" },
+            "temp": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "resources": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["used"],
+            "properties": { "used": { "type": "integer", "minimum": 0 } }
+          }
+        },
+        "conditions": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "Currency": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cp": { "type": "integer", "minimum": 0 },
+        "sp": { "type": "integer", "minimum": 0 },
+        "ep": { "type": "integer", "minimum": 0 },
+        "gp": { "type": "integer", "minimum": 0 },
+        "pp": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}
