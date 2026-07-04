@@ -1,29 +1,50 @@
 /*
- * character-forge design tokens (T05).
+ * character-forge design tokens (T05; restyled 2026-07-04).
  *
- * Dark-first (D10): this is the only theme in v1. Values are hue anchors
- * sampled from the audited paper sheets (scope §2.1), lifted in lightness and
- * tamed in saturation to hold contrast on dark surfaces without glowing.
+ * character-forge is a visual offshoot of monster-forge: surfaces, ink,
+ * hairlines, typography, and radius scale are inherited from its design
+ * system (monster-forge styles.css :root) so the two apps read as siblings.
+ * What does NOT carry over: monster-forge's terracotta accent (#e2654d) —
+ * this app gets its own accent to stay distinguishable (see --accent below,
+ * PROVISIONAL until Francesco picks the final hue) — and the sheet-canon
+ * ability/damage/origin palettes below, which are character-forge's own.
  *
- * Structure: semantic tokens (used by components) point at raw hue/scale
- * values defined here. A future light theme remaps this file's values only —
- * component CSS never changes (scope D10, T05 acceptance).
+ * Dark-first (D10): this is the only theme in v1. Structure: semantic tokens
+ * (used by components) point at raw values defined here. A future light theme
+ * remaps this file's values only — component CSS never changes.
  *
  * Tune freely in-browser (decision D7). See tokens/README.md for the map.
  */
 
 :root {
   /* ---------------------------------------------------------------------
-   * Surfaces & ink (dark scale)
+   * Surfaces & ink — monster-forge dark scale (bg / panel / panel2 / line,
+   * txt / dim / faint), plus its input well.
    * ------------------------------------------------------------------- */
-  --surface-bg: #0b0b0f;
-  --surface-raised: #15151d;
-  --surface-overlay: #1f1f2b;
-  --border-subtle: hsl(240 10% 24%);
+  --surface-bg: #121317;
+  --surface-raised: #1b1d22;
+  --surface-overlay: #23262d;
+  --surface-input: #0e0f12;
+  --border-subtle: #30343d;
 
-  --ink-primary: hsl(255 25% 96%);
-  --ink-secondary: hsl(255 12% 74%);
-  --ink-muted: hsl(255 8% 54%);
+  --ink-primary: #e7e9ee;
+  --ink-secondary: #a4aab4;
+  --ink-muted: #7e858f;
+
+  /* ---------------------------------------------------------------------
+   * App accent — sibling role of monster-forge's terracotta, deliberately a
+   * different hue so the two apps never get confused at a glance.
+   * PROVISIONAL: arcane indigo pending Francesco's pick (candidates in the
+   * restyle notes). Semantic ok/warn/bad/info inherited verbatim.
+   * ------------------------------------------------------------------- */
+  --accent: #7a6fe0;
+  --accent-soft: #9c93ea;
+  --accent-hover: #8a80e5;
+
+  --ok: #5fa873;
+  --warn: #d7a93f;
+  --bad: #d2604a;
+  --info: #5b9bd5;
   /* Text/numerals sitting on a solid accent-colored chip (§ability/§dmg below
      are all high-lightness, so dark ink reads best on all of them). */
   --ink-on-accent: hsl(240 20% 10%);
@@ -106,11 +127,12 @@
   /* ---------------------------------------------------------------------
    * Focus ring
    * ------------------------------------------------------------------- */
-  --focus-ring-color: hsl(243 70% 74%);
+  --focus-ring-color: var(--accent-soft);
   --focus-ring: 0 0 0 2px var(--surface-bg), 0 0 0 4px var(--focus-ring-color);
 
   /* ---------------------------------------------------------------------
-   * Spacing & radius scale
+   * Spacing & radius scale (radius steps = monster-forge's --r-sm/--r/--r-lg;
+   * --radius-lg is its card radius for panels/popovers).
    * ------------------------------------------------------------------- */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
@@ -119,16 +141,18 @@
   --space-5: 1.5rem;
   --space-6: 2rem;
 
-  --radius-sm: 4px;
-  --radius-md: 8px;
+  --radius-sm: 5px;
+  --radius-md: 7px;
+  --radius-lg: 10px;
   --radius-pill: 999px;
 
   /* ---------------------------------------------------------------------
-   * Typography — one stack, two roles: "chrome" (printed-template labels,
-   * small caps) vs "content" (filled-in values). Weight/size/color carry
-   * the distinction, not a handwriting font (scope §9 / T05 notes).
+   * Typography — Inter (bundled via @fontsource, offline-safe — no Google
+   * Fonts at runtime), same stack + 14px body rhythm as monster-forge.
+   * Two roles: "chrome" (printed-template labels, small caps) vs "content"
+   * (filled-in values). Weight/size/color carry the distinction.
    * ------------------------------------------------------------------- */
-  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+  --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
     sans-serif;
 
   --font-size-chrome: 0.6875rem;
@@ -136,6 +160,6 @@
   --weight-chrome: 600;
 
   --font-size-sm: 0.8125rem;
-  --font-size-md: 0.9375rem;
+  --font-size-md: 0.875rem;
   --weight-content: 400;
 }

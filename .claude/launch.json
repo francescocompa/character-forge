@@ -4,8 +4,14 @@
     {
       "name": "app-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--workspace", "app"],
-      "port": 5173
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--workspace",
+        "app"
+      ],
+      "port": 5173,
+      "autoPort": true
     }
   ]
 }

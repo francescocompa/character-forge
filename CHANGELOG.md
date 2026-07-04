@@ -3,6 +3,43 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T14 audit fixes + monster-forge visual inheritance
+
+**T14 audit — two rest-semantics bugs fixed in `sessionEngine.ts`:**
+
+- **Long rest now applies short-rest recovery too.** `applyRest('long')` only
+  fired `on:'long'` rules, so Vice's Pact Magic slots (encoded `on:'short'`
+  only, per the 2024 "Short or Long Rest" text) never refilled on a long rest.
+  Rest semantics are the engine's to own — files encode each feature's
+  *shortest* recovering rest; a long rest is a superset (`ruleApplies`).
+- **Companions now rest with the character.** `applyRest` ignored companions
+  entirely: Tiresia's HP stayed damaged after a long rest and companion
+  `resources` recover rules never fired. Long rest restores companion HP to
+  the compiled max; both rests apply companion resource recovery.
+- Two regression tests added (`sessionEngine.test.ts`, now 31).
+
+**Restyle — character-forge is now a visual offshoot of monster-forge
+(Francesco's direction, this session):**
+
+- `tokens.css` remapped to monster-forge's dark scale: surfaces
+  `#121317/#1b1d22/#23262d` (+ `--surface-input #0e0f12`), hairline `#30343d`,
+  ink `#e7e9ee/#a4aab4/#7e858f`, radius steps 5/7/10px (its `--r-sm/--r/--r-lg`),
+  semantic `--ok/--warn/--bad/--info` inherited verbatim. The sheet-canon
+  ability/damage/origin/recovery palettes are character-forge's own and stay.
+- New `--accent/--accent-soft/--accent-hover` family — deliberately NOT
+  monster-forge's terracotta (the two apps must stay distinguishable).
+  **PROVISIONAL** arcane indigo `#7a6fe0` pending Francesco's pick; focus ring
+  now follows the accent.
+- Inter bundled via `@fontsource/inter` 400–700 (offline PWA — no Google
+  Fonts fetch at runtime, unlike monster-forge), `--font-family` updated,
+  content size aligned to monster-forge's 14px rhythm.
+- `vite.config.ts`: PWA `theme_color`/`background_color` → `#121317`;
+  dev server honors `PORT` (with `autoPort` in `.claude/launch.json`, preview
+  sessions no longer collide on 5173 — unblocks the T08/T10/T11 gripe).
+- Deferred to Francesco (design decisions, not started): final accent hue,
+  the 3D dice port (three+cannon, Vecna faces), any layout-level parity
+  (rail nav vs current tabs), Vecna as a display face anywhere in-app.
+
 ## 2026-07-04 — T14: session state engine (IndexedDB + rest logic)
 
 - `app/src/state/`: the real `SessionStore`, replacing the T08 in-memory
