@@ -99,16 +99,20 @@ function internalIdChecks(file: CharacterFile): ValidationIssue[] {
   const resourceIds = new Set(file.resources?.map((r) => r.id) ?? [])
   const consumableIds = new Set(file.consumables?.map((c) => c.id) ?? [])
 
+  const spellNames = new Set(file.spellcasting?.spells.map((sp) => sp.name) ?? [])
+
   file.spellcasting?.spells.forEach((sp, i) => {
     const base = joinPath('spellcasting.spells', i)
-    if (!sourceIds.has(sp.origin)) {
-      issues.push({
-        layer: 'referential',
-        severity: 'error',
-        path: `${base}.origin`,
-        message: `origin "${sp.origin}" does not match any spellcasting.sources[].id`,
-      })
-    }
+    sp.origins.forEach((originId, k) => {
+      if (!sourceIds.has(originId)) {
+        issues.push({
+          layer: 'referential',
+          severity: 'error',
+          path: `${base}.origins[${k}]`,
+          message: `origin "${originId}" does not match any spellcasting.sources[].id`,
+        })
+      }
+    })
     if (sp.poolRef && !poolIds.has(sp.poolRef)) {
       issues.push({
         layer: 'referential',
@@ -126,6 +130,34 @@ function internalIdChecks(file: CharacterFile): ValidationIssue[] {
         severity: 'error',
         path: `${joinPath('spellcasting.slotPools', i)}.sourceId`,
         message: `sourceId "${sp.sourceId}" does not match any spellcasting.sources[].id`,
+      })
+    }
+  })
+
+  file.spellcasting?.swaps?.forEach((sw, i) => {
+    const base = joinPath('spellcasting.swaps', i)
+    if (!spellNames.has(sw.out)) {
+      issues.push({
+        layer: 'referential',
+        severity: 'error',
+        path: `${base}.out`,
+        message: `out "${sw.out}" does not match any spellcasting.spells[].name`,
+      })
+    }
+    if (!spellNames.has(sw.in)) {
+      issues.push({
+        layer: 'referential',
+        severity: 'error',
+        path: `${base}.in`,
+        message: `in "${sw.in}" does not match any spellcasting.spells[].name`,
+      })
+    }
+    if (sw.sourceId && !sourceIds.has(sw.sourceId)) {
+      issues.push({
+        layer: 'referential',
+        severity: 'error',
+        path: `${base}.sourceId`,
+        message: `sourceId "${sw.sourceId}" does not match any spellcasting.sources[].id`,
       })
     }
   })

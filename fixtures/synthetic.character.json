@@ -212,7 +212,8 @@
         "ref": "mending-charm",
         "level": 1,
         "school": "Transmutation",
-        "origin": "wizard",
+        "origins": ["wizard"],
+        "role": "prepared",
         "poolRef": "wizard-prepared",
         "unlockLevel": 1,
         "summary": "{dice:2d4} HP {ref:mending-charm|healing} to an object or willing creature"
@@ -222,19 +223,40 @@
         "ref": "ashen-bolt",
         "level": 1,
         "school": "Evocation",
-        "origin": "wizard",
+        "origins": ["wizard", "ember-charm"],
+        "role": "prepared",
         "poolRef": "wizard-prepared",
         "unlockLevel": 1,
+        "swapOutLevel": 5,
         "summary": "{dmg:fire|2d6} & {save:DEX|13} for half"
+      },
+      {
+        "name": "Frost Splinter",
+        "level": 1,
+        "school": "Evocation",
+        "origins": ["wizard"],
+        "role": "known",
+        "unlockLevel": 5,
+        "summary": "{dmg:cold|2d6} & {save:CON|13}; target {dis} on its next attack"
       },
       {
         "name": "Guiding Flame",
         "ref": "guiding-flame",
         "level": 0,
         "school": "Evocation",
-        "origin": "ember-charm",
+        "origins": ["ember-charm"],
+        "role": "innate",
         "unlockLevel": 1,
         "summary": "{dice:1d6} light guiding an ally's next {save:WIS}"
+      }
+    ],
+    "swaps": [
+      {
+        "atLevel": 5,
+        "out": "Ashen Bolt",
+        "in": "Frost Splinter",
+        "sourceId": "wizard",
+        "note": "Level-5 fixed-known swap: drop {ref:ashen-bolt|Ashen Bolt} for Frost Splinter."
       }
     ]
   },

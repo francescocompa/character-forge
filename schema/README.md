@@ -64,9 +64,21 @@ currentLevel`; Build view shows everything, grayed + badged (D14).
   on-hit extras. `save` for save-based attacks. `consumableRef` links ammo.
 - **`spellcasting`** — `sources[]` (per casting class/feat/item: ability, DC,
   attack mod, prepare rule), `slotPools[]` (pools that **coexist at one spell
-  level with different recovery** — pact SR, shared LR, bonus SR), and `spells[]`
-  (each carries `origin` → colored dot, and optional `poolRef` for pool
-  membership).
+  level with different recovery** — pact SR, shared LR, bonus SR), `spells[]`,
+  and `swaps[]`. Each spell carries:
+  - **`origins[]`** — one or more `SpellSource.id`s → colored origin dot(s).
+    **Two entries = a dual-source spell**, rendered as a two-tone/bordered dot
+    (a spell on both the base-class list and a subclass/feat list — e.g. Vice's
+    Hex).
+  - **`role`** — how it's accessed (`prepared` counts against a prepare limit,
+    `alwaysPrepared` is free/granted, `innate` is at-will, `known` is a fixed
+    pick, `ritualOnly`). Distinct from `origins` (which *source*).
+  - **`poolRef`** — preparedSpells pool membership (optional).
+  - **`unlockLevel`** and optional **`swapOutLevel`** — for fixed-known casters
+    (Warlock/Sorcerer), the spell is known during `[unlockLevel, swapOutLevel)`
+    and replaced on level-up. `spellcasting.swaps[]` records the explicit
+    out→in replacement links (`{atLevel, out, in, sourceId?}`, referencing
+    `Spell.name`s) so Build view shows the swap history rather than inferring it.
 - **`pools{}`** — volatile-element pools (D13), keyed by pool id. Generic `kind`
   (`preparedSpells`, `weaponMasteries`, …) so new kinds need no schema break.
   Options are `library` refs (popovers work in the pool browser); `defaults`
@@ -88,8 +100,9 @@ markdown`). **Every `ref` in the file resolves here.**
    attacks, pool options, resources, items, companions) is a key in `library`.
    The JSON Schema does **not** check this (a `ref` is just a pattern-matched
    string); the validator CLI does the referential pass. Same for internal id
-   references: `Spell.origin` → a `SpellSource.id`; `poolRef`/pool keys →
-   `pools`; `limitedUseRef`/`consumableRef` → `resources`/`consumables`.
+   references: `Spell.origins[]` → `SpellSource.id`s; `spellcasting.swaps[].out`
+   / `.in` → `Spell.name`s; `poolRef`/pool keys → `pools`;
+   `limitedUseRef`/`consumableRef` → `resources`/`consumables`.
 3. **Compiled numbers are authoritative.** `stats`, `abilities`, `toHit`,
    `saveDc`, etc. are results, not formulas. The app renders them verbatim and
    never recomputes (scope §1 — no rules engine). `note` fields explain, they
@@ -122,8 +135,15 @@ as loadout selections (seed from `defaults`, then own it in-session).
 ## Versioning policy
 
 - `formatVersion` is a single integer, currently **1**.
-- **Breaking change ⇒ bump `formatVersion`** (removing/renaming a field,
-  tightening a type, changing an invariant). Additive-optional changes don't bump.
+- **Pre-release (before the first shipped app that reads character files),
+  `formatVersion` stays 1 and the contract may change in place** — no released
+  build or real data depends on it yet, and the fixtures + local reference files
+  are migrated in lockstep. (E.g. the 2026-07-04 spell reshape —
+  `origin`→`origins[]`, `role`, `swapOutLevel`, `swaps[]` — was a breaking change
+  kept at `formatVersion: 1`.)
+- **After first ship, breaking change ⇒ bump `formatVersion`** (removing/renaming
+  a field, tightening a type, changing an invariant). Additive-optional changes
+  don't bump.
 - The app **refuses a newer `formatVersion` than it understands**, with a
   friendly "update the app to open this character" message — it never silently
   drops unknown data.

@@ -48,6 +48,47 @@ export function checkSanity(file: CharacterFile, rawFileSize: number): Validatio
 
   issues.push(...checkDuplicateIds(file.spellcasting?.slotPools, 'spellcasting.slotPools'))
   issues.push(...checkDuplicateIds(file.spellcasting?.sources, 'spellcasting.sources'))
+
+  const spellsByName = new Map(file.spellcasting?.spells.map((sp) => [sp.name, sp]))
+  file.spellcasting?.spells.forEach((sp, i) => {
+    if (sp.swapOutLevel !== undefined && sp.swapOutLevel <= sp.unlockLevel) {
+      issues.push({
+        layer: 'sanity',
+        severity: 'error',
+        path: `spellcasting.spells[${i}].swapOutLevel`,
+        message: `swapOutLevel (${sp.swapOutLevel}) must be greater than unlockLevel (${sp.unlockLevel})`,
+      })
+    }
+  })
+  file.spellcasting?.swaps?.forEach((sw, i) => {
+    const base = `spellcasting.swaps[${i}]`
+    if (sw.out === sw.in) {
+      issues.push({
+        layer: 'sanity',
+        severity: 'error',
+        path: `${base}.in`,
+        message: `swap out and in are the same spell ("${sw.in}")`,
+      })
+    }
+    const outSpell = spellsByName.get(sw.out)
+    if (outSpell && outSpell.swapOutLevel !== sw.atLevel) {
+      issues.push({
+        layer: 'sanity',
+        severity: 'warning',
+        path: `${base}.atLevel`,
+        message: `swap atLevel (${sw.atLevel}) does not match "${sw.out}".swapOutLevel (${outSpell.swapOutLevel ?? 'unset'})`,
+      })
+    }
+    const inSpell = spellsByName.get(sw.in)
+    if (inSpell && inSpell.unlockLevel !== sw.atLevel) {
+      issues.push({
+        layer: 'sanity',
+        severity: 'warning',
+        path: `${base}.atLevel`,
+        message: `swap atLevel (${sw.atLevel}) does not match "${sw.in}".unlockLevel (${inSpell.unlockLevel})`,
+      })
+    }
+  })
   issues.push(...checkDuplicateIds(file.resources, 'resources'))
   issues.push(...checkDuplicateIds(file.consumables, 'consumables'))
   issues.push(...checkDuplicateIds(file.equipment?.items, 'equipment.items'))

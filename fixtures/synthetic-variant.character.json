@@ -211,7 +211,8 @@
         "ref": "mending-charm",
         "level": 1,
         "school": "Transmutation",
-        "origin": "wizard",
+        "origins": ["wizard"],
+        "role": "prepared",
         "poolRef": "wizard-prepared",
         "unlockLevel": 1,
         "summary": "{dice:2d4} HP {ref:mending-charm|healing} to an object or willing creature"
@@ -221,7 +222,8 @@
         "ref": "ashen-bolt",
         "level": 1,
         "school": "Evocation",
-        "origin": "wizard",
+        "origins": ["wizard"],
+        "role": "prepared",
         "poolRef": "wizard-prepared",
         "unlockLevel": 1,
         "summary": "{dmg:fire|2d6} & {save:DEX|13} for half"
@@ -231,7 +233,8 @@
         "ref": "guiding-flame",
         "level": 0,
         "school": "Evocation",
-        "origin": "ember-charm",
+        "origins": ["ember-charm"],
+        "role": "innate",
         "unlockLevel": 1,
         "summary": "{dice:1d6} light guiding an ally's next {save:WIS}"
       }

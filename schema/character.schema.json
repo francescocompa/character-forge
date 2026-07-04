@@ -540,6 +540,11 @@
         "spells": {
           "type": "array",
           "items": { "$ref": "#/$defs/Spell" }
+        },
+        "swaps": {
+          "description": "Spell-swap history for fixed-known casters: explicit out->in replacement links, one per level-up swap. Optional; absent = no swaps.",
+          "type": "array",
+          "items": { "$ref": "#/$defs/SpellSwap" }
         }
       }
     },
@@ -549,7 +554,7 @@
       "required": ["id", "name", "ability", "saveDc", "attackMod"],
       "properties": {
         "id": {
-          "description": "Stable id referenced by Spell.origin and Pool.sourceId.",
+          "description": "Stable id referenced by Spell.origins[] and Pool.sourceId.",
           "type": "string",
           "minLength": 1
         },
@@ -595,7 +600,7 @@
     "Spell": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["name", "level", "origin", "unlockLevel"],
+      "required": ["name", "level", "origins", "unlockLevel"],
       "properties": {
         "name": { "type": "string" },
         "displayName": { "type": "string" },
@@ -622,16 +627,52 @@
           }
         },
         "summary": { "$ref": "#/$defs/Markup" },
-        "origin": {
-          "description": "SpellSource.id that granted this spell -> colored origin dot (Shigen's invention).",
+        "origins": {
+          "description": "SpellSource.id(s) that grant this spell -> colored origin dot(s). One id = a solid dot; two = a dual-source spell, rendered as a two-tone/bordered dot (e.g. a spell on both the base-class list and a subclass/feat list).",
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "role": {
+          "description": "How the caster accesses this spell (distinct from origins, which is *which source* it comes from). 'prepared' counts against a prepare limit; 'alwaysPrepared' is free/granted (subclass or feat); 'innate' is an at-will/innate cast; 'known' is a known-caster fixed pick; 'ritualOnly' is castable only as a ritual.",
           "type": "string",
-          "minLength": 1
+          "enum": ["prepared", "alwaysPrepared", "innate", "known", "ritualOnly"]
         },
         "poolRef": {
           "description": "If this spell is a member of a preparedSpells pool, the pool id in `pools`. Absent = always available (known/innate).",
           "type": "string"
         },
-        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" }
+        "unlockLevel": { "$ref": "#/$defs/UnlockLevel" },
+        "swapOutLevel": {
+          "description": "For fixed-known casters (Warlock, Sorcerer) that replace a spell on level-up: the character level at which this spell leaves the list. Must be > unlockLevel. In Build view the spell reads as known during [unlockLevel, swapOutLevel); the matching entry in spellcasting.swaps names its replacement.",
+          "$ref": "#/$defs/UnlockLevel"
+        }
+      }
+    },
+
+    "SpellSwap": {
+      "description": "One first-class entry in the spell-swap history (D-fixed-known casters). At `atLevel`, the spell named `out` is replaced by the spell named `in` (both are Spell.name values in this file). Lets Build view show the explicit replacement link rather than the app inferring it.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["atLevel", "out", "in"],
+      "properties": {
+        "atLevel": { "$ref": "#/$defs/UnlockLevel" },
+        "out": {
+          "description": "Spell.name of the spell dropped at atLevel (its swapOutLevel should equal atLevel).",
+          "type": "string",
+          "minLength": 1
+        },
+        "in": {
+          "description": "Spell.name of the spell gained at atLevel (its unlockLevel should equal atLevel).",
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceId": {
+          "description": "SpellSource.id the swap belongs to (optional; disambiguates when several sources allow swaps).",
+          "type": "string"
+        },
+        "note": { "$ref": "#/$defs/Markup" }
       }
     },
 

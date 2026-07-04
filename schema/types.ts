@@ -284,10 +284,12 @@ export interface Spellcasting {
   /** Pools that can coexist at one spell level with different recovery (§2.8). */
   slotPools: SlotPool[]
   spells: Spell[]
+  /** Explicit out->in replacement links for fixed-known casters (Warlock/Sorcerer). */
+  swaps?: SpellSwap[]
 }
 
 export interface SpellSource {
-  /** Referenced by Spell.origin and Pool.sourceId. */
+  /** Referenced by Spell.origins[] and Pool.sourceId. */
   id: string
   name: string
   classRef?: Ref
@@ -326,11 +328,27 @@ export interface Spell {
     m?: string | boolean
   }
   summary?: Markup
-  /** SpellSource.id -> colored origin dot. */
-  origin: string
+  /** SpellSource.id(s) -> colored origin dot(s). Two entries = dual-source (two-tone/bordered dot). */
+  origins: string[]
+  /** How the caster accesses this spell (prepare limit vs granted vs innate); distinct from origins. */
+  role?: 'prepared' | 'alwaysPrepared' | 'innate' | 'known' | 'ritualOnly'
   /** preparedSpells pool id, if this spell is a pool member. Absent = always available. */
   poolRef?: string
   unlockLevel: number
+  /** Fixed-known casters: character level at which this spell is swapped out. Must be > unlockLevel. */
+  swapOutLevel?: number
+}
+
+export interface SpellSwap {
+  /** Character level of the swap. */
+  atLevel: number
+  /** Spell.name dropped at atLevel. */
+  out: string
+  /** Spell.name gained at atLevel. */
+  in: string
+  /** SpellSource.id the swap belongs to (optional). */
+  sourceId?: string
+  note?: Markup
 }
 
 export interface Pool {

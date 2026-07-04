@@ -51,6 +51,47 @@ describe('checkSanity', () => {
     )
   })
 
+  it('flags a spell swapOutLevel that is not greater than its unlockLevel', () => {
+    const file = minimalFile({
+      spellcasting: {
+        sources: [{ id: 'warlock', name: 'Warlock', ability: 'CHA', saveDc: 13, attackMod: 5 }],
+        slotPools: [],
+        spells: [
+          { name: 'Hex', level: 1, origins: ['warlock'], unlockLevel: 3, swapOutLevel: 3 },
+        ],
+      },
+    })
+    expect(checkSanity(file, 100)).toContainEqual(
+      expect.objectContaining({
+        layer: 'sanity',
+        severity: 'error',
+        path: 'spellcasting.spells[0].swapOutLevel',
+      }),
+    )
+  })
+
+  it('warns when a swap atLevel disagrees with the spells it links', () => {
+    const file = minimalFile({
+      spellcasting: {
+        sources: [{ id: 'warlock', name: 'Warlock', ability: 'CHA', saveDc: 13, attackMod: 5 }],
+        slotPools: [],
+        spells: [
+          { name: 'Hex', level: 1, origins: ['warlock'], unlockLevel: 1, swapOutLevel: 5 },
+          { name: 'Bane', level: 1, origins: ['warlock'], unlockLevel: 5 },
+        ],
+        swaps: [{ atLevel: 4, out: 'Hex', in: 'Bane' }],
+      },
+    })
+    const issues = checkSanity(file, 100)
+    expect(issues).toContainEqual(
+      expect.objectContaining({
+        layer: 'sanity',
+        severity: 'warning',
+        path: 'spellcasting.swaps[0].atLevel',
+      }),
+    )
+  })
+
   it('flags duplicate resource ids', () => {
     const file = minimalFile({
       resources: [

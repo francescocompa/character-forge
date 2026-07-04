@@ -71,12 +71,27 @@ describe('checkReferentialIntegrity', () => {
       spellcasting: {
         sources: [{ id: 'wizard', name: 'Wizard', ability: 'INT', saveDc: 13, attackMod: 5 }],
         slotPools: [],
-        spells: [{ name: 'Test Spell', level: 1, origin: 'sorcerer', unlockLevel: 1 }],
+        spells: [{ name: 'Test Spell', level: 1, origins: ['sorcerer'], unlockLevel: 1 }],
       },
     })
     const issues = checkReferentialIntegrity(file)
     expect(issues).toContainEqual(
-      expect.objectContaining({ layer: 'referential', path: 'spellcasting.spells[0].origin' }),
+      expect.objectContaining({ layer: 'referential', path: 'spellcasting.spells[0].origins[0]' }),
+    )
+  })
+
+  it('flags a spell-swap out that names no spell in the file', () => {
+    const file = minimalFile({
+      spellcasting: {
+        sources: [{ id: 'warlock', name: 'Warlock', ability: 'CHA', saveDc: 13, attackMod: 5 }],
+        slotPools: [],
+        spells: [{ name: 'Hex', level: 1, origins: ['warlock'], unlockLevel: 1 }],
+        swaps: [{ atLevel: 5, out: 'Ghost Spell', in: 'Hex' }],
+      },
+    })
+    const issues = checkReferentialIntegrity(file)
+    expect(issues).toContainEqual(
+      expect.objectContaining({ layer: 'referential', path: 'spellcasting.swaps[0].out' }),
     )
   })
 
@@ -89,7 +104,7 @@ describe('checkReferentialIntegrity', () => {
           {
             name: 'Test Spell',
             level: 1,
-            origin: 'wizard',
+            origins: ['wizard'],
             poolRef: 'missing-pool',
             unlockLevel: 1,
           },
