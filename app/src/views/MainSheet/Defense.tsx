@@ -97,28 +97,27 @@ function HpBlock() {
           />
         </div>
       </div>
+      {/* monster-forge death-save pattern (.hpm-ds): successes (green) left
+          of the centred label, failures (red) right; circular pips whose
+          border color states each group's meaning before any are filled. */}
       <div className="death-saves">
-        <span className="stat__label">Death saves</span>
-        <div className="death-saves__rows">
-          <div className="death-saves__row death-saves__row--success">
-            <span className="death-saves__cue">Successes</span>
-            <TickBoxes
-              total={3}
-              used={successes}
-              tone="remaining"
-              label="Death save successes"
-              onSet={(t) => store.setDeathSaves(t, failures)}
-            />
-          </div>
-          <div className="death-saves__row death-saves__row--fail">
-            <span className="death-saves__cue">Failures</span>
-            <TickBoxes
-              total={3}
-              used={failures}
-              label="Death save failures"
-              onSet={(t) => store.setDeathSaves(successes, t)}
-            />
-          </div>
+        <div className="death-saves__grp death-saves__grp--success">
+          <TickBoxes
+            total={3}
+            used={successes}
+            tone="remaining"
+            label="Death save successes"
+            onSet={(t) => store.setDeathSaves(t, failures)}
+          />
+        </div>
+        <span className="death-saves__lbl">Death saves</span>
+        <div className="death-saves__grp death-saves__grp--fail">
+          <TickBoxes
+            total={3}
+            used={failures}
+            label="Death save failures"
+            onSet={(t) => store.setDeathSaves(successes, t)}
+          />
         </div>
       </div>
     </div>

@@ -3,6 +3,28 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — offshoot decisions locked + ability/death-save alignment
+
+Francesco confirmed the offshoot direction: **accent = arcane indigo
+`#7a6fe0`** (no longer provisional), 3D dice approved (accent-tinted, planned
+as T24), current tab shell stays, Vecna reserved for dice faces.
+
+- **Ability hues → monster-forge's `cc-ab` scheme** (same canon both apps
+  share): STR `#e05a5a`, DEX `#5fb4e6`, CON `#e88c3c`, INT `#a06ed6`,
+  WIS `#5fa873`, CHA `#e878b4`; soft variants at its .22-alpha tint.
+- **Ability cells → the `.abil .cell` recipe**: input-well bg, border
+  `color-mix(ability 55%, hairline)`, colored codename. The big value stays
+  the modifier (play-sheet hierarchy; monster-forge's editor leads with the
+  editable score).
+- **Death saves → the `.hpm-ds` pattern**: successes (green) left of a
+  centred DEATH SAVES label, failures (red) right; circular pips whose
+  border color states each group's meaning before any are filled
+  (`Defense.tsx` + CSS; TickBoxes and its a11y labels unchanged).
+- Planning: **Phase 3.5** added — T23 (thorough monster-forge DS alignment;
+  audited component catalog embedded in the task) and T24 (3D dice port) in
+  `planning/tasks/`; `planning/monster-forge-restyle.md` updated with the
+  decisions.
+
 ## 2026-07-04 — T14 audit fixes + monster-forge visual inheritance
 
 **T14 audit — two rest-semantics bugs fixed in `sessionEngine.ts`:**

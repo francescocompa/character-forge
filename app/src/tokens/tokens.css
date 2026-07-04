@@ -34,8 +34,8 @@
   /* ---------------------------------------------------------------------
    * App accent — sibling role of monster-forge's terracotta, deliberately a
    * different hue so the two apps never get confused at a glance.
-   * PROVISIONAL: arcane indigo pending Francesco's pick (candidates in the
-   * restyle notes). Semantic ok/warn/bad/info inherited verbatim.
+   * Arcane indigo, confirmed by Francesco 2026-07-04. Semantic
+   * ok/warn/bad/info inherited verbatim.
    * ------------------------------------------------------------------- */
   --accent: #7a6fe0;
   --accent-soft: #9c93ea;
@@ -50,21 +50,22 @@
   --ink-on-accent: hsl(240 20% 10%);
 
   /* ---------------------------------------------------------------------
-   * Ability colors (canon: STR red, DEX blue, CON orange, INT purple,
-   * WIS green, CHA magenta) — solid + soft (background-tint) variants.
+   * Ability colors — same canon both apps share (STR red, DEX light blue,
+   * CON orange, INT purple, WIS green, CHA pink); exact hues inherited from
+   * monster-forge's cc-ab scheme, softs at its .22-alpha tint.
    * ------------------------------------------------------------------- */
-  --ability-str: hsl(4 88% 68%);
-  --ability-str-soft: hsl(4 88% 68% / 0.16);
-  --ability-dex: hsl(212 88% 68%);
-  --ability-dex-soft: hsl(212 88% 68% / 0.16);
-  --ability-con: hsl(28 92% 62%);
-  --ability-con-soft: hsl(28 92% 62% / 0.16);
-  --ability-int: hsl(268 70% 74%);
-  --ability-int-soft: hsl(268 70% 74% / 0.16);
-  --ability-wis: hsl(142 55% 60%);
-  --ability-wis-soft: hsl(142 55% 60% / 0.16);
-  --ability-cha: hsl(322 78% 70%);
-  --ability-cha-soft: hsl(322 78% 70% / 0.16);
+  --ability-str: rgb(224 90 90);
+  --ability-str-soft: rgb(224 90 90 / 0.22);
+  --ability-dex: rgb(95 180 230);
+  --ability-dex-soft: rgb(95 180 230 / 0.22);
+  --ability-con: rgb(232 140 60);
+  --ability-con-soft: rgb(232 140 60 / 0.22);
+  --ability-int: rgb(160 110 214);
+  --ability-int-soft: rgb(160 110 214 / 0.22);
+  --ability-wis: rgb(95 168 115);
+  --ability-wis-soft: rgb(95 168 115 / 0.22);
+  --ability-cha: rgb(232 120 180);
+  --ability-cha-soft: rgb(232 120 180 / 0.22);
 
   /* ---------------------------------------------------------------------
    * Damage type palette (13 recognized types, markup-grammar.md §3).
