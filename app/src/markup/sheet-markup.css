@@ -1,0 +1,19 @@
+/*
+ * Sheet-markup renderer styles (T06). Only two rules: the muted note aside
+ * ({note:}) and the dev-only flag for a tag the renderer couldn't build a chip
+ * for. Every chip/badge brings its own styling from chips.css — these cover the
+ * two node kinds that have no dedicated chip component.
+ */
+
+/* {note:TEXT} — the gray parenthetical the paper sheet leans on. */
+.markup-note {
+  color: var(--ink-muted);
+}
+
+/* Dev-only: a known tag whose args don't form a valid chip (bad ability, stray
+   arity, non-integer level…). In prod the same tag degrades to bare text with
+   no marker (grammar §2). */
+.markup-invalid {
+  text-decoration: underline wavy var(--dis);
+  text-underline-offset: 2px;
+}

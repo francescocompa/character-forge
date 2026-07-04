@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { parseMarkup, collectRefTags } from './markup.ts'
+import { parseMarkup, collectRefTags, type MarkupNode } from './markup.ts'
 
 describe('parseMarkup', () => {
   it('parses plain text with no tags', () => {
@@ -164,6 +164,97 @@ describe('parseMarkup', () => {
         source: '{dtype:fire|1d6}',
       },
     ])
+  })
+})
+
+describe('grammar §4 worked examples → node trees', () => {
+  // Table-driven: every worked example in markup-grammar.md §4 must parse to
+  // exactly this tree, clean (the escaping example is covered above).
+  const cases: Array<{ name: string; input: string; nodes: MarkupNode[] }> = [
+    {
+      name: 'Mind Sliver-style cantrip line',
+      input:
+        '{dmg:psychic|1d6} & {save:INT|13} — on a fail, target subtracts {dice:1d4} from its next save before the end of its next turn',
+      nodes: [
+        { type: 'tag', name: 'dmg', args: ['psychic', '1d6'] },
+        { type: 'text', value: ' & ' },
+        { type: 'tag', name: 'save', args: ['INT', '13'] },
+        { type: 'text', value: ' — on a fail, target subtracts ' },
+        { type: 'tag', name: 'dice', args: ['1d4'] },
+        { type: 'text', value: ' from its next save before the end of its next turn' },
+      ],
+    },
+    {
+      name: 'mixed-recovery resource',
+      input:
+        'Regain {dice:1d10+5} HP. **2** uses per {recover:LR}; regain **1** use on a {recover:SR}.',
+      nodes: [
+        { type: 'text', value: 'Regain ' },
+        { type: 'tag', name: 'dice', args: ['1d10+5'] },
+        { type: 'text', value: ' HP. ' },
+        { type: 'bold', children: [{ type: 'text', value: '2' }] },
+        { type: 'text', value: ' uses per ' },
+        { type: 'tag', name: 'recover', args: ['LR'] },
+        { type: 'text', value: '; regain ' },
+        { type: 'bold', children: [{ type: 'text', value: '1' }] },
+        { type: 'text', value: ' use on a ' },
+        { type: 'tag', name: 'recover', args: ['SR'] },
+        { type: 'text', value: '.' },
+      ],
+    },
+    {
+      name: 'attack rider',
+      input: '{note:once per turn} push the target 10 ft on hit',
+      nodes: [
+        { type: 'tag', name: 'note', args: ['once per turn'] },
+        { type: 'text', value: ' push the target 10 ft on hit' },
+      ],
+    },
+    {
+      name: 'reflavored feature with a library link',
+      input: '{ref:fey-pact|Fey Pact}: {adv} on {save:WIS} against being {cond:charmed}',
+      nodes: [
+        { type: 'tag', name: 'ref', args: ['fey-pact', 'Fey Pact'] },
+        { type: 'text', value: ': ' },
+        { type: 'tag', name: 'adv', args: [] },
+        { type: 'text', value: ' on ' },
+        { type: 'tag', name: 'save', args: ['WIS'] },
+        { type: 'text', value: ' against being ' },
+        { type: 'tag', name: 'cond', args: ['charmed'] },
+      ],
+    },
+    {
+      name: 'future content in Build view',
+      input: '{lvl:6} gain a second {ref:eldritch-invocation|invocation} slot',
+      nodes: [
+        { type: 'tag', name: 'lvl', args: ['6'] },
+        { type: 'text', value: ' gain a second ' },
+        { type: 'tag', name: 'ref', args: ['eldritch-invocation', 'invocation'] },
+        { type: 'text', value: ' slot' },
+      ],
+    },
+  ]
+
+  it.each(cases)('$name parses clean to the expected tree', ({ input, nodes }) => {
+    const parsed = parseMarkup(input)
+    expect(parsed.nodes).toEqual(nodes)
+    expect(parsed.diagnostics).toEqual([])
+  })
+})
+
+describe('parseMarkup — fuzz (never throws)', () => {
+  it('survives 1k random strings from the metacharacter-heavy alphabet', () => {
+    const alphabet = 'abcXYZ0123456789{}|\\:*  é—'
+    for (let n = 0; n < 1000; n += 1) {
+      const len = Math.floor(Math.random() * 40)
+      let s = ''
+      for (let i = 0; i < len; i += 1) {
+        s += alphabet[Math.floor(Math.random() * alphabet.length)]
+      }
+      const parsed = parseMarkup(s)
+      expect(Array.isArray(parsed.nodes)).toBe(true)
+      expect(Array.isArray(parsed.diagnostics)).toBe(true)
+    }
   })
 })
 

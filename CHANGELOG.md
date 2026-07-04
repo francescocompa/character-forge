@@ -3,6 +3,26 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T06: sheet-markup renderer
+
+- `app/src/markup/SheetMarkup.tsx`: `<SheetMarkup source onRef />` maps the
+  shared parser's nodes to T05 chips — ability/save/damage-family/adv-dis/
+  condition/recovery/level/ref/note tags, plus `**bold**`/`*italic*`
+  passthrough. `{ref:KEY}` fires `onRef(KEY)` (the library key, not the label);
+  T07 wires the actual popover. Total-function: a known tag whose args can't
+  form a valid chip (bad ability, stray arity, non-integer level) degrades to
+  plain text — visibly flagged in dev (`.markup-invalid`), bare in prod.
+- No new parser: reused the shared `schema/markup.ts` that landed with T04, per
+  the T06 spec ("if T04 already created a shared home, use it"). Added to its
+  test suite a table-driven check that every grammar §4 worked example parses to
+  its exact node tree, and a 1k-string fuzz asserting the parser never throws.
+- `app/src/markup/SheetMarkup.test.tsx`: 20 tests — every node type mapped,
+  `onRef` fires with the ref key (via element-tree walk, no jsdom needed),
+  graceful-degradation cases, and snapshots of three composite lines.
+- `verify` green across all workspaces (schema 41, app 33, validate 30). Parser
+  branch coverage is exhaustive by construction; the repo ships no coverage
+  tool, so the ≥95% gate isn't machine-checked here.
+
 ## 2026-07-04 — T05: design tokens + chip/badge component set
 
 - `app/src/tokens/tokens.css`: dark-first CSS custom properties — ability
