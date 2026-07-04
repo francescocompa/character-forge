@@ -1,0 +1,26 @@
+{
+  "name": "character-forge",
+  "version": "0.0.0",
+  "private": true,
+  "description": "D&D 5e character sheet PWA — Claude compiles the build, the app renders and tracks it.",
+  "license": "UNLICENSED",
+  "workspaces": [
+    "app",
+    "schema",
+    "pipeline/validate"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace app",
+    "build": "npm run build --workspace app",
+    "preview": "npm run preview --workspace app",
+    "test": "npm run test --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "verify": "npm run verify --workspaces --if-present",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "prettier": "^3.4.2"
+  }
+}

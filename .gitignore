@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dev-dist/
+coverage/
+*.tsbuildinfo
+.eslintcache
+
+# OS / editor
+.DS_Store
+
+# ---------------------------------------------------------------------------
+# IP guardrail (this repo is PUBLIC) — never commit game content or real
+# characters. Real character files embed WotC-copyrighted knowledge-base
+# extracts; they live in the local Google Drive data folder, not here.
+# See docs/PROJECT-SCOPE.md §4. Tests use fixtures/ synthetic content only.
+# ---------------------------------------------------------------------------
+*.character.json
+!fixtures/*.character.json
+*.session.json
+*.chassis.md
+dnd-5e-knowledge-base*/
+kb-*/
+*.pdf
+Characters/

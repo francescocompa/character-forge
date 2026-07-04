@@ -1,0 +1,7 @@
+{
+  "name": "@character-forge/validate",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Validator CLI: ajv + referential integrity + markup lint (built in T04)."
+}

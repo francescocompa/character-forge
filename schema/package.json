@@ -1,0 +1,7 @@
+{
+  "name": "@character-forge/schema",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "JSON Schema + shared TypeScript types for the character and session files (populated in T02)."
+}
