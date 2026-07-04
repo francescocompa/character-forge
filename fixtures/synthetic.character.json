@@ -219,9 +219,9 @@
         "name": "Ember Cartographer's Compass",
         "originRef": "ember-cartographer",
         "ability": "INT",
-        "saveDc": 13,
-        "attackMod": 5,
-        "note": "Innate; always prepared, not part of the wizard-prepared pool"
+        "saveDc": 14,
+        "attackMod": 6,
+        "note": "Innate; always prepared, not part of the wizard-prepared pool. Item bonus, so its DC/attack differ from the wizard class DC."
       }
     ],
     "slotPools": [
@@ -249,6 +249,7 @@
         "ref": "mending-charm",
         "level": 1,
         "school": "Transmutation",
+        "ritual": true,
         "origins": ["wizard"],
         "role": "prepared",
         "poolRef": "wizard-prepared",
@@ -269,8 +270,10 @@
       },
       {
         "name": "Frost Splinter",
+        "ref": "frost-splinter",
         "level": 1,
         "school": "Evocation",
+        "concentration": true,
         "origins": ["wizard"],
         "role": "known",
         "unlockLevel": 5,
@@ -522,6 +525,13 @@
       "type": "spell",
       "source": "Homebrew",
       "markdown": "Invented cantrip. A mote of light grants an ally advantage on their next Wisdom save."
+    },
+    "frost-splinter": {
+      "name": "Frost Splinter",
+      "edition": "Homebrew",
+      "type": "spell",
+      "source": "Homebrew",
+      "markdown": "Invented spell. 2d6 cold damage, CON save or the target has disadvantage on its next attack; requires concentration."
     },
     "ember-sprite-familiar": {
       "name": "Ember Sprite",

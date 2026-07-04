@@ -88,6 +88,14 @@ describe('OriginDot', () => {
     expect(html).toContain('Celestial Warlock')
     expect(originColor(0)).toBe(originColor(6))
   })
+
+  it('renders a two-tone, bordered dot for a dual-source spell (§2.8, e.g. Vice\'s Hex)', () => {
+    const html = renderToStaticMarkup(
+      <OriginDot label="Wizard + Ember Cartographer's Compass" index={0} secondaryIndex={1} />,
+    )
+    expect(html).toContain('origin-dot--dual')
+    expect(html).toContain('Wizard + Ember Cartographer&#x27;s Compass')
+  })
 })
 
 describe('SchoolLabel', () => {

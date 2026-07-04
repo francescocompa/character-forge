@@ -3,6 +3,48 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T10: spells view
+
+- `app/src/views/Spells/spellHelpers.ts`: pure, unit-tested helpers — level
+  grouping for both the main spell list (`Spell.level`, cantrips first) and a
+  `preparedSpells` pool's full option browser (matched against known spells
+  by ref/name since the generic `PoolOption` shape carries no `level` of its
+  own; unmatched candidates land in an "Other" bucket rather than a schema
+  change), a stable source-id → origin-dot palette index, the D13 "current
+  selection + always-prepared" visibility rule (`isSpellShown` — only
+  `role: 'prepared'` spells with a `poolRef` are gated by the live session
+  selection; a not-yet-unlocked one previews in Build view regardless), and
+  swap-history ordering. (File is `spellHelpers.ts`, not `spells.ts`, to avoid
+  a case-only clash with `Spells.tsx` on a case-insensitive filesystem.)
+- `app/src/views/Spells/`: casting headers per source (ability, save DC,
+  attack mod, prepare rule, cross-source note), slot pips grouped by spell
+  level so pools that coexist with different recovery read side by side
+  (Wizard Slots LR vs the homebrew Arcane Font SR, both 1st-level), the clean
+  play list grouped by level via the reused `CollapsibleSection` (Features),
+  and the D13 prepare/manage mode: browses a source's full embedded pool
+  (including options the character doesn't currently have selected),
+  highlights the live selection, caps it at the source's prepare-count with a
+  live counter, and shows the rest-rule as an informational note — never
+  blocking. Build view adds the explicit `spellcasting.swaps[]` history
+  ("L5: Ashen Bolt → Frost Splinter") that fixed-known casters need instead of
+  inferring it from `unlockLevel`/`swapOutLevel`.
+- `app/src/components/chips/OriginDot.tsx`: added an optional
+  `secondaryIndex` — two `Spell.origins` render one two-tone, bordered dot
+  instead of two solid ones (Vice's Hex convention, §2.8).
+- `fixtures/synthetic.character.json`: gave the two casting sources distinct
+  DCs/attack mods (the item-granted Ember Cartographer's Compass differs from
+  the Wizard class DC) so a per-source rendering bug can't hide behind
+  identical numbers; added `ritual`/`concentration` flags and a `ref` +
+  library entry for Frost Splinter so every fixture spell is popover-able,
+  including the future fixed-known swap target.
+- Wired into `AppShell.tsx`, replacing the T10 `ComingSoon` placeholder.
+- `verify` green (schema 41, validate 30, app 113 across 13 files). Live
+  in-browser verification wasn't possible this session — another session's
+  dev server already held the shared port — so this batch leans on the
+  render-snapshot tests (Level/Build/manage-mode assertions against the
+  synthetic fixture) for coverage; worth a manual desktop/375px pass next time
+  the app is open.
+
 ## 2026-07-04 — T09: features view
 
 - `app/src/views/Features/group.ts`: pure, unit-tested grouping of

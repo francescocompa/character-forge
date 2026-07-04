@@ -157,6 +157,13 @@
   flex: none;
 }
 
+/* Dual-source spell (two `origins`, e.g. Vice's Hex): two-tone, bordered dot. */
+.origin-dot--dual {
+  background: linear-gradient(135deg, var(--chip-fg) 50%, var(--chip-fg-2) 50%);
+  border: 1px solid var(--ink-muted);
+  box-sizing: border-box;
+}
+
 /* School label — small gray caps, like the printed template's "chrome". */
 .school-label {
   color: var(--ink-muted);
