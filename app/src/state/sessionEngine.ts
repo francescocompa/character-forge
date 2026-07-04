@@ -217,13 +217,19 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
     return (companions[owner] ??= {})
   }
 
+  /** A long rest includes all short-rest recovery (rest semantics, which the
+   *  engine owns — files encode each feature's *shortest* rest, e.g. Pact Magic
+   *  is `on:'short'` only, and must still refill on a long rest). */
+  function ruleApplies(rule: RecoverRule, kind: 'short' | 'long'): boolean {
+    return rule.on === kind || (kind === 'long' && rule.on === 'short')
+  }
+
   /** Apply every resource's / slot pool's / hit-dice group's `recover` rule for the given rest. */
   function applyRest(kind: 'short' | 'long') {
-    const on = kind === 'long' ? 'long' : 'short'
     const resources = (state.trackers.resources ??= {})
     for (const resource of character.resources ?? []) {
       for (const rule of resource.recover) {
-        if (rule.on === on) {
+        if (ruleApplies(rule, kind)) {
           resources[resource.id] = { used: recoverUsed(resources[resource.id]?.used ?? 0, rule) }
         }
       }
@@ -231,7 +237,7 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
     const slots = (state.trackers.slotPools ??= {})
     for (const pool of character.spellcasting?.slotPools ?? []) {
       for (const rule of pool.recover) {
-        if (rule.on === on) {
+        if (ruleApplies(rule, kind)) {
           slots[pool.id] = { used: recoverUsed(slots[pool.id]?.used ?? 0, rule) }
         }
       }
@@ -253,6 +259,23 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
       const maxHp = state.trackers.maxHpOverride ?? compiledMax
       state.trackers.hp = { current: maxHp, temp: 0 }
       state.trackers.deathSaves = { successes: 0, failures: 0 }
+    }
+    // Companions rest with the character: their resources follow the same
+    // rules, and a long rest restores their HP to the compiled max.
+    for (const sheet of character.companions ?? []) {
+      const trackers = companion(sheet.id)
+      for (const resource of sheet.resources ?? []) {
+        for (const rule of resource.recover) {
+          if (ruleApplies(rule, kind)) {
+            const bag = (trackers.resources ??= {})
+            bag[resource.id] = { used: recoverUsed(bag[resource.id]?.used ?? 0, rule) }
+          }
+        }
+      }
+      if (kind === 'long') {
+        const max = typeof sheet.maxHp.value === 'number' ? sheet.maxHp.value : 0
+        trackers.hp = { current: max, temp: 0 }
+      }
     }
   }
 

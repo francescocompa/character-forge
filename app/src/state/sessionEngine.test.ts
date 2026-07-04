@@ -72,6 +72,22 @@ describe('rests apply per-rule recovery (mixed recovery)', () => {
     expect(t.deathSaves).toEqual({ successes: 0, failures: 0 })
   })
 
+  it('long rest also applies short-rest recovery (Pact Magic-style short-only pools refill)', () => {
+    const s = store()
+    s.tick('slotPool', 'arcane-font-1') // recover rule is on:'short' only
+    s.applyLongRest()
+    expect(s.getState().trackers.slotPools?.['arcane-font-1']?.used).toBe(0)
+  })
+
+  it('long rest restores a companion\'s HP to its compiled max', () => {
+    const s = store()
+    const companionId = character.companions![0].id
+    s.setCurrentHp(3, { owner: companionId })
+    s.applyLongRest()
+    const max = character.companions![0].maxHp.value
+    expect(s.getState().companions?.[companionId]?.hp).toEqual({ current: max, temp: 0 })
+  })
+
   it('long rest recovers each hit-dice group independently per its own recover rule', () => {
     const s = store()
     s.spendHitDie('fighter') // count 1
