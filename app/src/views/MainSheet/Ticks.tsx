@@ -1,3 +1,4 @@
+import type { TrackerScope } from '@character-forge/schema/types.ts'
 import { useSession } from '../../session/SessionProvider'
 
 /**
@@ -124,6 +125,8 @@ export function NumberStepper({ value, label, onChange, min, max }: NumberSteppe
 /**
  * Tick-boxes bound to a slot pool or resource id. Drives the store's
  * single-step tick/untick to reach the clicked target, so undo steps one box.
+ * `scope` namespaces a companion's own resources (T12) — omitted, it targets
+ * the main character.
  */
 export function TrackerTicks({
   kind,
@@ -131,22 +134,24 @@ export function TrackerTicks({
   total,
   used,
   label,
+  scope,
 }: {
   kind: 'slotPool' | 'resource'
   id: string
   total: number
   used: number
   label: string
+  scope?: TrackerScope
 }) {
   const store = useSession()
   const setTo = (target: number) => {
     let current = used
     while (current < target) {
-      store.tick(kind, id)
+      store.tick(kind, id, scope)
       current++
     }
     while (current > target) {
-      store.untick(kind, id)
+      store.untick(kind, id, scope)
       current--
     }
   }

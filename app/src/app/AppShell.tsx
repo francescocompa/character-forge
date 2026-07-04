@@ -7,27 +7,18 @@ import { MainSheet } from '../views/MainSheet'
 import { Features } from '../views/Features'
 import { Spells } from '../views/Spells'
 import { Equipment } from '../views/Equipment'
+import { Companion } from '../views/Companion'
 import './appShell.css'
 
 type Tab = 'main' | 'features' | 'spells' | 'equipment' | 'companion'
 
-const TABS: { id: Tab; label: string; ready?: boolean }[] = [
-  { id: 'main', label: 'Main', ready: true },
-  { id: 'features', label: 'Features', ready: true },
-  { id: 'spells', label: 'Spells', ready: true },
-  { id: 'equipment', label: 'Equipment', ready: true },
+const TABS: { id: Tab; label: string }[] = [
+  { id: 'main', label: 'Main' },
+  { id: 'features', label: 'Features' },
+  { id: 'spells', label: 'Spells' },
+  { id: 'equipment', label: 'Equipment' },
   { id: 'companion', label: 'Companion' },
 ]
-
-/** Placeholder for a view that lands in a later Phase-2 task (T09–T12). */
-function ComingSoon({ label, task }: { label: string; task: string }) {
-  return (
-    <div className="coming-soon">
-      <h2>{label}</h2>
-      <p>Lands in {task}.</p>
-    </div>
-  )
-}
 
 /** The global Level/Build view-mode switch (D14). Lives in the shell, drives all views. */
 function ViewModeToggle() {
@@ -57,6 +48,8 @@ function ViewModeToggle() {
 function Shell() {
   const { character } = useCharacter()
   const [tab, setTab] = useState<Tab>('main')
+  const hasCompanions = (character.companions?.length ?? 0) > 0
+  const tabs = TABS.filter((t) => t.id !== 'companion' || hasCompanions)
 
   return (
     <div className="app-shell">
@@ -68,7 +61,7 @@ function Shell() {
       </div>
 
       <nav className="app-shell__tabs" role="tablist" aria-label="Sheet sections">
-        {TABS.map((t) => (
+        {tabs.map((t) => (
           <button
             key={t.id}
             type="button"
@@ -87,7 +80,7 @@ function Shell() {
         {tab === 'features' && <Features />}
         {tab === 'spells' && <Spells />}
         {tab === 'equipment' && <Equipment />}
-        {tab === 'companion' && <ComingSoon label="Companion" task="T12" />}
+        {tab === 'companion' && hasCompanions && <Companion />}
       </main>
     </div>
   )

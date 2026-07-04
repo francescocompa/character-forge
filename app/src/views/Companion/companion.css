@@ -1,0 +1,93 @@
+/*
+ * Companion view (T12). Reuses `.panel`/`.panel__title`, ability/save/skill
+ * row styles, `.stat`/`.hp-block`/`.hit-dice`/`.resource*`, `.attack*`/`.tohit*`,
+ * and `.defenses*`/`.senses*` from `MainSheet/mainSheet.css`, plus
+ * `.feature-list*`/`.feature-row*` from `Features/features.css` — both load
+ * globally via AppShell's static imports, same convention as Equipment (T11).
+ * Only companion-specific chrome (switcher, identity, responsive columns)
+ * lives here. Tokens only (scope §12.3).
+ */
+
+.companion-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  color: var(--ink-primary);
+  font-family: var(--font-family);
+}
+
+/* --- switcher -------------------------------------------------------------- */
+.companion-switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.companion-switcher__btn {
+  background: var(--surface-overlay);
+  color: var(--ink-secondary);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  min-height: 2.25rem;
+  cursor: pointer;
+  font: inherit;
+}
+.companion-switcher__btn.is-active {
+  color: var(--ink-primary);
+  border-color: var(--ink-muted);
+  background: var(--surface-raised);
+}
+
+/* --- identity ---------------------------------------------------------------- */
+.companion-identity {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3) var(--space-4);
+}
+.companion-identity__portrait {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: var(--radius-md);
+  object-fit: cover;
+  flex: none;
+}
+.companion-identity__text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.companion-identity__name {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+.companion-identity__type {
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+}
+
+/* --- responsive columns ------------------------------------------------------ */
+.companion-view__grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+.companion-view__col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+@media (min-width: 1024px) {
+  .companion-view__grid {
+    display: grid;
+    grid-template-columns: minmax(9rem, 12rem) minmax(0, 1.2fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}

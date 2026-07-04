@@ -3,6 +3,47 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T12: companion sheet view
+
+- `app/src/views/Companion/`: a full mini-sheet per companion (familiars,
+  sidekicks) — identity (name, portrait, a type/size line resolved from the
+  companion's library `ref`, since the schema has no separate type/size
+  field), ability rail + saves + skills, AC/speeds (incl. alternate
+  movement) + interactive current/temp HP, resistance/immunity/
+  condition-advantage chips + senses + languages, an attacks table
+  (markup damage, riders, separable magic bonus), and a features list
+  (markup summaries, tappable refs). A `CompanionSwitcher` appears only with
+  more than one companion (schema already supports several); `AppShell` hides
+  the Companion tab entirely at zero. Reuses `MainSheet`'s CSS primitives
+  (`.panel`, `.stat`, ability/save/skill row styles, `.attack*`/`.tohit*`) and
+  `Features`' `.feature-list*` — both load globally via `AppShell`'s static
+  imports, same convention as T11's equipment view.
+- Session-layer namespacing (D2, T02's `TrackerScope`) already covered
+  companions from T08's stub — `SessionStore.setCurrentHp/setTempHp` and
+  `tick/untick` all take an optional `{ owner }` scope, and `memoryStore.ts`
+  keys companion trackers under `state.companions[id]`. The only gap was the
+  `TrackerTicks` React helper (`MainSheet/Ticks.tsx`) not exposing that scope
+  to callers — added an optional `scope` prop, threaded through to the store,
+  so a companion's resource ticks land in its own bucket instead of the main
+  character's. `ProficiencyDot` (`MainSheet/Abilities.tsx`) is now exported
+  for the same reuse-not-duplicate reason.
+- **Known gap, noted for T14**: `CompanionTrackers`/`SessionStore.setDeathSaves`
+  have no per-companion death-save tracking. Neither fixture companion
+  (a familiar) needs it, and the schema has no field marking "this companion
+  uses death saves" (unlike a PC or a 2024-rules sidekick) — adding one
+  without a real case to shape it would be a guess, so v1 skips it rather
+  than invent the flag.
+- Verified against the local Vice fixture (`app/public/vice.character.json`,
+  gitignored, T08's dev-only path): Tiresia renders complete vs PDF p.7 — STR
+  −2 … CHA +2, AC 13, HP 21/21, speeds 20 ft/fly 40 ft, Sting +5 (1d6+3
+  piercing + 2d6 poison), all five features, Devil's Sight 120 ft, resistance/
+  immunity/condition-advantage chips — and the HP stepper edits only the
+  companion's own tracker (confirmed independent of the main character's HP).
+  375 px: tab bar scrolls horizontally to reach Companion (existing
+  `overflow-x: auto` shell behavior), content stacks to one column, clean.
+  `verify` green (schema 41, validate 30, app 150 across 16 files, incl. 9 new
+  Companion tests against the synthetic Ember Sprite fixture — the CI path).
+
 ## 2026-07-04 — T11: equipment view
 
 - `app/src/views/Equipment/equipmentHelpers.ts`: pure, unit-tested helpers —

@@ -33,14 +33,15 @@ export function AbilityRail() {
   )
 }
 
-const PROF_LABEL: Record<string, string> = {
+export const PROF_LABEL: Record<string, string> = {
   none: 'Not proficient',
   half: 'Half proficiency',
   proficient: 'Proficient',
   expertise: 'Expertise',
 }
 
-function ProficiencyDot({ level }: { level: keyof typeof PROF_LABEL }) {
+/** Proficiency/expertise marker dot, shared with the Companion view (T12). */
+export function ProficiencyDot({ level }: { level: keyof typeof PROF_LABEL }) {
   return (
     <span className={`prof-dot prof-dot--${level}`} role="img" aria-label={PROF_LABEL[level]} />
   )

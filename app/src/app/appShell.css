@@ -88,17 +88,6 @@ body {
   box-shadow: var(--focus-ring);
 }
 
-/* --- placeholder views --------------------------------------------------- */
-.coming-soon {
-  padding: var(--space-6) var(--space-3);
-  text-align: center;
-  color: var(--ink-muted);
-}
-.coming-soon h2 {
-  margin: 0 0 var(--space-1);
-  color: var(--ink-secondary);
-}
-
 @media (max-width: 768px) {
   .view-toggle__btn {
     min-height: 44px;
