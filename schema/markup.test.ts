@@ -145,6 +145,26 @@ describe('parseMarkup', () => {
     const { diagnostics } = parseMarkup('{dmg:sonic|1d6}')
     expect(diagnostics).toEqual([])
   })
+
+  it('parses a bare damage type via {dtype:}', () => {
+    const { nodes, diagnostics } = parseMarkup('Resist {dtype:fire}')
+    expect(nodes).toEqual([
+      { type: 'text', value: 'Resist ' },
+      { type: 'tag', name: 'dtype', args: ['fire'] },
+    ])
+    expect(diagnostics).toEqual([])
+  })
+
+  it('flags {dtype:} with a dice argument as an arity error (dice belong in {dmg:})', () => {
+    const { diagnostics } = parseMarkup('{dtype:fire|1d6}')
+    expect(diagnostics).toEqual([
+      {
+        severity: 'error',
+        message: '{dtype} expects 1 argument(s), got 2',
+        source: '{dtype:fire|1d6}',
+      },
+    ])
+  })
 })
 
 describe('collectRefTags', () => {

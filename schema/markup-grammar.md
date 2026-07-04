@@ -85,6 +85,7 @@ Ability colors: **STR** red · **DEX** blue · **CON** orange · **INT** purple 
 | `{save:ABIL}` / `{save:ABIL\|DC}` | ability, optional DC        | saving throw       | ability-colored save badge; shows "DC N" when DC given                  |
 | `{dmg:TYPE\|DICE}`                | damage type, dice/amount    | typed damage       | damage-type-colored dice (e.g. psychic → pink)                          |
 | `{dice:DICE}`                     | dice/amount                 | untyped dice       | neutral dice chip (no damage color)                                     |
+| `{dtype:TYPE}`                    | damage type                 | bare damage type   | damage-type-colored label, no dice (resistance/immunity lists, prose)   |
 | `{adv}`                           | —                           | advantage ("EDGE") | green badge                                                             |
 | `{dis}`                           | —                           | disadvantage       | orange/red badge                                                        |
 | `{cond:NAME}`                     | condition name              | condition          | condition chip; tappable → popover if a `library` extract for it exists |
@@ -108,6 +109,12 @@ Ability colors: **STR** red · **DEX** blue · **CON** orange · **INT** purple 
 - **`{dice:DICE}`** — for dice with no damage type: healing, a subtracted die,
   Bardic Inspiration, a scaling rider. Distinct from `{dmg:}` so the renderer
   doesn't miscolor it.
+- **`{dtype:TYPE}`** — for a damage type with no dice: resistance/immunity/
+  vulnerability list entries ("Resist {dtype:poison}") and inline prose that
+  names a type without an amount ("Change a Warlock spell's damage to
+  {dtype:psychic}"). Same recognized-type list and neutral-color fallback as
+  `{dmg:}`. Distinct from `{dmg:}` so the arity contract (always type + dice)
+  stays exact for actual damage rolls.
 - **`{recover:WHEN}`** — the icon vocabulary is intentionally tiny (SR/LR/Dawn);
   structured recovery for _resources_ lives in `RecoverModel` in the schema, not
   in markup. Use `{recover:}` only for inline prose ("regain 1 use on a

@@ -68,6 +68,11 @@ const TAG_SPECS: Record<string, TagSpec> = {
     maxArgs: 1,
     validate: ([dice]) => (dice ? undefined : 'missing dice/amount'),
   },
+  dtype: {
+    minArgs: 1,
+    maxArgs: 1,
+    validate: ([type]) => (type ? undefined : 'missing damage type'),
+  },
   adv: { minArgs: 0, maxArgs: 0 },
   dis: { minArgs: 0, maxArgs: 0 },
   cond: {

@@ -67,6 +67,7 @@
     ],
     "passives": { "perception": 10, "investigation": 15 },
     "senses": ["Darkvision 60 ft"],
+    "resistances": ["Resist {dtype:fire} (ashwalker heritage)"],
     "languages": ["Common", "Ignan"],
     "proficiencies": {
       "armor": ["light", "medium", "shields"],
