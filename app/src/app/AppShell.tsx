@@ -6,6 +6,7 @@ import { SessionProvider } from '../session/SessionProvider'
 import { MainSheet } from '../views/MainSheet'
 import { Features } from '../views/Features'
 import { Spells } from '../views/Spells'
+import { Equipment } from '../views/Equipment'
 import './appShell.css'
 
 type Tab = 'main' | 'features' | 'spells' | 'equipment' | 'companion'
@@ -14,7 +15,7 @@ const TABS: { id: Tab; label: string; ready?: boolean }[] = [
   { id: 'main', label: 'Main', ready: true },
   { id: 'features', label: 'Features', ready: true },
   { id: 'spells', label: 'Spells', ready: true },
-  { id: 'equipment', label: 'Equipment' },
+  { id: 'equipment', label: 'Equipment', ready: true },
   { id: 'companion', label: 'Companion' },
 ]
 
@@ -85,7 +86,7 @@ function Shell() {
         {tab === 'main' && <MainSheet />}
         {tab === 'features' && <Features />}
         {tab === 'spells' && <Spells />}
-        {tab === 'equipment' && <ComingSoon label="Equipment" task="T11" />}
+        {tab === 'equipment' && <Equipment />}
         {tab === 'companion' && <ComingSoon label="Companion" task="T12" />}
       </main>
     </div>

@@ -1,0 +1,288 @@
+/*
+ * Equipment view (T11). Tokens only — no hardcoded color/space/type (scope
+ * §12.3). Reuses `.panel`/`.panel__title` from `MainSheet/mainSheet.css`
+ * (already global once the app bundle loads — same precedent as Spells/
+ * Features). Mobile: stacked cards, ≥ 44 px tap targets on every checkbox/
+ * input. Desktop (>= 768px): denser grids for currency/capacity stats.
+ */
+
+.equipment-view {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  color: var(--ink-primary);
+  font-family: var(--font-family);
+}
+
+/* --- gear / components / magic items ------------------------------------- */
+.gear-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.gear-section__title {
+  margin: 0;
+  font-size: var(--font-size-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  font-weight: var(--weight-chrome);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.gear-item-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.gear-item-wrap--future {
+  opacity: 0.85;
+}
+
+.gear-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  background: var(--surface-overlay);
+  border-radius: var(--radius-sm);
+}
+
+.gear-item__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.gear-item__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-height: 44px;
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+  cursor: pointer;
+}
+
+.gear-item__toggle input {
+  width: 1.15rem;
+  height: 1.15rem;
+}
+
+.gear-item__name {
+  font-weight: 600;
+}
+
+.gear-item__qty,
+.gear-item__weight,
+.gear-item__cost {
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.gear-item__attuned {
+  font-size: var(--font-size-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  text-transform: uppercase;
+  color: var(--recover-dawn);
+  border: 1px solid var(--recover-dawn);
+  border-radius: var(--radius-pill);
+  padding: 0 var(--space-2);
+}
+
+.gear-item__summary {
+  color: var(--ink-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.gear-item--addition {
+  border: 1px dashed var(--border-subtle);
+}
+
+.gear-item__session-marker {
+  font-size: var(--font-size-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 0 var(--space-2);
+}
+
+/* --- weapon masteries (mirrors Spells' manage mode, T10) ------------------ */
+.masteries__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.masteries__count {
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+.masteries__note {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+}
+
+.mastery-option-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.mastery-option {
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--surface-overlay);
+}
+
+.mastery-option--selected {
+  outline: 1px solid var(--focus-ring-color);
+}
+
+.mastery-option__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 44px;
+  cursor: pointer;
+}
+
+.mastery-option__summary {
+  display: block;
+  margin-left: calc(1rem + var(--space-2));
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+}
+
+/* --- attunement ------------------------------------------------------------ */
+.attunement__slots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.attunement-slot {
+  min-width: 8rem;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-overlay);
+  font-weight: 600;
+}
+
+.attunement-slot.is-filled {
+  border-color: var(--recover-dawn);
+}
+
+.attunement-slot__empty {
+  color: var(--ink-muted);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.attunement__note {
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+}
+
+/* --- weight & capacity ----------------------------------------------------- */
+.capacity__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: var(--space-2);
+}
+
+.weight-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-2);
+  background: var(--surface-overlay);
+  border-radius: var(--radius-sm);
+}
+
+.weight-stat__value {
+  font-size: 1.1rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.weight-stat__kg {
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  color: var(--ink-secondary);
+}
+
+.capacity__note {
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+}
+
+/* --- currency --------------------------------------------------------------- */
+.currency__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(4.5rem, 1fr));
+  gap: var(--space-2);
+}
+
+.currency-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2);
+  background: var(--surface-overlay);
+  border-radius: var(--radius-sm);
+}
+
+.currency-field__label {
+  font-size: var(--font-size-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  font-weight: var(--weight-chrome);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.currency-field__input {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--ink-primary);
+  font: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  padding: var(--space-1);
+}
+
+.currency-field__input:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Focus visibility for interactive controls unique to this view. */
+.gear-item__toggle input:focus-visible {
+  outline: var(--focus-ring-color) solid 2px;
+  outline-offset: 2px;
+}

@@ -319,7 +319,8 @@
       "chooseCount": 2,
       "options": [
         { "ref": "longsword", "name": "Longsword", "summary": "Sap" },
-        { "ref": "shortbow", "name": "Shortbow", "summary": "Slow" }
+        { "ref": "shortbow", "name": "Shortbow", "summary": "Slow" },
+        { "ref": "dagger", "name": "Dagger", "summary": "Nick" }
       ],
       "defaults": ["longsword", "shortbow"]
     }
@@ -382,6 +383,49 @@
         "cost": "45 gp",
         "equipped": true,
         "carried": true
+      },
+      {
+        "id": "dagger-item",
+        "name": "Dagger",
+        "ref": "dagger",
+        "quantity": 1,
+        "weightLb": 1,
+        "cost": "2 gp",
+        "summary": "Spare backup weapon, not currently worn",
+        "equipped": false,
+        "carried": true
+      },
+      {
+        "id": "incense-item",
+        "name": "Incense",
+        "ref": "incense",
+        "quantity": 3,
+        "weightLb": 0,
+        "cost": "2 gp",
+        "summary": "{note:consumed} on each ritual cast of {ref:mending-charm|Mending Charm}",
+        "carried": true
+      },
+      {
+        "id": "ember-compass-item",
+        "name": "Ember Cartographer's Compass",
+        "ref": "ember-compass",
+        "quantity": 1,
+        "weightLb": 1,
+        "cost": "250 gp",
+        "summary": "Source of the {ref:ember-compass|Compass} spellcasting; while attuned, grants {ref:guiding-flame|Guiding Flame} and empowers {ref:ashen-bolt|Ashen Bolt}",
+        "equipped": true,
+        "carried": true,
+        "attuned": true
+      },
+      {
+        "id": "ashwalker-cloak-item",
+        "name": "Ashwalker Cloak",
+        "ref": "ashwalker-cloak",
+        "quantity": 1,
+        "weightLb": 1,
+        "cost": "500 gp",
+        "summary": "A gift promised once the Eldritch Knight training begins; grants {note:resistance} to {dtype:fire} while worn",
+        "unlockLevel": 5
       }
     ],
     "currency": { "gp": 32, "sp": 5 },
@@ -546,6 +590,34 @@
       "type": "feat",
       "source": "Homebrew",
       "markdown": "Invented feat, granted by the Ember Cartographer background. Ignore difficult terrain along a route you've already mapped; +1 Intelligence."
+    },
+    "dagger": {
+      "name": "Dagger",
+      "edition": "2014",
+      "type": "item",
+      "source": "Test",
+      "markdown": "Invented stand-in weapon entry. Light thrown weapon."
+    },
+    "incense": {
+      "name": "Incense",
+      "edition": "2014",
+      "type": "component",
+      "source": "Test",
+      "markdown": "Invented stand-in consumable spell component, burned as part of a ritual casting."
+    },
+    "ember-compass": {
+      "name": "Ember Cartographer's Compass",
+      "edition": "Homebrew",
+      "type": "magic item",
+      "source": "Homebrew",
+      "markdown": "Invented magic item. A brass compass that never loses true north; while attuned, grants the Guiding Flame cantrip and empowers Ashen Bolt (the ember-charm spellcasting source, §2.8)."
+    },
+    "ashwalker-cloak": {
+      "name": "Ashwalker Cloak",
+      "edition": "Homebrew",
+      "type": "magic item",
+      "source": "Homebrew",
+      "markdown": "Invented magic item, not yet acquired. Promised on beginning Eldritch Knight training (level 5); grants resistance to fire while worn."
     },
     "ashwalker-lore": {
       "name": "Ashwalker lore",

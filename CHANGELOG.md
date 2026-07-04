@@ -3,6 +3,52 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T11: equipment view
+
+- `app/src/views/Equipment/equipmentHelpers.ts`: pure, unit-tested helpers —
+  the schema carries no per-item "which section" discriminator (the same gap
+  T09 hit with `progression[]`), so the documented convention is: the library
+  extract's `type` sorts an item into `'magic item'` → Magic Items,
+  `'component'` → Components, anything else → Gear (`classifyItem`/
+  `groupItems`). Also: effective equipped/carried state (session override
+  over the file's compiled default, D13), total carried weight (arithmetic,
+  `currentLevel`-filtered rather than view-mode-filtered — Build view
+  previews a not-yet-owned item grayed, but it can't weigh you down, so the
+  total doesn't change when the player flips Level/Build), push/drag/lift
+  (SRD baseline: 2x carrying capacity), and the attuned-items list.
+- `app/src/views/Equipment/`: `GearPanel` (Gear/Components/Magic items
+  sections, equipped/carried checkboxes bound to the `SessionStore`,
+  Build-view future graying, and in-session `kind: 'item'` additions
+  rendered inline in the Gear section with a subtle "session" marker — T15
+  lands the add-UI, this just renders whatever the store already holds),
+  `MasteriesPanel` (weapon-masteries manage flow mirroring T10's prepare
+  mode — full option browse, live count capped at `chooseCount`, rest-rule
+  as an informational note; placed on Equipment rather than Main so Main's
+  Attacks panel, T13, stays a clean at-a-glance table), `AttunementPanel`
+  (N slots, filled ones named — read-only in v1, since the T02
+  `SessionStore` contract has no attunement toggle yet), `CapacityPanel`
+  (total carried + capacity + push/drag/lift, all in lb and kg per D15 #8),
+  and `CurrencyPanel` (cp/sp/ep/gp/pp, big tappable number fields, absolute
+  values via `store.setCurrency`).
+- `fixtures/synthetic.character.json`: added a `'component'`-typed item
+  (Incense, consumed per ritual cast), a `'magic item'`-typed attuned item
+  (Ember Cartographer's Compass — ties back to the existing `ember-charm`
+  spellcasting source, explaining why its DC/attack differ from the wizard
+  class DC), a spare unequipped weapon (Dagger, exercises the equip toggle)
+  added as a third `weapon-masteries` pool option (exercises "not currently
+  selected, pool at its `chooseCount` limit"), and a level-5 not-yet-owned
+  magic item (Ashwalker Cloak) to exercise Level-view hiding / Build-view
+  graying without it polluting the current carried-weight total.
+- Wired into `AppShell.tsx`, replacing the T11 `ComingSoon` placeholder.
+- Live in-browser verification wasn't possible this session — another
+  session's dev server already held the shared port (same constraint noted
+  in T08/T10) — so this batch leans on the render-snapshot tests (Level/
+  Build, session-store-driven currency/equip/addition edits via a custom
+  `createMemorySessionStore` instance, masteries limit gating, weight/
+  capacity math) for coverage. Worth a manual desktop/375px pass next time
+  the app is open. `verify` green (schema 41, validate 30, app 141 across 15
+  files).
+
 ## 2026-07-04 — T10: spells view
 
 - `app/src/views/Spells/spellHelpers.ts`: pure, unit-tested helpers — level
