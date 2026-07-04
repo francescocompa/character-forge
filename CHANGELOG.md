@@ -3,6 +3,46 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T08: main sheet + view modes
+
+- `app/src/character/CharacterProvider.tsx` + `visibility.ts`: the shared
+  character/view-mode context. Holds the loaded file and the global Level/Build
+  mode (D14), exposes mode-aware `isVisible`/`isFuture` (the single place "what
+  shows at this level" is decided) and `nameOf` (ref → library name). Mode is
+  remembered per character across remounts. `visibility.ts` is pure + unit-tested.
+- `app/src/session/memoryStore.ts` + `SessionProvider.tsx`: the in-memory
+  `SessionStore` stub (T08) implementing the full T02 contract — HP/temp/death
+  saves, per-pool slot + per-resource + per-class hit-die ticks (clamped against
+  the file's maxes), consumable tallies, currency/conditions/inspiration,
+  loadout select/deselect (seeded from pool `defaults`), rests that apply each
+  rule's recovery (mixed recovery works), and single-step undo. `getState`
+  returns a stable snapshot so it's `useSyncExternalStore`-safe. T14 swaps the
+  implementation, not the interface. Unit-tested against the synthetic fixture.
+- `app/src/views/MainSheet/`: the main sheet rendered from a `CharacterFile` —
+  identity strip (per-class level badges, planned subclass hidden until its
+  level), ability rail + saves + skills (proficiency/expertise dots, passives),
+  defense/tempo (AC + note, initiative, PB, speeds, interactive HP + death
+  saves, per-class hit dice, per-source spell DCs), resistance/immunity/
+  condition chips, resource strip (mixed-recovery icons, interactive USED
+  boxes, short/long rest + undo), consumable counters, senses/languages/
+  proficiencies, and an attacks table with separable magic bonus + rider lines.
+  A clean `ActionsSlot` reserves T13's spot. Responsive: ≥ 1024 dashboard grid,
+  ≤ 768 single column with ≥ 44 px tap targets. Tokens only.
+- `app/src/app/AppShell.tsx`: tab shell (Main / Features / Spells / Equipment /
+  Companion; Main default, others placeheld for T09–T12) with the global
+  Level/Build toggle, composing library → character → session providers. Now the
+  app root (`App.tsx`), replacing the T05 gallery.
+- `app/src/character/characterFile.ts`: bundles the synthetic fixture as the
+  CI-safe default and, in dev only, swaps in a local `public/vice.character.json`
+  if present (gitignored; never shipped). `app/src/library/MarkupText.tsx`:
+  shared markup-with-popovers wrapper every view uses.
+- Verified by server-render tests: the synthetic multiclass fixture (two class
+  badges, per-class hit dice, mixed recovery, ammo counter, attack riders, Level
+  view hides future content) and a throwaway local Vice spot-check (AC 16, HP 26,
+  DC 13, three resources, subclass hidden at level 2). Browser preview was
+  unavailable (another session held the project's dev port). `verify` green
+  (schema 41, validate 30, app 75 across 9 files).
+
 ## 2026-07-04 — T07: popover / library system
 
 - `app/src/library/LibraryProvider.tsx`: `LibraryProvider` holds the character's

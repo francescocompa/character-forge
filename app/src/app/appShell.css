@@ -1,0 +1,106 @@
+/*
+ * App shell (T08): topbar with the Level/Build toggle, tab nav, and the active
+ * view. Tokens only. Mobile-first; a max-width container centers it on desktop.
+ */
+
+body {
+  margin: 0;
+  background: var(--surface-bg);
+  color: var(--ink-primary);
+  font-family: var(--font-family);
+}
+
+.app-shell {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.app-shell__topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+.app-shell__title {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+/* --- view-mode toggle ---------------------------------------------------- */
+.view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  padding: 2px;
+  background: var(--surface-raised);
+}
+.view-toggle__btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-4);
+  min-height: 2.25rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+.view-toggle__btn.is-active {
+  background: var(--surface-overlay);
+  color: var(--ink-primary);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+.view-toggle__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* --- tabs ---------------------------------------------------------------- */
+.app-shell__tabs {
+  display: flex;
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--border-subtle);
+  overflow-x: auto;
+}
+.app-tab {
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  padding: var(--space-2) var(--space-3);
+  min-height: 2.75rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+}
+.app-tab.is-active {
+  color: var(--ink-primary);
+  border-bottom-color: var(--focus-ring-color);
+}
+.app-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* --- placeholder views --------------------------------------------------- */
+.coming-soon {
+  padding: var(--space-6) var(--space-3);
+  text-align: center;
+  color: var(--ink-muted);
+}
+.coming-soon h2 {
+  margin: 0 0 var(--space-1);
+  color: var(--ink-secondary);
+}
+
+@media (max-width: 768px) {
+  .view-toggle__btn {
+    min-height: 44px;
+  }
+}
