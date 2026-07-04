@@ -3,6 +3,6 @@ import { FORMAT_VERSION } from './formatVersion'
 
 describe('scaffold smoke test', () => {
   it('exposes the character file format version', () => {
-    expect(FORMAT_VERSION).toBe('0.1.0')
+    expect(FORMAT_VERSION).toBe(1)
   })
 })
