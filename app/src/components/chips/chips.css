@@ -96,22 +96,13 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Advantage / disadvantage badges. */
-.state-badge {
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--font-size-chrome);
-  font-weight: var(--weight-chrome);
-  letter-spacing: var(--letter-spacing-chrome);
-  color: var(--ink-on-accent);
-}
-
-.state-badge--adv {
-  background: var(--adv);
-}
-
-.state-badge--dis {
-  background: var(--dis);
+/* Advantage / disadvantage icon — inline SVG die, colored per direction (scope §2.1). */
+.state-icon {
+  display: inline-block;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.15em;
+  flex: none;
 }
 
 /* Condition chip. */

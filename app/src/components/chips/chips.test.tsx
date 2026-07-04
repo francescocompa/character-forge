@@ -51,9 +51,17 @@ describe('DamageText', () => {
 })
 
 describe('AdvBadge / DisBadge', () => {
-  it('renders "EDGE" for advantage (Francesco\'s shorthand) and "DIS" for disadvantage', () => {
-    expect(renderToStaticMarkup(<AdvBadge />)).toContain('EDGE')
-    expect(renderToStaticMarkup(<DisBadge />)).toContain('DIS')
+  it('renders a colored die icon labeled for advantage (Francesco\'s "EDGE" shorthand)', () => {
+    const html = renderToStaticMarkup(<AdvBadge />)
+    expect(html).toContain('Advantage')
+    expect(html).toContain('EDGE')
+    expect(html).toContain('var(--adv)')
+  })
+
+  it('renders a colored die icon labeled for disadvantage', () => {
+    const html = renderToStaticMarkup(<DisBadge />)
+    expect(html).toContain('Disadvantage')
+    expect(html).toContain('var(--dis)')
   })
 })
 

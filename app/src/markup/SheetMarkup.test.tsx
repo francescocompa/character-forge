@@ -31,9 +31,9 @@ describe('SheetMarkup — node type coverage', () => {
     expect(dtype).not.toMatch(/\d/)
   })
 
-  it('maps {adv} and {dis} to their badges', () => {
-    expect(html('{adv}')).toContain('EDGE')
-    expect(html('{dis}')).toContain('DIS')
+  it('maps {adv} and {dis} to their dice icons', () => {
+    expect(html('{adv}')).toContain('Advantage')
+    expect(html('{dis}')).toContain('Disadvantage')
   })
 
   it('maps {cond:NAME} to a condition chip (plain until T07 wires popovers)', () => {
