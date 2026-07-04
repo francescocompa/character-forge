@@ -3,6 +3,34 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-04 — T07: popover / library system
+
+- `app/src/library/LibraryProvider.tsx`: `LibraryProvider` holds the character's
+  `library` map and owns the single open surface; `useLibrary().openRef(refKey,
+  anchorEl?)` opens an extract. Views wire `SheetMarkup`'s `onRef` (key only) to
+  it once — `openRef` then anchors the popover to the focused trigger and returns
+  focus there on close. Refs tapped inside an open extract push onto a stack so
+  "‹ Back" walks back rather than closing.
+- `app/src/library/LibrarySurface.tsx`: the one open surface, portalled to
+  `<body>` so opening never shifts the sheet. ≥ 768 px anchored popover
+  (max-width ~28 rem, internal scroll); < 768 px bottom sheet with a drag handle
+  (dismiss past 90 px) and safe-area padding. Focus-trapped, Esc/scrim close,
+  `role="dialog"` + `aria-modal`. Missing ref → inline "not in library" note,
+  never a crash.
+- `app/src/library/markdown.ts` + `ExtractMarkdown.tsx`: minimal GFM block parser
+  (headings, paragraphs, ordered/unordered lists, fenced code, tables incl.
+  alignment) whose inline runs go through `SheetMarkup` (T06), so bold/italic,
+  colored chips, and `{ref:…}` links render inside extracts too.
+- `app/src/library/position.ts`: pure `placePopover` geometry (below/above flip,
+  viewport clamp, scroll-height cap) — DOM-free, unit-tested.
+- `app/src/tokens/Gallery.tsx`: wrapped in `LibraryProvider`; new "Library
+  popovers (T07)" section with three invented-homebrew extracts (no WotC text,
+  scope §4) covering a GFM table, headings, lists, and a nested ref.
+- Verified in-browser via preview at 1280 px (anchored popover, clamped, body
+  scrolls) and 375 px (bottom sheet, table legible): same trigger, both
+  surfaces; nested-ref back; missing ref; Esc + focus restore; scrim dismiss; no
+  layout shift. `verify` green (schema 41, app 50 across 6 files, validate 30).
+
 ## 2026-07-04 — T06: sheet-markup renderer
 
 - `app/src/markup/SheetMarkup.tsx`: `<SheetMarkup source onRef />` maps the

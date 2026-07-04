@@ -12,9 +12,11 @@ import {
   SaveDCBadge,
   SchoolLabel,
 } from '../components/chips'
-import type { Ability } from '@character-forge/schema/types.ts'
+import type { Ability, Extract } from '@character-forge/schema/types.ts'
 import type { DamageType } from '../components/chips'
 import type { ReactNode } from 'react'
+import { LibraryProvider, useLibrary } from '../library'
+import { SheetMarkup } from '../markup/SheetMarkup'
 
 const ABILITIES: Ability[] = ['STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA']
 
@@ -104,11 +106,97 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
 }
 
 /**
+ * Fake extracts for manual popover testing (T07 deliverable 5). All invented
+ * homebrew — the gallery is committed, so no WotC text (scope §4). Exercises
+ * headings, bold/italic, GFM tables, lists, and a `{ref:…}` *inside* an extract
+ * (moonlit-brand → gloaming-step) to prove the in-place back affordance.
+ */
+const DEMO_LIBRARY: Record<string, Extract> = {
+  'moonlit-brand': {
+    name: 'Moonlit Brand',
+    edition: 'Homebrew',
+    type: 'invocation',
+    source: 'Gran Via Homebrew',
+    page: 12,
+    markdown: `You channel a pale sigil onto a foe you can see within 60 ft. Until the
+end of your next turn, attacks against the marked creature deal an extra
+{dmg:radiant|1d4} and it can't benefit from {adv}.
+
+**Recharge.** Once per turn on a hit. Longer bursts recover on {recover:SR}.
+
+You can spend a pact slot to extend the mark; see {ref:gloaming-step|Gloaming Step}.`,
+  },
+  'gloaming-step': {
+    name: 'Gloaming Step',
+    edition: 'Homebrew',
+    type: 'feature',
+    source: 'Gran Via Homebrew',
+    page: 13,
+    markdown: `As a *bonus action*, teleport up to 30 ft to a dimly lit or dark space you
+can see. Uses per long rest scale with your Marionette level:
+
+| Level | Uses | Bonus |
+|:------|:----:|------:|
+| 3rd   | 1    | —     |
+| 7th   | 2    | +1d6  |
+| 11th  | 3    | +2d6  |
+
+- Doesn't provoke opportunity attacks.
+- On arrival you gain {adv} on your next {a:DEX} check this turn.
+- Bright light *suppresses* this feature until the end of your turn.`,
+  },
+  'sootwright-cunning': {
+    name: 'Sootwright Cunning',
+    edition: 'Homebrew',
+    type: 'feature',
+    source: 'Gran Via Homebrew',
+    markdown: `### Tools of the trade
+You add double your proficiency bonus to any check made with **tinker's tools**
+or a **forgery kit**.
+
+### Improvised save
+When you fail a {save:DEX|15}, you may drop prone to reroll it once per
+{recover:LR}.`,
+  },
+}
+
+/** Uses the library context (must render inside a LibraryProvider). */
+function PopoverSection() {
+  const { openRef } = useLibrary()
+  return (
+    <Section title="Library popovers (T07)">
+      <div style={{ maxWidth: '52ch', lineHeight: 1.6 }}>
+        Tap a term to open its extract — anchored popover on desktop, bottom
+        sheet under 768 px. Inline markup refs:{' '}
+        <SheetMarkup
+          source="Your {ref:moonlit-brand|Moonlit Brand} pairs with {ref:gloaming-step|Gloaming Step}; artisans lean on {ref:sootwright-cunning|Sootwright Cunning}."
+          onRef={openRef}
+        />
+      </div>
+      <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
+        <RefLink label="Moonlit Brand" onClick={() => openRef('moonlit-brand')} />
+        <RefLink label="Gloaming Step (table)" onClick={() => openRef('gloaming-step')} />
+        <RefLink label="Sootwright Cunning" onClick={() => openRef('sootwright-cunning')} />
+        <RefLink label="Missing entry" onClick={() => openRef('does-not-exist')} />
+      </div>
+    </Section>
+  )
+}
+
+/**
  * Dev-only iteration surface (T05 deliverable 4): every chip in every variant,
  * plus a token swatch board. Francesco tweaks values in tokens.css and
  * refreshes this page — no other wiring needed.
  */
 export function Gallery() {
+  return (
+    <LibraryProvider library={DEMO_LIBRARY}>
+      <GalleryContent />
+    </LibraryProvider>
+  )
+}
+
+function GalleryContent() {
   return (
     <div
       style={{
@@ -189,6 +277,8 @@ export function Gallery() {
       <Section title="Future-wrap (Build view)">
         <FutureWrap level={6}>Second eldritch invocation</FutureWrap>
       </Section>
+
+      <PopoverSection />
 
       {SWATCH_GROUPS.map((group) => (
         <section key={group.title} style={{ marginBottom: 'var(--space-5)' }}>
