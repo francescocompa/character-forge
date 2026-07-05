@@ -802,3 +802,31 @@
     min-height: 44px;
   }
 }
+
+/* Phone: pin the paired grids to fixed column counts so they can't wrap
+   ragged (abilities 4+2, stats 3+1, death-save pips 2+1 at 375px). The
+   death-save label moves above its two groups; the pips keep 44px targets. */
+@media (max-width: 480px) {
+  .abilities {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .defense__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .death-saves {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'lbl lbl'
+      'success fail';
+    row-gap: var(--space-2);
+  }
+  .death-saves__lbl {
+    grid-area: lbl;
+  }
+  .death-saves__grp--success {
+    grid-area: success;
+  }
+  .death-saves__grp--fail {
+    grid-area: fail;
+  }
+}

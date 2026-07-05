@@ -21,13 +21,16 @@
   gap: var(--space-1);
 }
 
+/* Sub-group header inside the titled Gear panel — the dim micro-label voice
+   (like .action-group__header), not amber: only panel titles take accent-2,
+   and "GEAR" sits directly above the first group. */
 .gear-section__title {
   margin: 0;
   font-size: var(--font-size-chrome);
-  letter-spacing: var(--letter-spacing-title);
+  letter-spacing: var(--letter-spacing-chrome);
   font-weight: var(--weight-chrome);
   text-transform: uppercase;
-  color: var(--accent-2);
+  color: var(--ink-muted);
 }
 
 .gear-item-list {

@@ -3,6 +3,29 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — UX audit: sticky section tabs + phone layout fixes
+
+External-auditor pass over the whole journey (library → sheet → tabs → dice →
+add/export) at 1280px and 375px. CSS-only; no markup or behavior changes.
+
+- **Sticky tabs** (`appShell.css`): the section tab bar now pins to the top of
+  the viewport (z 50 — above sheet content, under every overlay; `top` respects
+  the standalone-iOS safe-area inset). The sheet runs 2000px+, and switching
+  sections is the most frequent at-the-table action — it previously required
+  scrolling all the way back up.
+- **Phone topbar 3 rows → 2** (≤ 480px): shell buttons and the Level/Build
+  toggle drop to `--font-size-sm` with slimmer padding, so + Add / Export
+  session / toggle share one row (tap targets stay ≥ 44px). All five tabs now
+  fit 375px with no horizontal scroll.
+- **Phone grids pinned** (`mainSheet.css` ≤ 480px): abilities 3×2 (was a ragged
+  4+2), AC/Initiative/Prof/Speed 2×2 (was 3+1), death saves relaid as label
+  over [successes | failures] on one row (pips were wrapping 2+1).
+- **Gear sub-headers demoted** (`equipment.css`): `.gear-section__title` takes
+  the dim micro-label voice like `.action-group__header` — only panel titles
+  speak amber (fixes the double-amber "GEAR"/"EQUIPMENT" stack from T23).
+- Verified: all five views + library + manage/add dialogs + 2D/3D dice at
+  1280px and 375px; `verify` green (220 app tests).
+
 ## 2026-07-05 — T24 3D dice (ported from monster-forge)
 
 Rollable 3D dice, ported and distilled from monster-forge's `dice3d.js` (real
@@ -203,8 +226,8 @@ belong, and export for adoption at the next recompile.
 
 - **Contract** (`session.schema.json` + `types.ts`): `Addition` extended with
   kind-specific fields — `quantity`/`weightLb` (item), `limitedUse` (boon: max
-  + a `RecoverModel`, mirrored into the session schema). Boon use-counts live in
-  `trackers.additions`, ticked and rested like any resource.
+  - a `RecoverModel`, mirrored into the session schema). Boon use-counts live in
+    `trackers.additions`, ticked and rested like any resource.
 - **Engine** (`sessionEngine.ts`): `updateAddition` (edit in place, clamps live
   uses if the cap shrinks), `tickAddition`/`untickAddition`, `removeAddition`
   now clears the boon's uses, and `applyRest` recovers limited-use boons on
@@ -253,7 +276,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   fired `on:'long'` rules, so Vice's Pact Magic slots (encoded `on:'short'`
   only, per the 2024 "Short or Long Rest" text) never refilled on a long rest.
   Rest semantics are the engine's to own — files encode each feature's
-  *shortest* recovering rest; a long rest is a superset (`ruleApplies`).
+  _shortest_ recovering rest; a long rest is a superset (`ruleApplies`).
 - **Companions now rest with the character.** `applyRest` ignored companions
   entirely: Tiresia's HP stayed damaged after a long rest and companion
   `resources` recover rules never fired. Long rest restores companion HP to
@@ -306,7 +329,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   a checkbox + number input showing both the active override and the compiled
   value.
 - **Hit-dice long-rest recovery, schema addition**: `HitDiceGroup.recover?:
-  RecoverModel` (character.schema.json + types.ts) — the compiler pre-resolves
+RecoverModel` (character.schema.json + types.ts) — the compiler pre-resolves
   how many hit dice a long rest regains per class (no hardcoded "half your hit
   dice, minimum 1" in the engine); both synthetic fixtures updated with a
   concrete rule per class group.
@@ -466,9 +489,9 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   `progression[]` into the Features IA. Documents the modeling convention this
   task needed (the schema has no per-item "which section" field): `classRef`
   sorts an item into that class's section; among classless items, `kind:
-  'feature'` is a species trait (only species grants classless features —
+'feature'` is a species trait (only species grants classless features —
   2024-style backgrounds grant proficiencies + a feat, not features); `kind:
-  'feat' | 'asi'` always lands in the top-level Feats section regardless of
+'feat' | 'asi'` always lands in the top-level Feats section regardless of
   `classRef`. No schema change — this is a rendering-layer convention the
   compiler (T18/T19) should also follow when it starts emitting real files.
 - `app/src/views/Features/`: one collapsible section per class (level badge,
@@ -548,7 +571,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
 
 - `app/src/library/LibraryProvider.tsx`: `LibraryProvider` holds the character's
   `library` map and owns the single open surface; `useLibrary().openRef(refKey,
-  anchorEl?)` opens an extract. Views wire `SheetMarkup`'s `onRef` (key only) to
+anchorEl?)` opens an extract. Views wire `SheetMarkup`'s `onRef` (key only) to
   it once — `openRef` then anchors the popover to the focused trigger and returns
   focus there on close. Refs tapped inside an open extract push onto a stack so
   "‹ Back" walks back rather than closing.

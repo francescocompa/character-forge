@@ -15,8 +15,9 @@ body {
   margin: 0 auto;
   /* Safe-area insets keep the sheet clear of the notch / home indicator when
      launched standalone with viewport-fit=cover (T17). */
-  padding: max(var(--space-3), env(safe-area-inset-top)) max(var(--space-3), env(safe-area-inset-right))
-    max(var(--space-3), env(safe-area-inset-bottom)) max(var(--space-3), env(safe-area-inset-left));
+  padding: max(var(--space-3), env(safe-area-inset-top))
+    max(var(--space-3), env(safe-area-inset-right)) max(var(--space-3), env(safe-area-inset-bottom))
+    max(var(--space-3), env(safe-area-inset-left));
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
@@ -156,7 +157,15 @@ body {
 }
 
 /* --- tabs ---------------------------------------------------------------- */
+/* Sticky: the sheet runs 2000px+, and switching sections is the most frequent
+   navigation — the tab bar must survive the scroll. Sits above sheet content
+   (z 50) but under every overlay (scrims 90+, dice 600, popovers 1000). The
+   `top` inset keeps it below the notch in standalone iOS (T17). */
 .app-shell__tabs {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  background: var(--surface-bg);
   display: flex;
   gap: var(--space-1);
   border-bottom: 1px solid var(--border-subtle);
@@ -191,5 +200,26 @@ body {
   .app-shell__topbar-tools {
     width: 100%;
     justify-content: space-between;
+  }
+}
+
+/* Phone: slim the paddings so the tools land on one row (topbar = 2 rows, not
+   3) and all five tabs fit without horizontal scroll. Tap targets stay 44px
+   via the min-heights above. */
+@media (max-width: 480px) {
+  .shell-btn,
+  .view-toggle__btn {
+    padding: var(--space-1) var(--space-3);
+    font-size: var(--font-size-sm);
+  }
+  .app-shell__topbar-tools {
+    gap: var(--space-2);
+  }
+  .app-shell__tabs {
+    gap: 0;
+  }
+  .app-tab {
+    padding: var(--space-2);
+    font-size: var(--font-size-sm);
   }
 }
