@@ -3,6 +3,54 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T20 follow-up: unified-diff context fix + bin-link note
+
+Audit pass over the T20 batch.
+
+- **`kbDiff.ts`** — hunks emitted only 2 trailing context lines instead of 3
+  (the trim ran before the current op was pushed, over-trimming by one). Output
+  now matches `diff -U3`; two tests pin leading/trailing context and hunk
+  splitting (19 kb-diff tests). Classification untouched — the real Vice run
+  reproduces T20's acceptance counts exactly.
+- **`pipeline/kb-audit.md`** — note the `npm rebuild @character-forge/validate`
+  escape hatch when `npx character-forge-kb-diff` 404s because `node_modules`
+  predates the bin (npm doesn't relink bins into an already-reified tree).
+
+## 2026-07-05 — T20 kb-audit (extract-drift diff + refresh recipe)
+
+The maintenance path for decision D5: characters embed the KB's full text at
+compile time, so when the KB is re-compiled those copies can go stale. This batch
+adds the tooling to find and fix that drift.
+
+- **`pipeline/validate/src/kbDiff.ts` + `kbDiff.cli.ts`** — the
+  `character-forge-kb-diff` bin (second bin in the validate workspace). For every
+  non-Homebrew `library` extract it resolves the current KB entry via
+  `MANIFEST.json` (match on `name` + `edition`; `source` then `type` break ties),
+  reads the `## <name>` block out of the entry's file, whitespace-normalises both
+  sides, and classifies `unchanged` / `changed` (with a context-3 unified diff) /
+  `missing-from-kb` / `not-in-manifest` / `homebrew-skipped`. Dependency-free LCS
+  diff. `--json` report documented in `pipeline/validate/README.md`; exit 0 when
+  nothing needs action. Never reads or emits Homebrew text (scope §4).
+- **`pipeline/kb-audit.md`** — the recipe: run kb-diff over `Characters/`, triage
+  each `changed` (cosmetic/boilerplate → refresh; substantive rules change → spell
+  out the mechanical consequence + the summaries/stats it invalidates, and ask
+  Francesco), flag missing/unfindable without ever deleting an extract, then
+  refresh + fix derived numbers + re-validate (T04) + record an audit note.
+- **`fixtures/fake-kb/`** — a tiny invented-content KB mirroring the synthetic
+  fixture's non-Homebrew entries, seeding one of each status. `kbDiff.test.ts`
+  (17 tests) exercises all five plus the pure helpers.
+- Docs: `pipeline/README.md`, `pipeline/validate/README.md`, `fixtures/README.md`.
+- **Real run (acceptance):** kb-diff on the local Vice file against the current KB
+  (v2.31.0) — 25 `unchanged` (all spells + the Autognome species, verbatim match),
+  4 `changed` (invocation extracts where the compiler intentionally dropped the
+  KB's `Prerequisite:`/`Type:` boilerplate — mechanical body identical, benign),
+  1 `missing-from-kb` (the Warlock class overview is a `#`-level heading in a
+  composite class file, not a top-level `##` block), 10 `not-in-manifest` (class/
+  subclass features and one reflavored subclass name — the KB doesn't index these
+  individually), 5 Homebrew skipped. No stale rules text; the deltas are the
+  compiler's deliberate compression, not KB drift. (Run described only; no WotC
+  text in this repo — scope §4.)
+
 ## 2026-07-05 — T19 compile recipe (chassis doc → character.json), proven on Vice
 
 The compiler itself — instructions a cold Claude session follows to turn a

@@ -4,3 +4,8 @@ dev-dist
 coverage
 package-lock.json
 docs/PROJECT-SCOPE.md
+
+# kb-diff test fixture: mirrors the real KB's on-disk markdown format (metadata
+# line immediately under each `## ` heading). Prettier would reflow it and make
+# it an unfaithful stand-in — keep it byte-for-byte like the real KB.
+fixtures/fake-kb/

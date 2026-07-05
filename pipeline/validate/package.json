@@ -5,9 +5,10 @@
   "type": "module",
   "description": "Validator CLI: ajv schema + referential integrity + markup lint + sanity checks (T04).",
   "bin": {
-    "character-forge-validate": "./src/cli.ts"
+    "character-forge-validate": "./src/cli.ts",
+    "character-forge-kb-diff": "./src/kbDiff.cli.ts"
   },
-  "//exports": "Browser-safe layers the app reuses for in-app import validation (T16). The CLI entry (cli.ts, validate.ts) stays Node-only via node:fs and is not exported.",
+  "//exports": "Browser-safe layers the app reuses for in-app import validation (T16). The CLI entries (cli.ts, validate.ts; kbDiff.cli.ts) stay Node-only via node:fs and are not exported.",
   "exports": {
     "./referential.ts": "./src/referential.ts",
     "./paths.ts": "./src/paths.ts",
@@ -15,6 +16,7 @@
   },
   "scripts": {
     "validate": "node --import tsx src/cli.ts",
+    "kb-diff": "node --import tsx src/kbDiff.cli.ts",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "verify": "npm run typecheck && npm run test"

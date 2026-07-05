@@ -40,6 +40,20 @@ corrected extract) to re-check and refresh the embedded `library` extracts in
 already-compiled characters — a diff/refresh, so a fixed rule propagates without a
 full recompile.
 
+Two pieces work together:
+
+- **`kb-diff`** — the script (`character-forge-kb-diff`, in
+  [`validate/`](validate/)). Mechanical: for every non-Homebrew `library` extract
+  it locates the current KB entry via `MANIFEST.json` and reports
+  `unchanged` / `changed` (with a unified diff) / `missing-from-kb` /
+  `not-in-manifest` / `homebrew-skipped`. Makes no edits. `--json` for tooling.
+- **`kb-audit.md`** — the recipe. A Claude Code session runs kb-diff over
+  `Characters/`, triages each `changed` (cosmetic → refresh; substantive rules
+  change → spell out the consequence and ask Francesco), flags the missing/
+  unfindable ones without ever deleting an extract, then refreshes the approved
+  entries, fixes the summaries/stats derived from them, re-runs the validator,
+  and records an audit note.
+
 ## The documents
 
 | Doc                                        | Step      | What it governs                                            |
