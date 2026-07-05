@@ -3,6 +3,39 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T18 pipeline front door (interview + chassis format)
+
+The pipeline's authoring layer: how a build idea becomes a `*.chassis.md`, and
+how that document maps onto the schema. Docs only — no code touched. Phase 4
+starts here (compile T19, kb-audit T20, docs T21 follow).
+
+- **`pipeline/chassis-format.md`**: the human-first chassis document format —
+  frontmatter (identity + rules envelope: `ruleset`/`sources`/`currentLevel`/
+  `targetLevel`) and the sections concept & reflavoring · chassis (species,
+  background, class(es) with order/levels/hit die/planned subclass) · homebrew
+  (full rules text, verbatim → `library` extracts) · level-by-level progression
+  · volatile-pool defaults (D13) · equipment · companions · variants (D12). A
+  fully annotated **multiclass** example anchored to
+  `fixtures/synthetic.character.json` (provable round-trip), precise **`TBD(...)`
+  semantics** (at/below `currentLevel` = blocking; above = non-blocking planned),
+  and a **field → schema mapping table** flagging each region as read-from-doc
+  vs compiler-derived.
+- **`pipeline/interview.md`**: cold-start instructions for a Claude session to
+  co-write the chassis doc — rules-accurate collaborator (2–3 cited options, no
+  invented rules), KB lookup via `MANIFEST.json` + `_legend.md`, per-entry
+  user-approved edition mixing, verbatim homebrew protocol, `TBD`/`FLAG`
+  discipline, and the hard rule that the interview **never** writes a
+  `character.json` (compile is a separate step).
+- **`pipeline/README.md`**: one-page interview → compile → validate overview +
+  when to run kb-audit; links the four pipeline docs.
+- **`pipeline/examples/thessaly-quill.chassis.md`**: a worked dry-run product,
+  wholly invented content (public-repo safe) — single-class caster, reflavored
+  species, DM-approved homebrew background, a prepared-spell pool, a companion, a
+  planned subclass, one variant, and TBD markers above the current level.
+- **`.gitignore`**: added `!pipeline/examples/**/*.chassis.md` so the synthetic
+  example is tracked while real `*.chassis.md` build docs stay ignored (mirrors
+  the existing `!fixtures/**` IP-guardrail exceptions).
+
 ## 2026-07-05 — T17 PWA polish & offline hardening
 
 Character Forge is now a real installable, offline-first app: a dark-matching
