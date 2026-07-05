@@ -1,0 +1,210 @@
+/*
+ * 3D dice chrome (T24) — ported from monster-forge's dice CSS, re-toned to character-forge's accent (arcane
+ * indigo) via tokens. Covers: the result card (#d3dCard), the crit flourish (#d3dCrit), the held-die cursor
+ * hide (body.dicing), the 2D fallback toast (.cf-dice-toast, reusing the T17/T23 toast chrome), and the
+ * screen-reader announce region. Vecna is NOT registered here as an @font-face — the engine loads it via the
+ * FontFace API so it stays scoped to the dice faces (restyle decision: Vecna is dice-only).
+ */
+
+/* Result card — total + label + ghost reroll + auto-dismiss timer bar. z above the dice canvas (400). */
+#d3dCard {
+  position: fixed;
+  left: 50%;
+  top: calc(46px + env(safe-area-inset-top));
+  transform: translate(-50%, -12px);
+  z-index: 600;
+  display: none;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: min(92vw, 440px);
+  background: var(--surface-input);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  padding: 11px 14px 13px 18px;
+  overflow: hidden;
+  box-shadow: var(--shadow-pop);
+  opacity: 0;
+  transition:
+    opacity 0.18s,
+    transform 0.18s;
+}
+#d3dCard.show {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+#d3dCard .d3dc-text {
+  font-size: var(--font-size-sm);
+  color: var(--ink-primary);
+  white-space: nowrap;
+  font-weight: 600;
+}
+#d3dCard .d3dc-rr {
+  flex: none;
+  width: 26px;
+  height: 26px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  color: var(--ink-secondary);
+}
+#d3dCard .d3dc-rr:hover {
+  color: var(--ink-primary);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+}
+#d3dCard .d3dc-rr:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+#d3dCard .d3dc-bar {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  height: 3px;
+  width: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+/* Crit flourish — a vivid accent glow blooms over the crit die while a glossy sheen sweeps its face (the die
+   snap-pops, driven in JS). Added by the engine only on a crit (which never runs under reduced motion). */
+#d3dCrit {
+  position: fixed;
+  z-index: 610;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+#d3dCrit .d3dcrit-glow {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.5);
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--accent-soft) 85%, transparent),
+    color-mix(in srgb, var(--accent) 50%, transparent) 40%,
+    transparent 68%
+  );
+}
+#d3dCrit .d3dcrit-sheenwrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: 20%;
+  overflow: hidden;
+  transform: translate(-50%, -50%);
+}
+#d3dCrit .d3dcrit-sheen {
+  position: absolute;
+  top: -60%;
+  left: -90%;
+  width: 55%;
+  height: 220%;
+  opacity: 0;
+  background: linear-gradient(105deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+  transform: rotate(16deg);
+}
+#d3dCrit.go .d3dcrit-glow {
+  animation: d3dcrit-bloom 560ms cubic-bezier(0.1, 0.8, 0.2, 1) 1;
+}
+#d3dCrit.go .d3dcrit-sheen {
+  animation: d3dcrit-sheen 420ms ease-out 1;
+}
+@keyframes d3dcrit-bloom {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  18% {
+    opacity: 1;
+    transform: scale(1.22);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.65);
+  }
+}
+@keyframes d3dcrit-sheen {
+  0% {
+    transform: translateX(0) rotate(16deg);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(380%) rotate(16deg);
+    opacity: 0;
+  }
+}
+
+/* While a 3D die rides the cursor, hide the native cursor everywhere (rollables set cursor:pointer, which
+   would otherwise peek out from behind the held die). */
+body.dicing,
+body.dicing * {
+  cursor: none !important;
+}
+
+/* 2D fallback result toast — shown when 3D can't run (reduced motion, no WebGL, or the libs haven't loaded
+   yet, e.g. the first tap on touch). Reuses the T17/T23 toast chrome. */
+.cf-dice-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  z-index: 600;
+  max-width: calc(100vw - 2 * var(--space-4));
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-input);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-pop);
+  color: var(--ink-primary);
+  font-weight: 600;
+  font-size: var(--font-size-md);
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.18s,
+    transform 0.18s;
+}
+.cf-dice-toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Rollable surfaces — a subtle affordance. Kept low-key so the sheet doesn't read as a form of buttons. */
+.rollable {
+  cursor: pointer;
+}
+.rollable:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+  border-radius: var(--radius-sm);
+}
+
+/* Screen-reader-only announce region (aria-live). */
+.cf-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #d3dCard,
+  .cf-dice-toast {
+    transition: none;
+  }
+}

@@ -4,6 +4,7 @@ import type { CSSVarStyle } from '../../components/chips/css-vars'
 import { MarkupText } from '../../library'
 import { useCharacter } from '../../character/CharacterProvider'
 import { useSession, useSessionState } from '../../session/SessionProvider'
+import { rollCheck, rollableProps } from '../../dice'
 import { NumberStepper, TickBoxes } from './Ticks'
 import { signed } from './format'
 
@@ -46,7 +47,9 @@ function MaxHpOverrideControl({ compiled }: { compiled: number | undefined }) {
           }}
         />
       )}
-      {override !== undefined && <span className="hp-max-override__compiled">compiled: {compiled}</span>}
+      {override !== undefined && (
+        <span className="hp-max-override__compiled">compiled: {compiled}</span>
+      )}
     </label>
   )
 }
@@ -213,10 +216,26 @@ export function DefenseBlock() {
             </span>
           )}
         </div>
-        <div className="stat">
-          <span className="stat__label">Initiative</span>
-          <span className="stat__value">{statText(stats.initiative, true)}</span>
-        </div>
+        {typeof stats.initiative.value === 'number' ? (
+          <div
+            {...rollableProps(
+              (mode) =>
+                rollCheck('Initiative', stats.initiative.value as number, {
+                  mode,
+                  isAttack: false,
+                }),
+              { className: 'stat', label: 'Roll initiative' },
+            )}
+          >
+            <span className="stat__label">Initiative</span>
+            <span className="stat__value">{statText(stats.initiative, true)}</span>
+          </div>
+        ) : (
+          <div className="stat">
+            <span className="stat__label">Initiative</span>
+            <span className="stat__value">{statText(stats.initiative, true)}</span>
+          </div>
+        )}
         <div className="stat">
           <span className="stat__label">Prof. bonus</span>
           <span className="stat__value">{signed(stats.proficiencyBonus)}</span>

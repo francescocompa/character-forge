@@ -4,3 +4,4 @@ dev-dist
 coverage
 package-lock.json
 docs/PROJECT-SCOPE.md
+app/public/vendor

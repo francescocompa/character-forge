@@ -3,6 +3,46 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T24 3D dice (ported from monster-forge)
+
+Rollable 3D dice, ported and distilled from monster-forge's `dice3d.js` (real
+cannon.js physics + three.js), re-toned to character-forge's arcane-indigo
+accent with Vecna numerals on the faces (the only place Vecna is used). Tap an
+ability, save, skill, initiative, or attack to-hit to roll a d20 + modifier;
+tap a `{dice:}`/`{dmg:}` chip to roll its expression. Shift-click = advantage,
+Alt/Ctrl-click = disadvantage (2d20 with the unkept die dimmed). Every roll is
+also announced on an `aria-live` region and, when 3D can't run, shown as a 2D
+toast.
+
+- **`app/src/dice/engine.js`** (+ `engine.d.ts`): the ported physics/paint core,
+  kept as guarded browser JS (T24 permits this for the core). cannon pre-roll →
+  paint the predetermined value onto the landing face → replay the identical
+  fixed-step sim, so the shown value never changes at settle. Single look: an
+  indigo "stone" material derived from `--accent`; no material presets, no
+  max-face logo. Held cursor-die on desktop hover, result card (total + reroll +
+  auto-dismiss bar), crit flourish (bloom + sheen) on a natural max, dropped-die
+  dimming. Every THREE/CANNON/WebGL/document touch is lazy + guarded, so the
+  Vitest `node` env and no-WebGL browsers no-op cleanly.
+- **`app/src/dice/index.ts`**: the typed front door — rolls values in JS, embeds
+  them in the engine's parts grammar (`2d20kh1:[15,8]`), and hands off to
+  `rollDice3D`. `buildRoll` is the pure, unit-tested core (the card total always
+  equals the kept dice shown plus the modifier). `rollableProps` turns any
+  surface into a keyboard-focusable, `data-roll`-tagged rollable.
+- **Lazy-load off the boot path**: three (~590KB) + cannon (~132KB) are vendored
+  under `app/public/vendor/` and injected via `<script>` on first roll intent
+  (desktop hover preloads; touch's first roll falls back to the toast, the next
+  is 3D) — never imported, so they stay out of the initial bundle (verified via
+  the `vite build` chunk report). Vecna (`vecna.otf`) loads via the FontFace API,
+  scoped to the dice faces only.
+- **Rollable surfaces**: ability cells, save/skill rows, initiative
+  (`Abilities.tsx`, `Defense.tsx`), attack to-hit (`Attacks.tsx`), and
+  damage/dice chips (`DamageText.tsx`).
+- **PWA precache** (`vite.config.ts`): globs now include the vendor blobs + `otf`
+  so the first offline roll works; size cap lifted to fit three.min.js.
+- **Tooling**: ESLint override for `src/dice/*.js` (browser + THREE/CANNON
+  globals); `public/vendor` excluded from ESLint + Prettier. New
+  `src/dice/dice.test.ts` (value invariant, adv/dis keep, crit, fuzz).
+
 ## 2026-07-05 — T23 monster-forge design-system alignment
 
 Finishes the offshoot restyle: the component-level skins now match
