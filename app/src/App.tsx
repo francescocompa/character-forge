@@ -1,10 +1,22 @@
-import { AppShell } from './app/AppShell'
-import { useCharacterFile } from './character/characterFile'
+import { CharacterLibraryProvider, useCharacterLibrary } from './manage/CharacterLibraryProvider'
+import { CharacterList } from './manage/CharacterList'
+import { CharacterWorkspace } from './manage/CharacterWorkspace'
+import './manage/manage.css'
+
+/** Routes between the library list and an opened character (T16). */
+function LibraryRoot() {
+  const { loading, groups, selectedId, clearSelection } = useCharacterLibrary()
+  if (loading) return <div className="cf-splash">Loading your characters…</div>
+
+  const selected = selectedId ? groups.find((g) => g.characterId === selectedId) : undefined
+  if (selected) return <CharacterWorkspace group={selected} onBack={clearSelection} />
+  return <CharacterList />
+}
 
 export function App() {
-  // v1 loads a single character: the bundled synthetic fixture by default, or a
-  // local dev character if one is present (see useCharacterFile). T16 replaces
-  // this with real file import + variant switching.
-  const character = useCharacterFile()
-  return <AppShell character={character} />
+  return (
+    <CharacterLibraryProvider>
+      <LibraryRoot />
+    </CharacterLibraryProvider>
+  )
 }

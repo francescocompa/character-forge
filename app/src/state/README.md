@@ -10,9 +10,13 @@ state, backed by IndexedDB (`idb`). The app never writes the character file
   structure — no hardcoded 5e formulas), undo (bounded history), and
   `reconcileSessionState` (drops orphaned refs on a re-imported file, seeds
   new pools/consumables, logs what it dropped).
-- **`db.ts`** — thin `idb` wrapper: one object store keyed by
+- **`db.ts`** — thin `idb` wrapper: the `sessions` object store keyed by
   `characterId::variantLabel::characterFormatVersion` (a format-version bump
-  starts a fresh session, D12).
+  starts a fresh session, D12), plus `deleteSessionsFor` (character delete wipes
+  play state). DB v2 also opens the `characters` store below.
+- **`characterDb.ts`** (T16) — the persistent home for imported character files:
+  put/list/get/delete + display alias, keyed by `characterId::variantLabel`.
+  Deleting a character also wipes its sessions. See `manage/` for the UI.
 - **`IndexedDbSessionStore.ts`** — wraps the engine with persistence. Returns
   synchronously with a fresh in-memory seed (first paint never blocks on
   IndexedDB, and it degrades gracefully where IndexedDB doesn't exist — SSR,

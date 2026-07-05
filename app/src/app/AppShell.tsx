@@ -72,7 +72,40 @@ function SessionActions() {
   )
 }
 
-function Shell() {
+/** Chip-row switcher between a character's variants (D12); only shown when there's more than one. */
+function VariantSwitcher({
+  variants,
+  activeKey,
+  onSelect,
+}: {
+  variants: VariantOption[]
+  activeKey: string
+  onSelect: (key: string) => void
+}) {
+  return (
+    <div className="variant-switcher" role="group" aria-label="Variant">
+      {variants.map((v) => (
+        <button
+          key={v.key}
+          type="button"
+          className={`variant-chip ${v.key === activeKey ? 'is-active' : ''}`}
+          aria-pressed={v.key === activeKey}
+          onClick={() => onSelect(v.key)}
+        >
+          {v.label}
+        </button>
+      ))}
+    </div>
+  )
+}
+
+function Shell({
+  displayName,
+  onBack,
+  variants,
+  activeVariantKey,
+  onSelectVariant,
+}: ShellChromeProps) {
   const { character } = useCharacter()
   const [tab, setTab] = useState<Tab>('main')
   const hasCompanions = (character.companions?.length ?? 0) > 0
@@ -82,13 +115,26 @@ function Shell() {
     <div className="app-shell">
       <div className="app-shell__topbar">
         <div className="app-shell__brand">
-          <span className="app-shell__title">{character.meta.name}</span>
+          {onBack && (
+            <button type="button" className="app-shell__back" onClick={onBack}>
+              ‹ Characters
+            </button>
+          )}
+          <span className="app-shell__title">{displayName ?? character.meta.name}</span>
         </div>
         <div className="app-shell__topbar-tools">
           <SessionActions />
           <ViewModeToggle />
         </div>
       </div>
+
+      {variants && activeVariantKey && onSelectVariant && (
+        <VariantSwitcher
+          variants={variants}
+          activeKey={activeVariantKey}
+          onSelect={onSelectVariant}
+        />
+      )}
 
       <nav className="app-shell__tabs" role="tablist" aria-label="Sheet sections">
         {tabs.map((t) => (
@@ -116,18 +162,39 @@ function Shell() {
   )
 }
 
+interface VariantOption {
+  key: string
+  label: string
+}
+
+interface ShellChromeProps {
+  /** Character display name (alias, T16); falls back to the file's `meta.name`. */
+  displayName?: string
+  /** Present when opened from the library (T16): renders a Back-to-list control. */
+  onBack?: () => void
+  /** More than one build → a variant switcher chip row (D12). */
+  variants?: VariantOption[]
+  activeVariantKey?: string
+  onSelectVariant?: (key: string) => void
+}
+
+export interface AppShellProps extends ShellChromeProps {
+  character: CharacterFile
+}
+
 /**
- * App root: composes the providers (library popovers → character/view-mode →
- * session store) around the tab shell. One character at a time in v1; T16 adds
- * multi-character + variant switching.
+ * The opened character: composes the providers (library popovers →
+ * character/view-mode → session store) around the tab shell. Standalone by
+ * default; the library (T16) passes the management chrome props to add a Back
+ * control and a variant switcher.
  */
-export function AppShell({ character }: { character: CharacterFile }) {
+export function AppShell({ character, ...chrome }: AppShellProps) {
   return (
     <LibraryProvider library={character.library}>
       <CharacterProvider character={character}>
         <SessionProvider character={character}>
           <AdditionsProvider>
-            <Shell />
+            <Shell {...chrome} />
           </AdditionsProvider>
         </SessionProvider>
       </CharacterProvider>

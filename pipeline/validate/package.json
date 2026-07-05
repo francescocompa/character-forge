@@ -7,6 +7,12 @@
   "bin": {
     "character-forge-validate": "./src/cli.ts"
   },
+  "//exports": "Browser-safe layers the app reuses for in-app import validation (T16). The CLI entry (cli.ts, validate.ts) stays Node-only via node:fs and is not exported.",
+  "exports": {
+    "./referential.ts": "./src/referential.ts",
+    "./paths.ts": "./src/paths.ts",
+    "./types.ts": "./src/types.ts"
+  },
   "scripts": {
     "validate": "node --import tsx src/cli.ts",
     "test": "vitest run",

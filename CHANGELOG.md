@@ -3,6 +3,46 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T16 character import & management
+
+The app now holds a **library of characters** instead of one bundled file. Files
+come from a picker or a drag-drop, persist on-device, and group into variant
+cards (D12). This replaces T08's provisional single-character loader.
+
+- **Persistence** (`state/db.ts` → v2 + `state/characterDb.ts`): a new
+  `characters` IndexedDB store keeps imported files verbatim (plus a display
+  alias + import date). Deleting a character wipes every session keyed to it.
+  The app works fully offline after the first import — no re-pick on reload.
+- **Import** (`manage/importCharacter.ts`, `validateImport.ts`,
+  `useCharacterImport.ts`): read → **version-gate** (a too-new `formatVersion`
+  gets a plain "update the app" refusal before anything else) → **validate**
+  (ajv layer 1 + referential layer 2, reused verbatim from
+  `@character-forge/validate`, now exposed via an `exports` map) → **classify**
+  against the library. New character / new variant commit silently; a same
+  id+label file raises a **refresh** confirmation showing the name/level/format
+  diff, and the session layer survives (reconciled by the T14 engine).
+- **Library screen** (`manage/CharacterList.tsx`, `CharacterCard.tsx`):
+  cards with portrait/monogram, name, class + level, and a variant badge;
+  variants of one character share a card (D12). Empty state explains the flow
+  in plain words + a WotC-free **Load a sample character** (the synthetic
+  variant pair). Whole-screen drag-drop shares the picker's dialogs.
+- **Opened character** (`manage/CharacterWorkspace.tsx` + `AppShell` chrome):
+  a Back-to-library control and a **variant switcher** chip row; switching
+  remounts the shell so each variant keeps independent session state.
+- **Manage** (`manage/ManageDialog.tsx`, `about.ts`): rename a display alias
+  (never touches file data; applies across a character's variants), per-variant
+  **Delete** (leaves siblings intact), and **About this file** (format version,
+  compiled date, library/spell counts). Export session stays in the workspace
+  topbar (T15 placement, now owned here).
+- iOS: the picker uses `<input type=file accept=.json,application/json>` (works
+  with the Files app incl. the Google Drive location); no File System Access API
+  dependency. Verified in responsive mobile mode; the manual on-device step is
+  in T16's acceptance notes.
+- Tests: `characterDb` (round-trip, refresh-preserves-alias, group + delete-one,
+  session wipe on delete), `importCharacter` (parse / version-gate / classify),
+  `group` (variant grouping + alias lift). App 213, schema 41, validate 31 —
+  all green; production build + PWA precache clean.
+
 ## 2026-07-05 — T15 in-session additions (boons / found items / notes)
 
 Mid-session captures (D2): the DM grants a boon, the party finds an item, a

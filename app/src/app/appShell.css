@@ -26,9 +26,62 @@ body {
   gap: var(--space-3);
   flex-wrap: wrap;
 }
+.app-shell__brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  min-width: 0;
+}
 .app-shell__title {
   font-size: 1.1rem;
   font-weight: 700;
+}
+.app-shell__back {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  min-height: 2.25rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.app-shell__back:hover {
+  color: var(--ink-primary);
+}
+.app-shell__back:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* --- variant switcher (D12) --------------------------------------------- */
+.variant-switcher {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+.variant-chip {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  min-height: 2rem;
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+.variant-chip.is-active {
+  background: var(--accent-soft);
+  border-color: transparent;
+  color: var(--ink-primary);
+}
+.variant-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
 }
 
 /* --- session actions (add / export) ------------------------------------- */
