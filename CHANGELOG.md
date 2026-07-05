@@ -3,6 +3,15 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — chore: prettier sweep + format gate in verify
+
+Housekeeping after merging the T19/T20/T23/T24 branches to main.
+
+- `npm run format` sweep — 50 files, no functional changes (formatting had
+  drifted because nothing gated it).
+- Root `verify` now runs `format:check` first, so CI fails on drift instead
+  of letting it accumulate.
+
 ## 2026-07-05 — UX audit: sticky section tabs + phone layout fixes
 
 External-auditor pass over the whole journey (library → sheet → tabs → dice →
