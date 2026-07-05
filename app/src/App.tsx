@@ -1,6 +1,7 @@
 import { CharacterLibraryProvider, useCharacterLibrary } from './manage/CharacterLibraryProvider'
 import { CharacterList } from './manage/CharacterList'
 import { CharacterWorkspace } from './manage/CharacterWorkspace'
+import { UpdateToast } from './app/UpdateToast'
 import './manage/manage.css'
 
 /** Routes between the library list and an opened character (T16). */
@@ -17,6 +18,7 @@ export function App() {
   return (
     <CharacterLibraryProvider>
       <LibraryRoot />
+      <UpdateToast />
     </CharacterLibraryProvider>
   )
 }

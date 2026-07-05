@@ -3,22 +3,62 @@ import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
 // GitHub Pages project site is served under /character-forge/.
+const base = '/character-forge/'
+
 export default defineConfig({
-  base: '/character-forge/',
+  base,
   // Preview harnesses assign a port via PORT; default stays Vite's 5173.
   server: { port: Number(process.env.PORT) || 5173 },
   plugins: [
     react(),
-    // Default manifest for now — T17 finalizes icons and offline strategy.
     VitePWA({
-      registerType: 'autoUpdate',
+      // Prompt, not autoUpdate: the app shows a "New version — Reload" toast and
+      // swaps the service worker only when Francesco taps it (T17 — no silent
+      // mid-session swaps). See app/src/app/UpdateToast.tsx.
+      registerType: 'prompt',
+      // Extra static assets to precache that the default glob would miss.
+      includeAssets: ['apple-touch-icon.png', 'favicon-32x32.png', 'icon.svg', 'icon-maskable.svg'],
       manifest: {
-        name: 'character-forge',
-        short_name: 'character-forge',
-        description: 'D&D 5e character sheet',
+        name: 'Character Forge',
+        short_name: 'Forge',
+        description: 'Your D&D 5e character sheets — offline, at the table.',
+        // Dark launch/status surfaces to match the dark UI (D10, token --surface-bg).
         theme_color: '#121317',
         background_color: '#121317',
         display: 'standalone',
+        orientation: 'portrait',
+        // Pin scope/start/id to the Pages sub-path so install + navigation stay
+        // inside /character-forge/.
+        scope: base,
+        start_url: base,
+        id: base,
+        icons: [
+          { src: 'pwa-192x192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+          { src: 'pwa-512x512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          {
+            src: 'maskable-icon-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable',
+          },
+        ],
+      },
+      workbox: {
+        // Precache the whole shell for true offline-first — including the bundled
+        // Inter font files (woff2), which the default glob omits and which the
+        // app must never fetch from the network at runtime (§8).
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2}'],
+        // Real character files can be dropped in public/ during local dev; never
+        // precache them (they hold KB extracts, and they belong in IndexedDB).
+        globIgnores: ['**/*.character.json'],
+        // SPA fallback so deep reloads work offline under the Pages sub-path.
+        navigateFallback: `${base}index.html`,
+        cleanupOutdatedCaches: true,
+      },
+      devOptions: {
+        // Let the SW run in `vite dev` so the update/offline flow is testable
+        // without a production build.
+        enabled: false,
       },
     }),
   ],

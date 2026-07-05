@@ -3,6 +3,49 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T17 PWA polish & offline hardening
+
+Character Forge is now a real installable, offline-first app: a dark-matching
+launch surface, a complete icon set, a controlled update flow, and iOS quirks
+handled. No network calls at runtime beyond service-worker update checks (§8).
+
+- **Manifest** (`app/vite.config.ts`): name "Character Forge" / short_name
+  "Forge", standalone + portrait, dark `theme_color`/`background_color` from the
+  `--surface-bg` token (D10), and `scope`/`start_url`/`id` pinned to the Pages
+  sub-path `/character-forge/`. Icons: `pwa-192`, `pwa-512` (any) +
+  `maskable-icon-512` (maskable, glyph in the safe zone).
+- **Icons** (`app/public/`): a neutral d20 glyph in the arcane-indigo accent on
+  the dark surface, drawn as `icon.svg` / `icon-maskable.svg` and rasterized to
+  the PNG set (192/512/maskable/apple-touch/favicon). Placeholder by intent —
+  Francesco restyles later.
+- **Service worker** (vite-plugin-pwa, `registerType: 'prompt'`): precache the
+  full shell **including the bundled Inter woff/woff2** (the default glob omits
+  fonts — critical for offline text) via an explicit `globPatterns`;
+  `navigateFallback` so deep reloads work offline under the sub-path;
+  `globIgnores` skips any `*.character.json` dropped in `public/` (KB extracts
+  never get precached). Build precaches 75 entries (~1.6 MB).
+- **Update flow** (`app/src/app/UpdateToast.tsx` + `updateToast.css`): a
+  bottom "New version available — Reload / Later" toast via `useRegisterSW`;
+  the new shell is fetched but never swapped mid-session until Reload. Also a
+  one-time "Ready to work offline" confirmation after first install.
+- **iOS specifics** (`app/index.html`, `app/src/app/global.css`):
+  `apple-mobile-web-app-*` tags (translucent status bar, home-screen title),
+  `apple-touch-icon`, `theme-color`; safe-area insets on the shell + library
+  roots and both bottom sheets (already had `env(safe-area-inset-bottom)`);
+  `viewport-fit=cover` (kept); **inputs forced to 16px on narrow widths** to
+  kill iOS focus-zoom; `overscroll-behavior: contain` on scroll surfaces;
+  `-webkit-text-size-adjust: 100%`.
+- **Persistent storage** (`app/src/app/persistStorage.ts`): best-effort
+  `navigator.storage.persist()` on boot to reduce IndexedDB eviction of the
+  character library + session layer. Never throws.
+- **Docs** (`docs/INSTALL.md`): plain-language install steps for iPhone
+  (Share → Add to Home Screen) and desktop, plus the Google Drive → import
+  flow, written for future-Francesco.
+- Verified: `verify` green; production build emits `sw.js` + a valid
+  `manifest.webmanifest` (icons, scope, dark colors) with the real character
+  file excluded from precache. Lighthouse-installable / airplane-mode / device
+  safe-area checks are the on-device acceptance step (Pages deploy + iPhone).
+
 ## 2026-07-05 — T16 character import & management
 
 The app now holds a **library of characters** instead of one bundled file. Files

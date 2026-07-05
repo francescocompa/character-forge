@@ -1,0 +1,31 @@
+/*
+ * Global iOS/PWA hardening (T17). Tokens-driven; kept separate from component
+ * CSS and from tokens.css (which stays values-only). Imported once in main.tsx.
+ */
+
+html {
+  /* Don't let iOS bump font sizes in landscape. */
+  -webkit-text-size-adjust: 100%;
+  /* Fill the launch surface with the dark background under the safe areas so
+     the notch / home-indicator gutters aren't white on standalone launch. */
+  background: var(--surface-bg);
+}
+
+body {
+  /* Stop the whole page rubber-banding past its edges in standalone mode. */
+  overscroll-behavior-y: none;
+  min-height: 100dvh;
+}
+
+/*
+ * iOS zooms the page when focusing an input whose text is < 16px. Force 16px on
+ * touch/narrow widths so focus never triggers a zoom-and-pan. Desktop keeps the
+ * denser token sizes.
+ */
+@media (max-width: 768px) {
+  input,
+  textarea,
+  select {
+    font-size: 16px;
+  }
+}

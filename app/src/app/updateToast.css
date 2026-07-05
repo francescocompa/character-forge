@@ -1,0 +1,62 @@
+/*
+ * Service-worker update / offline-ready toast (T17). Fixed to the bottom edge,
+ * clear of the home indicator via the safe-area inset. Tokens only.
+ */
+.pwa-toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: calc(var(--space-4) + env(safe-area-inset-bottom));
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  max-width: calc(100vw - 2 * var(--space-4));
+  padding: var(--space-3) var(--space-4);
+  background: var(--surface-overlay);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 28px rgb(0 0 0 / 45%);
+  color: var(--ink-primary);
+}
+.pwa-toast__msg {
+  font-weight: 600;
+  font-size: var(--font-size-md);
+}
+.pwa-toast__actions {
+  display: flex;
+  gap: var(--space-2);
+}
+.pwa-toast__btn {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-raised);
+  color: var(--ink-secondary);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-4);
+  min-height: 2.25rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+.pwa-toast__btn:hover {
+  color: var(--ink-primary);
+}
+.pwa-toast__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.pwa-toast__btn--primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--ink-on-accent);
+}
+.pwa-toast__btn--primary:hover {
+  background: var(--accent-hover);
+  color: var(--ink-on-accent);
+}
+
+@media (max-width: 768px) {
+  .pwa-toast__btn {
+    min-height: 44px;
+  }
+}

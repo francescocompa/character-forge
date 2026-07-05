@@ -2,9 +2,22 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <!-- viewport-fit=cover so the dark UI reaches under the notch / home indicator;
+         safe-area insets are honored in CSS. -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="color-scheme" content="dark" />
-    <title>character-forge</title>
+    <!-- Status/URL bar tint = the app's dark surface (D10). -->
+    <meta name="theme-color" content="#121317" />
+    <link rel="icon" type="image/svg+xml" href="/character-forge/icon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/character-forge/favicon-32x32.png" />
+    <!-- iOS home-screen install: translucent status bar (paired with viewport-fit=cover
+         for edge-to-edge), touch icon, and the label shown under the icon. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Character Forge" />
+    <link rel="apple-touch-icon" href="/character-forge/apple-touch-icon.png" />
+    <title>Character Forge</title>
   </head>
   <body>
     <div id="root"></div>
