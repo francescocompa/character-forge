@@ -45,9 +45,12 @@ export default defineConfig({
       },
       workbox: {
         // Precache the whole shell for true offline-first — including the bundled
-        // Inter font files (woff2), which the default glob omits and which the
-        // app must never fetch from the network at runtime (§8).
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2}'],
+        // Inter font files (woff2), the vendored three/cannon blobs (js, lazy-loaded
+        // but must be cached so the first offline roll works — T24), and the Vecna
+        // dice faces (otf). The app must never fetch any of these at runtime (§8).
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff,woff2,otf}'],
+        // three.min.js is ~590KB — lift the precache size cap so it's included.
+        maximumFileSizeToCacheInBytes: 3 * 1024 * 1024,
         // Real character files can be dropped in public/ during local dev; never
         // precache them (they hold KB extracts, and they belong in IndexedDB).
         globIgnores: ['**/*.character.json'],

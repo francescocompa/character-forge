@@ -27,7 +27,7 @@
   border: 1px solid var(--border-subtle);
   font-family: var(--font-family);
   font-size: var(--font-size-sm);
-  box-shadow: 0 12px 40px hsl(240 40% 2% / 0.55);
+  box-shadow: var(--shadow-pop);
   overscroll-behavior: contain;
 }
 
@@ -43,7 +43,7 @@
 /* Mobile: the scrim dims, the sheet sits on the bottom edge, safe-area aware. */
 @media (max-width: 767.98px) {
   .lib-scrim {
-    background: hsl(240 40% 2% / 0.5);
+    background: var(--scrim);
   }
 
   .lib-sheet {

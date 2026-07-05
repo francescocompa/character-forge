@@ -5,9 +5,9 @@
  * hairlines, typography, and radius scale are inherited from its design
  * system (monster-forge styles.css :root) so the two apps read as siblings.
  * What does NOT carry over: monster-forge's terracotta accent (#e2654d) —
- * this app gets its own accent to stay distinguishable (see --accent below,
- * PROVISIONAL until Francesco picks the final hue) — and the sheet-canon
- * ability/damage/origin palettes below, which are character-forge's own.
+ * this app gets its own accent (arcane indigo, see --accent below) to stay
+ * distinguishable — and the sheet-canon ability/damage/origin palettes below,
+ * which are character-forge's own.
  *
  * Dark-first (D10): this is the only theme in v1. Structure: semantic tokens
  * (used by components) point at raw values defined here. A future light theme
@@ -17,15 +17,21 @@
  */
 
 :root {
+  /* Native form controls, scrollbars, and browser-drawn popups render dark. */
+  color-scheme: dark;
+
   /* ---------------------------------------------------------------------
-   * Surfaces & ink — monster-forge dark scale (bg / panel / panel2 / line,
-   * txt / dim / faint), plus its input well.
+   * Surfaces & ink — monster-forge dark scale (bg / panel / panel2 / panel3 /
+   * line, txt / dim / faint), plus its input well.
    * ------------------------------------------------------------------- */
   --surface-bg: #121317;
   --surface-raised: #1b1d22;
   --surface-overlay: #23262d;
+  --surface-panel3: #2a2e36;
   --surface-input: #0e0f12;
   --border-subtle: #30343d;
+  /* Hairline lifted on hover (monster-forge input/stepper hover border). */
+  --border-hover: #3c424c;
 
   --ink-primary: #e7e9ee;
   --ink-secondary: #a4aab4;
@@ -40,6 +46,12 @@
   --accent: #7a6fe0;
   --accent-soft: #9c93ea;
   --accent-hover: #8a80e5;
+
+  /* Secondary voice — amber, shared verbatim with monster-forge (`--amber`).
+     It carries section titles and help states; it is NOT a second brand hue,
+     so it never fills buttons or selected states. */
+  --accent-2: #d9a441;
+  --accent-2-soft: #e7c070;
 
   --ok: #5fa873;
   --warn: #d7a93f;
@@ -145,7 +157,19 @@
   --radius-sm: 5px;
   --radius-md: 7px;
   --radius-lg: 10px;
+  --radius-xl: 11px;
   --radius-pill: 999px;
+
+  /* ---------------------------------------------------------------------
+   * Overlay chrome — scrim behind modals/sheets and the elevated pop shadow.
+   * Both inherited from monster-forge (--shadow-pop, scrim rgba).
+   * ------------------------------------------------------------------- */
+  --scrim: rgb(6 7 9 / 0.72);
+  --shadow-pop: 0 10px 28px rgb(0 0 0 / 0.55);
+
+  /* Tick glyph for the custom checkbox — used as a mask so the fill color
+     (white) is set by the control, matching monster-forge's --mf-check. */
+  --check-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4 8.5 6.8 11.2 12 5.2' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 
   /* ---------------------------------------------------------------------
    * Typography — Inter (bundled via @fontsource, offline-safe — no Google
@@ -153,11 +177,13 @@
    * Two roles: "chrome" (printed-template labels, small caps) vs "content"
    * (filled-in values). Weight/size/color carry the distinction.
    * ------------------------------------------------------------------- */
-  --font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial,
-    sans-serif;
+  --font-family:
+    'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 
   --font-size-chrome: 0.6875rem;
   --letter-spacing-chrome: 0.06em;
+  /* Wider tracking for section titles (monster-forge .fs-title = .12em). */
+  --letter-spacing-title: 0.12em;
   --weight-chrome: 600;
 
   --font-size-sm: 0.8125rem;

@@ -3,6 +3,105 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — UX audit: sticky section tabs + phone layout fixes
+
+External-auditor pass over the whole journey (library → sheet → tabs → dice →
+add/export) at 1280px and 375px. CSS-only; no markup or behavior changes.
+
+- **Sticky tabs** (`appShell.css`): the section tab bar now pins to the top of
+  the viewport (z 50 — above sheet content, under every overlay; `top` respects
+  the standalone-iOS safe-area inset). The sheet runs 2000px+, and switching
+  sections is the most frequent at-the-table action — it previously required
+  scrolling all the way back up.
+- **Phone topbar 3 rows → 2** (≤ 480px): shell buttons and the Level/Build
+  toggle drop to `--font-size-sm` with slimmer padding, so + Add / Export
+  session / toggle share one row (tap targets stay ≥ 44px). All five tabs now
+  fit 375px with no horizontal scroll.
+- **Phone grids pinned** (`mainSheet.css` ≤ 480px): abilities 3×2 (was a ragged
+  4+2), AC/Initiative/Prof/Speed 2×2 (was 3+1), death saves relaid as label
+  over [successes | failures] on one row (pips were wrapping 2+1).
+- **Gear sub-headers demoted** (`equipment.css`): `.gear-section__title` takes
+  the dim micro-label voice like `.action-group__header` — only panel titles
+  speak amber (fixes the double-amber "GEAR"/"EQUIPMENT" stack from T23).
+- Verified: all five views + library + manage/add dialogs + 2D/3D dice at
+  1280px and 375px; `verify` green (220 app tests).
+
+## 2026-07-05 — T24 3D dice (ported from monster-forge)
+
+Rollable 3D dice, ported and distilled from monster-forge's `dice3d.js` (real
+cannon.js physics + three.js), re-toned to character-forge's arcane-indigo
+accent with Vecna numerals on the faces (the only place Vecna is used). Tap an
+ability, save, skill, initiative, or attack to-hit to roll a d20 + modifier;
+tap a `{dice:}`/`{dmg:}` chip to roll its expression. Shift-click = advantage,
+Alt/Ctrl-click = disadvantage (2d20 with the unkept die dimmed). Every roll is
+also announced on an `aria-live` region and, when 3D can't run, shown as a 2D
+toast.
+
+- **`app/src/dice/engine.js`** (+ `engine.d.ts`): the ported physics/paint core,
+  kept as guarded browser JS (T24 permits this for the core). cannon pre-roll →
+  paint the predetermined value onto the landing face → replay the identical
+  fixed-step sim, so the shown value never changes at settle. Single look: an
+  indigo "stone" material derived from `--accent`; no material presets, no
+  max-face logo. Held cursor-die on desktop hover, result card (total + reroll +
+  auto-dismiss bar), crit flourish (bloom + sheen) on a natural max, dropped-die
+  dimming. Every THREE/CANNON/WebGL/document touch is lazy + guarded, so the
+  Vitest `node` env and no-WebGL browsers no-op cleanly.
+- **`app/src/dice/index.ts`**: the typed front door — rolls values in JS, embeds
+  them in the engine's parts grammar (`2d20kh1:[15,8]`), and hands off to
+  `rollDice3D`. `buildRoll` is the pure, unit-tested core (the card total always
+  equals the kept dice shown plus the modifier). `rollableProps` turns any
+  surface into a keyboard-focusable, `data-roll`-tagged rollable.
+- **Lazy-load off the boot path**: three (~590KB) + cannon (~132KB) are vendored
+  under `app/public/vendor/` and injected via `<script>` on first roll intent
+  (desktop hover preloads; touch's first roll falls back to the toast, the next
+  is 3D) — never imported, so they stay out of the initial bundle (verified via
+  the `vite build` chunk report). Vecna (`vecna.otf`) loads via the FontFace API,
+  scoped to the dice faces only.
+- **Rollable surfaces**: ability cells, save/skill rows, initiative
+  (`Abilities.tsx`, `Defense.tsx`), attack to-hit (`Attacks.tsx`), and
+  damage/dice chips (`DamageText.tsx`).
+- **PWA precache** (`vite.config.ts`): globs now include the vendor blobs + `otf`
+  so the first offline roll works; size cap lifted to fit three.min.js.
+- **Tooling**: ESLint override for `src/dice/*.js` (browser + THREE/CANNON
+  globals); `public/vendor` excluded from ESLint + Prettier. New
+  `src/dice/dice.test.ts` (value invariant, adv/dis keep, crit, fuzz).
+
+## 2026-07-05 — T23 monster-forge design-system alignment
+
+Finishes the offshoot restyle: the component-level skins now match
+monster-forge, so the two apps read as siblings on one DS — with
+character-forge's arcane-indigo accent, never terracotta. Token-first; the
+sheet-canon ability/damage/origin/recovery grammar is untouched.
+
+- **`app/src/tokens/tokens.css`**: new shared tokens — `--accent-2` amber (the
+  secondary voice for section titles) + `--accent-2-soft`, `--surface-panel3`,
+  `--border-hover`, `--scrim`, `--shadow-pop`, `--radius-xl`, `--check-mask`
+  (checkbox tick), `--letter-spacing-title`, and `color-scheme: dark` on
+  `:root`. Cleared the stale "provisional accent" note (indigo is confirmed).
+- **`app/src/components/primitives.css`** (new, imported once in `main.tsx`):
+  the shared DS layer — global hygiene (tap-highlight, `accent-color`, dark
+  scrollbars), the `.panel`/`.panel__title` **SectionCard** (title now amber),
+  `.section-div`, the text-input well + accent-focus base, the monster-forge
+  **custom checkbox** (accent fill + masked white tick), the `.is-selected`
+  card pattern (colored border + faint tint, no glow), and a reduced-motion
+  guard. Reused app-wide — no per-view forks.
+- **Section titles → amber**: `.panel__title` (moved out of `mainSheet.css`)
+  and `.gear-section__title`. Field micro-labels stay dim — only titles take
+  the accent-2 voice.
+- **Selected states → border + tint**: `.manage-option--selected` and
+  `.mastery-option--selected` drop the outline glow for the `--sel-accent`
+  border + `color-mix` tint.
+- **Overlay chrome**: library popover, manage/add dialogs and the update toast
+  now share `--scrim`, `--shadow-pop`, and `--radius-xl`; the toast picks up
+  the accent ring on the `--in` well.
+- **Stepper**: `.step-btn` hover adopts the panel3 lift + accent glyph; the ±
+  layout and 44px mobile tap targets are kept deliberately over mf's 20px
+  column (usability note in T23).
+- No component imports monster-forge files; ability/damage/origin colors
+  unchanged; focus-visible, ≥44px targets, and reduced-motion intact.
+  `verify` green (213 app tests). Verified across all five views + shell +
+  library surface at 1280px and 375px.
+
 ## 2026-07-05 — T20 follow-up: unified-diff context fix + bin-link note
 
 Audit pass over the T20 batch.

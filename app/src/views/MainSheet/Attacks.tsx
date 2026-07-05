@@ -2,19 +2,32 @@ import type { Attack } from '@character-forge/schema/types.ts'
 import { SaveDCBadge, FutureWrap } from '../../components/chips'
 import { MarkupText } from '../../library'
 import { useCharacter } from '../../character/CharacterProvider'
+import { rollCheck, rollableProps } from '../../dice'
 import { signed } from './format'
 
-/** To-hit with a separable magic bonus (the circled +1, §2.8): base then magic part. */
-function ToHit({ modifier, magicBonus }: { modifier: number; magicBonus?: number }) {
+/** To-hit with a separable magic bonus (the circled +1, §2.8): base then magic part. Click to roll the attack. */
+function ToHit({
+  name,
+  modifier,
+  magicBonus,
+}: {
+  name: string
+  modifier: number
+  magicBonus?: number
+}) {
+  const props = rollableProps(
+    (mode) => rollCheck(`${name} to hit`, modifier, { mode, isAttack: true }),
+    { className: 'tohit', label: `Roll ${name} to hit` },
+  )
   if (magicBonus) {
     return (
-      <span className="tohit">
+      <span {...props}>
         <span className="tohit__base">{signed(modifier - magicBonus)}</span>
         <span className="tohit__magic">{signed(magicBonus)} magic</span>
       </span>
     )
   }
-  return <span className="tohit">{signed(modifier)}</span>
+  return <span {...props}>{signed(modifier)}</span>
 }
 
 function AttackRow({ attack }: { attack: Attack }) {
@@ -25,12 +38,18 @@ function AttackRow({ attack }: { attack: Attack }) {
   return (
     <li className="attack">
       <div className="attack__main">
-        <span className="attack__name">{attack.displayName ?? nameOf(attack.ref, attack.name)}</span>
+        <span className="attack__name">
+          {attack.displayName ?? nameOf(attack.ref, attack.name)}
+        </span>
         <span className="attack__hit">
           {attack.save ? (
             <SaveDCBadge ability={attack.save.ability} dc={attack.save.dc} />
           ) : attack.toHit ? (
-            <ToHit modifier={attack.toHit.modifier} magicBonus={attack.toHit.magicBonus} />
+            <ToHit
+              name={attack.displayName ?? nameOf(attack.ref, attack.name)}
+              modifier={attack.toHit.modifier}
+              magicBonus={attack.toHit.magicBonus}
+            />
           ) : null}
         </span>
         {attack.range && <span className="attack__range">{attack.range}</span>}

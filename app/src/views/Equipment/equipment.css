@@ -21,6 +21,9 @@
   gap: var(--space-1);
 }
 
+/* Sub-group header inside the titled Gear panel — the dim micro-label voice
+   (like .action-group__header), not amber: only panel titles take accent-2,
+   and "GEAR" sits directly above the first group. */
 .gear-section__title {
   margin: 0;
   font-size: var(--font-size-chrome);
@@ -139,11 +142,14 @@
 .mastery-option {
   padding: var(--space-2);
   border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   background: var(--surface-overlay);
 }
 
+/* Selected = colored border + faint accent tint, no glow (--sel-accent). */
 .mastery-option--selected {
-  outline: 1px solid var(--focus-ring-color);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-overlay));
 }
 
 .mastery-option__row {

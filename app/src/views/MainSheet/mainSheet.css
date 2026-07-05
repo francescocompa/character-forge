@@ -12,26 +12,11 @@
   font-family: var(--font-family);
 }
 
-/* --- shared panel chrome ------------------------------------------------- */
-.panel {
-  background: var(--surface-raised);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
-  padding: var(--space-3);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
-}
-
-.panel__title {
-  margin: 0;
-  font-size: var(--font-size-chrome);
-  letter-spacing: var(--letter-spacing-chrome);
-  font-weight: var(--weight-chrome);
-  text-transform: uppercase;
-  color: var(--ink-muted);
-}
-
+/* --- shared panel chrome -------------------------------------------------
+ * `.panel` / `.panel__title` are the shared SectionCard primitive; they live
+ * in components/primitives.css (T23) so every view shares one skin. Field
+ * micro-labels below stay dim — only section titles take the amber voice.
+ * --------------------------------------------------------------------- */
 .stat__label,
 .chassis-item__label,
 .defenses__label,
@@ -209,7 +194,9 @@
 }
 .prof-dot--expertise {
   background: var(--chip-fg, var(--ink-secondary));
-  box-shadow: 0 0 0 2px var(--surface-raised), 0 0 0 3.5px var(--chip-fg, var(--ink-secondary));
+  box-shadow:
+    0 0 0 2px var(--surface-raised),
+    0 0 0 3.5px var(--chip-fg, var(--ink-secondary));
 }
 
 /* --- saves --------------------------------------------------------------- */
@@ -780,8 +767,13 @@
   align-items: center;
   justify-content: center;
 }
+/* monster-forge stepper skin: the button lifts to panel3 with an accent glyph
+   on hover. The ± layout (not mf's stacked column) is kept deliberately — 44px
+   tap targets beat the 20px column on a phone (T23 usability note). */
 .step-btn:hover:not(:disabled) {
-  border-color: var(--ink-muted);
+  background: var(--surface-panel3);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 .step-btn:disabled {
   opacity: 0.4;
@@ -808,5 +800,33 @@
   }
   .rest-btn {
     min-height: 44px;
+  }
+}
+
+/* Phone: pin the paired grids to fixed column counts so they can't wrap
+   ragged (abilities 4+2, stats 3+1, death-save pips 2+1 at 375px). The
+   death-save label moves above its two groups; the pips keep 44px targets. */
+@media (max-width: 480px) {
+  .abilities {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  .defense__stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .death-saves {
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      'lbl lbl'
+      'success fail';
+    row-gap: var(--space-2);
+  }
+  .death-saves__lbl {
+    grid-area: lbl;
+  }
+  .death-saves__grp--success {
+    grid-area: success;
+  }
+  .death-saves__grp--fail {
+    grid-area: fail;
   }
 }

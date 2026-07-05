@@ -3,6 +3,7 @@ import { ABILITY_COLOR, ABILITY_SOFT } from '../../components/chips/colorMaps'
 import type { CSSVarStyle } from '../../components/chips/css-vars'
 import { MarkupText } from '../../library'
 import { useCharacter } from '../../character/CharacterProvider'
+import { rollCheck, rollableProps } from '../../dice'
 import { ABILITY_ORDER, signed } from './format'
 
 function abilityStyle(ability: Ability): CSSVarStyle {
@@ -17,7 +18,14 @@ export function AbilityRail() {
       {ABILITY_ORDER.map((ability) => {
         const score = character.abilities[ability]
         return (
-          <div key={ability} className="ability" style={abilityStyle(ability)}>
+          <div
+            key={ability}
+            style={abilityStyle(ability)}
+            {...rollableProps(
+              (mode) => rollCheck(`${ability} check`, score.modifier, { mode, isAttack: false }),
+              { className: 'ability', label: `Roll ${ability} check` },
+            )}
+          >
             <span className="ability__abbr">{ability}</span>
             <span className="ability__mod">{signed(score.modifier)}</span>
             <span className="ability__score">{score.final}</span>
@@ -60,7 +68,14 @@ export function SavesBlock() {
           const save = byAbility.get(ability)
           if (!save) return null
           return (
-            <li key={ability} className="save-row" style={abilityStyle(ability)}>
+            <li
+              key={ability}
+              style={abilityStyle(ability)}
+              {...rollableProps(
+                (mode) => rollCheck(`${ability} save`, save.modifier, { mode, isAttack: false }),
+                { className: 'save-row', label: `Roll ${ability} saving throw` },
+              )}
+            >
               <ProficiencyDot level={save.proficient ? 'proficient' : 'none'} />
               <span className="save-row__abbr">{ability}</span>
               <span className="save-row__mod">{signed(save.modifier)}</span>
@@ -83,8 +98,11 @@ export function SkillsBlock() {
         {skills.map((skill) => (
           <li
             key={skill.name}
-            className="skill-row"
             style={{ '--chip-fg': ABILITY_COLOR[skill.ability] } as CSSVarStyle}
+            {...rollableProps(
+              (mode) => rollCheck(skill.name, skill.modifier, { mode, isAttack: false }),
+              { className: 'skill-row', label: `Roll ${skill.name}` },
+            )}
           >
             <ProficiencyDot level={skill.proficiency} />
             <span className="skill-row__name">{skill.name}</span>
