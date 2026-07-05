@@ -3,6 +3,19 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T20 follow-up: unified-diff context fix + bin-link note
+
+Audit pass over the T20 batch.
+
+- **`kbDiff.ts`** — hunks emitted only 2 trailing context lines instead of 3
+  (the trim ran before the current op was pushed, over-trimming by one). Output
+  now matches `diff -U3`; two tests pin leading/trailing context and hunk
+  splitting (19 kb-diff tests). Classification untouched — the real Vice run
+  reproduces T20's acceptance counts exactly.
+- **`pipeline/kb-audit.md`** — note the `npm rebuild @character-forge/validate`
+  escape hatch when `npx character-forge-kb-diff` 404s because `node_modules`
+  predates the bin (npm doesn't relink bins into an already-reified tree).
+
 ## 2026-07-05 — T20 kb-audit (extract-drift diff + refresh recipe)
 
 The maintenance path for decision D5: characters embed the KB's full text at

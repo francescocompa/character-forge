@@ -261,8 +261,10 @@ export function unifiedDiff(embedded: string, current: string, context = 3): str
           const rest = ops.slice(idx)
           const nextChange = rest.findIndex((o) => o.kind !== ' ')
           if (nextChange === -1 || nextChange >= context) {
-            // Trim the extra context we speculatively consumed.
-            hunk.lines = hunk.lines.slice(0, hunk.lines.length - (trailingContext - context))
+            // Trim the extra context we speculatively consumed. The current op
+            // has not been pushed yet, so the pushed trailing run is one
+            // shorter than `trailingContext`.
+            hunk.lines = hunk.lines.slice(0, hunk.lines.length - (trailingContext - context - 1))
             break
           }
         }

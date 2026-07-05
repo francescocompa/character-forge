@@ -204,4 +204,48 @@ describe('unifiedDiff', () => {
     expect(diff).toContain(' line one')
     expect(diff).toMatch(/@@ -\d+,\d+ \+\d+,\d+ @@/)
   })
+
+  it('keeps 3 lines of context on both sides of a change', () => {
+    const lines = ['l1', 'l2', 'l3', 'l4', 'l5', 'l6', 'l7', 'l8', 'l9', 'l10']
+    const edited = lines.map((l) => (l === 'l5' ? 'CHANGED' : l))
+    const diff = unifiedDiff(lines.join('\n'), edited.join('\n'))
+    expect(diff.split('\n')).toEqual([
+      '--- embedded',
+      '+++ kb',
+      '@@ -2,7 +2,7 @@',
+      ' l2',
+      ' l3',
+      ' l4',
+      '-l5',
+      '+CHANGED',
+      ' l6',
+      ' l7',
+      ' l8',
+    ])
+  })
+
+  it('splits distant changes into separate hunks, each fully contexted', () => {
+    const mk = (third: string, thirteenth: string): string =>
+      [
+        'l1',
+        'l2',
+        third,
+        'l4',
+        'l5',
+        'l6',
+        'l7',
+        'l8',
+        'l9',
+        'l10',
+        'l11',
+        'l12',
+        thirteenth,
+        'l14',
+      ].join('\n')
+    const diff = unifiedDiff(mk('x3', 'x13'), mk('y3', 'y13'))
+    const hunks = diff.split('\n').filter((l) => l.startsWith('@@'))
+    expect(hunks).toHaveLength(2)
+    expect(diff).toContain(' l6') // trailing context of hunk 1 reaches 3 lines
+    expect(diff).toContain('@@ -10,5 +10,5 @@')
+  })
 })

@@ -39,6 +39,10 @@ The split of labour:
 Never copy a character file or KB content **into** this repo — they hold WotC
 text (scope §4). Work on the files in place in the data home.
 
+If `npx character-forge-kb-diff` fails with a registry 404, the workspace bin
+isn't linked yet (it happens when `node_modules` predates this tool): run
+`npm rebuild @character-forge/validate` from the repo root and retry.
+
 ---
 
 ## Step 1 — run kb-diff on every character
