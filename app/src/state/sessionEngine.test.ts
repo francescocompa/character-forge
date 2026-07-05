@@ -79,7 +79,7 @@ describe('rests apply per-rule recovery (mixed recovery)', () => {
     expect(s.getState().trackers.slotPools?.['arcane-font-1']?.used).toBe(0)
   })
 
-  it('long rest restores a companion\'s HP to its compiled max', () => {
+  it("long rest restores a companion's HP to its compiled max", () => {
     const s = store()
     const companionId = character.companions![0].id
     s.setCurrentHp(3, { owner: companionId })
@@ -99,7 +99,7 @@ describe('rests apply per-rule recovery (mixed recovery)', () => {
     expect(hitDice?.wizard?.spent).toBe(1) // recovers 1 of 2 spent → 1 left
   })
 
-  it("long rest restores HP to the maxHpOverride when one is set, not the compiled value", () => {
+  it('long rest restores HP to the maxHpOverride when one is set, not the compiled value', () => {
     const s = store()
     s.setMaxHpOverride(30)
     s.setCurrentHp(2)
@@ -313,7 +313,11 @@ describe('temp HP, currency, conditions, inspiration, equipped, additions', () =
   it('adds and removes in-session additions', () => {
     const s = store()
     const id = s.addAddition({ kind: 'boon', name: 'Blessing of the tide' })
-    expect(s.getState().additions?.[0]).toMatchObject({ id, kind: 'boon', name: 'Blessing of the tide' })
+    expect(s.getState().additions?.[0]).toMatchObject({
+      id,
+      kind: 'boon',
+      name: 'Blessing of the tide',
+    })
     s.removeAddition(id)
     expect(s.getState().additions).toEqual([])
   })
@@ -380,7 +384,10 @@ describe('limited-use boon additions (T15)', () => {
     s.tickAddition(id)
     s.tickAddition(id)
     s.tickAddition(id) // used 3
-    s.updateAddition(id, { name: 'Waning blessing', limitedUse: { max: 1, recover: boon.limitedUse.recover } })
+    s.updateAddition(id, {
+      name: 'Waning blessing',
+      limitedUse: { max: 1, recover: boon.limitedUse.recover },
+    })
     expect(s.getState().additions?.[0].name).toBe('Waning blessing')
     expect(s.getState().trackers.additions?.[id]?.used).toBe(1) // clamped to new max
   })
@@ -396,7 +403,12 @@ describe('limited-use boon additions (T15)', () => {
 
   it('stores item additions with quantity and weight verbatim', () => {
     const s = store()
-    const id = s.addAddition({ kind: 'item', name: 'Potion of healing', quantity: 3, weightLb: 0.5 })
+    const id = s.addAddition({
+      kind: 'item',
+      name: 'Potion of healing',
+      quantity: 3,
+      weightLb: 0.5,
+    })
     expect(s.getState().additions?.find((a) => a.id === id)).toMatchObject({
       kind: 'item',
       quantity: 3,
@@ -411,7 +423,13 @@ describe('formula resolution edge cases', () => {
       ...character,
       resources: [
         ...(character.resources ?? []),
-        { id: 'pb-resource', name: 'PB Resource', max: 'PB', recover: [{ on: 'long', amount: 'all' }], unlockLevel: 1 },
+        {
+          id: 'pb-resource',
+          name: 'PB Resource',
+          max: 'PB',
+          recover: [{ on: 'long', amount: 'all' }],
+          unlockLevel: 1,
+        },
         {
           id: 'free-form-resource',
           name: 'Free-form Resource',

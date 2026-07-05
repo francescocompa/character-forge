@@ -25,7 +25,11 @@ export interface IndexedDbSessionStore extends SessionStore {
  * without warning.
  */
 export function createIndexedDbSessionStore(character: CharacterFile): IndexedDbSessionStore {
-  const key = sessionKey(character.meta.characterId, character.meta.variantLabel, character.formatVersion)
+  const key = sessionKey(
+    character.meta.characterId,
+    character.meta.variantLabel,
+    character.formatVersion,
+  )
   const engine = createSessionEngine(character, seedSessionState(character))
 
   let saveTimer: ReturnType<typeof setTimeout> | undefined

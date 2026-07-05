@@ -156,7 +156,7 @@ export function LibrarySurface({
   // Desktop popover stays hidden until measured, so it never flashes at 0,0.
   const desktopStyle: CSSProperties = isMobile
     ? {}
-    : pos ?? { visibility: 'hidden', top: 0, left: 0 }
+    : (pos ?? { visibility: 'hidden', top: 0, left: 0 })
   const mobileStyle: CSSProperties = isMobile
     ? { transform: dragY ? `translateY(${dragY}px)` : undefined }
     : {}
@@ -186,7 +186,12 @@ export function LibrarySurface({
         )}
         <header className="lib-header">
           {canBack && (
-            <button type="button" className="lib-icon-btn lib-back" onClick={onBack} aria-label="Back">
+            <button
+              type="button"
+              className="lib-icon-btn lib-back"
+              onClick={onBack}
+              aria-label="Back"
+            >
               ‹
             </button>
           )}
@@ -194,7 +199,12 @@ export function LibrarySurface({
             <span className="lib-name">{entry?.name ?? refKey}</span>
             {entry && <span className="lib-type">{entry.type}</span>}
           </div>
-          <button type="button" className="lib-icon-btn lib-close" onClick={onClose} aria-label="Close">
+          <button
+            type="button"
+            className="lib-icon-btn lib-close"
+            onClick={onClose}
+            aria-label="Close"
+          >
             ×
           </button>
         </header>

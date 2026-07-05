@@ -85,7 +85,11 @@ export function FeatureList({ items, className, originOf }: FeatureListProps) {
   return (
     <ul className={`feature-list ${className ?? ''}`}>
       {visible.map((item, i) => (
-        <ProgressionRow key={item.ref ?? `${item.name}-${i}`} item={item} origin={originOf?.(item)} />
+        <ProgressionRow
+          key={item.ref ?? `${item.name}-${i}`}
+          item={item}
+          origin={originOf?.(item)}
+        />
       ))}
     </ul>
   )

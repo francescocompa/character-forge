@@ -23,7 +23,10 @@ export function DefensesBlock() {
   const { character } = useCharacter()
   const { resistances, immunities, vulnerabilities, conditionAdvantages } = character.stats
   const any =
-    resistances?.length || immunities?.length || vulnerabilities?.length || conditionAdvantages?.length
+    resistances?.length ||
+    immunities?.length ||
+    vulnerabilities?.length ||
+    conditionAdvantages?.length
   if (!any) return null
   return (
     <section className="panel defenses" aria-label="Resistances and immunities">

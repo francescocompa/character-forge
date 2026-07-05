@@ -90,7 +90,11 @@ export function AddDialog({ editing, initialKind = 'item', onClose }: AddDialogP
   }
 
   const summaryLabel =
-    draft.kind === 'note' ? 'Note' : draft.kind === 'item' ? 'Note (optional)' : 'What it does (optional)'
+    draft.kind === 'note'
+      ? 'Note'
+      : draft.kind === 'item'
+        ? 'Note (optional)'
+        : 'What it does (optional)'
 
   return (
     <div className="add-overlay" role="presentation" onClick={onClose}>
@@ -135,7 +139,11 @@ export function AddDialog({ editing, initialKind = 'item', onClose }: AddDialogP
                 type="text"
                 value={draft.name}
                 autoFocus
-                placeholder={draft.kind === 'item' ? 'e.g. Potion of healing' : 'e.g. Blessing of the Archivist'}
+                placeholder={
+                  draft.kind === 'item'
+                    ? 'e.g. Potion of healing'
+                    : 'e.g. Blessing of the Archivist'
+                }
                 onChange={(e) => set('name', e.target.value)}
               />
             </label>
@@ -232,14 +240,21 @@ export function AddDialog({ editing, initialKind = 'item', onClose }: AddDialogP
             </div>
           )}
 
-          {(draft.kind !== 'item' || draft.summary.trim() !== '') && <MarkupPreview source={draft.summary} />}
+          {(draft.kind !== 'item' || draft.summary.trim() !== '') && (
+            <MarkupPreview source={draft.summary} />
+          )}
         </div>
 
         <div className="add-actions">
           <button type="button" className="add-btn add-btn--ghost" onClick={onClose}>
             Cancel
           </button>
-          <button type="button" className="add-btn add-btn--primary" disabled={!canSave} onClick={save}>
+          <button
+            type="button"
+            className="add-btn add-btn--primary"
+            disabled={!canSave}
+            onClick={save}
+          >
             {editing ? 'Save' : 'Add'}
           </button>
         </div>

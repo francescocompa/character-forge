@@ -10,13 +10,15 @@ describe('sessionFileName', () => {
   })
 
   it('strips punctuation and collapses whitespace', () => {
-    expect(sessionFileStem({ meta: { name: "  Vice: the Warlock!  " } } as Pick<CharacterFile, 'meta'>)).toBe(
-      'vice-the-warlock',
-    )
+    expect(
+      sessionFileStem({ meta: { name: '  Vice: the Warlock!  ' } } as Pick<CharacterFile, 'meta'>),
+    ).toBe('vice-the-warlock')
   })
 
   it('falls back to "character" for an empty name', () => {
-    expect(sessionFileStem({ meta: { name: '   ' } } as Pick<CharacterFile, 'meta'>)).toBe('character')
+    expect(sessionFileStem({ meta: { name: '   ' } } as Pick<CharacterFile, 'meta'>)).toBe(
+      'character',
+    )
   })
 })
 

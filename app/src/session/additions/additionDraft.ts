@@ -29,14 +29,22 @@ export interface AdditionDraft {
 }
 
 export function emptyDraft(kind: AdditionKind = 'item'): AdditionDraft {
-  return { kind, name: '', summary: '', quantity: '', weightLb: '', limited: false, uses: '', recover: 'long' }
+  return {
+    kind,
+    name: '',
+    summary: '',
+    quantity: '',
+    weightLb: '',
+    limited: false,
+    uses: '',
+    recover: 'long',
+  }
 }
 
 /** Reconstruct the form state from an existing addition (edit mode). */
 export function draftFromAddition(addition: Addition): AdditionDraft {
   const rule = addition.limitedUse?.recover[0]
-  const recover: BoonRecover =
-    rule?.on === 'short' || rule?.on === 'dawn' ? rule.on : 'long'
+  const recover: BoonRecover = rule?.on === 'short' || rule?.on === 'dawn' ? rule.on : 'long'
   return {
     kind: addition.kind,
     name: addition.name,
@@ -94,7 +102,10 @@ export function draftToAddition(draft: AdditionDraft): Omit<Addition, 'id' | 'ad
   }
   // boon
   const limitedUse = draft.limited
-    ? { max: toPositiveInt(draft.uses) ?? 1, recover: [{ on: draft.recover, amount: 'all' } as RecoverRule] }
+    ? {
+        max: toPositiveInt(draft.uses) ?? 1,
+        recover: [{ on: draft.recover, amount: 'all' } as RecoverRule],
+      }
     : undefined
   return {
     kind: 'boon',

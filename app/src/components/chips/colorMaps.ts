@@ -71,5 +71,7 @@ export const ORIGIN_COLORS = [
 ]
 
 export function originColor(index: number): string {
-  return ORIGIN_COLORS[((index % ORIGIN_COLORS.length) + ORIGIN_COLORS.length) % ORIGIN_COLORS.length]
+  return ORIGIN_COLORS[
+    ((index % ORIGIN_COLORS.length) + ORIGIN_COLORS.length) % ORIGIN_COLORS.length
+  ]
 }

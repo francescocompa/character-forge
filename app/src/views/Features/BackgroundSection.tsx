@@ -30,7 +30,11 @@ export function BackgroundSection({ backgroundFeat }: { backgroundFeat: Progress
       title={
         <span className="chassis-section__heading">
           <RefLink label={name} onClick={() => openRef(background.ref)} />
-          {entry && <span className="chassis-section__source">{sourceTag(entry.edition, entry.source)}</span>}
+          {entry && (
+            <span className="chassis-section__source">
+              {sourceTag(entry.edition, entry.source)}
+            </span>
+          )}
         </span>
       }
       className="chassis-section"
@@ -49,16 +53,18 @@ export function BackgroundSection({ backgroundFeat }: { backgroundFeat: Progress
           ))}
         </ul>
       )}
-      {backgroundFeat.filter((feat) => isVisible(feat.unlockLevel)).map((feat) => (
-        <p key={feat.ref ?? feat.name} className="chassis-section__feat-link">
-          <span className="chassis-section__label">Feat</span>{' '}
-          {feat.ref ? (
-            <RefLink label={feat.displayName ?? feat.name} onClick={() => openRef(feat.ref!)} />
-          ) : (
-            feat.displayName ?? feat.name
-          )}
-        </p>
-      ))}
+      {backgroundFeat
+        .filter((feat) => isVisible(feat.unlockLevel))
+        .map((feat) => (
+          <p key={feat.ref ?? feat.name} className="chassis-section__feat-link">
+            <span className="chassis-section__label">Feat</span>{' '}
+            {feat.ref ? (
+              <RefLink label={feat.displayName ?? feat.name} onClick={() => openRef(feat.ref!)} />
+            ) : (
+              (feat.displayName ?? feat.name)
+            )}
+          </p>
+        ))}
     </CollapsibleSection>
   )
 }

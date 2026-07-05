@@ -35,7 +35,9 @@ function ItemRowBody({ item }: { item: Item }) {
           {item.ref ? <RefLink label={item.name} onClick={() => openRef(item.ref!)} /> : item.name}
         </span>
         {item.quantity > 1 && <span className="gear-item__qty">×{item.quantity}</span>}
-        {item.weightLb !== undefined && <span className="gear-item__weight">{item.weightLb} lb</span>}
+        {item.weightLb !== undefined && (
+          <span className="gear-item__weight">{item.weightLb} lb</span>
+        )}
         {item.cost && <span className="gear-item__cost">{item.cost}</span>}
         {item.attuned && <span className="chip gear-item__attuned">Attuned</span>}
       </div>
@@ -133,8 +135,7 @@ export function GearPanel() {
   const groups = groupItems(items, character.library)
   const itemAdditions = (additions ?? []).filter((a) => a.kind === 'item')
 
-  const anyVisible =
-    items.some((i) => isVisible(i.unlockLevel)) || itemAdditions.length > 0
+  const anyVisible = items.some((i) => isVisible(i.unlockLevel)) || itemAdditions.length > 0
   if (!anyVisible) return null
 
   return (

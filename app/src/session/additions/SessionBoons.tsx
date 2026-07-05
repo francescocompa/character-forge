@@ -7,7 +7,11 @@ import { useSession, useSessionState } from '../SessionProvider'
 import { AdditionControls, SessionMarker } from './AdditionControls'
 
 /** Limited-use ticks for a boon addition — the same "fill to here" gesture as any resource. */
-function BoonTicks({ addition }: { addition: Addition & { limitedUse: NonNullable<Addition['limitedUse']> } }) {
+function BoonTicks({
+  addition,
+}: {
+  addition: Addition & { limitedUse: NonNullable<Addition['limitedUse']> }
+}) {
   const store = useSession()
   const { trackers } = useSessionState()
   const total = addition.limitedUse.max
@@ -44,7 +48,9 @@ function BoonRow({ addition }: { addition: Addition }) {
           <MarkupText source={addition.summary} />
         </div>
       )}
-      {addition.limitedUse && <BoonTicks addition={{ ...addition, limitedUse: addition.limitedUse }} />}
+      {addition.limitedUse && (
+        <BoonTicks addition={{ ...addition, limitedUse: addition.limitedUse }} />
+      )}
     </li>
   )
 }

@@ -99,7 +99,7 @@ describe('Spells — Build view', () => {
 describe('Spells — manage mode (rendered directly; the play/manage switch is client state)', () => {
   const html = renderManageMode()
 
-  it("lists the wizard prepared pool with its name and live prepare count (2 selected / 4 max)", () => {
+  it('lists the wizard prepared pool with its name and live prepare count (2 selected / 4 max)', () => {
     expect(html).toContain('Wizard prepared spells')
     expect(html).toContain('2')
     expect(html).toContain('/ 4 prepared')

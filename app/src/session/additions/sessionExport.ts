@@ -31,7 +31,10 @@ export function serializeSession(session: SessionFile): string {
 }
 
 /** Trigger a browser download of the session file. No-op (returns false) outside a DOM. */
-export function downloadSession(character: Pick<CharacterFile, 'meta'>, session: SessionFile): boolean {
+export function downloadSession(
+  character: Pick<CharacterFile, 'meta'>,
+  session: SessionFile,
+): boolean {
   if (typeof document === 'undefined' || typeof URL.createObjectURL !== 'function') return false
   const blob = new Blob([serializeSession(session)], { type: 'application/json' })
   const url = URL.createObjectURL(blob)

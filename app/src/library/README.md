@@ -12,7 +12,7 @@ sheet on phones.
   `SheetMarkup`'s `onRef` to `openRef` once at its root; every `{ref:…}` on the
   sheet then opens its extract. `openRef(refKey, anchorEl?)` — when no element is
   passed (the `SheetMarkup.onRef` path gives only a key), it anchors to the
-  focused trigger and restores focus there on close. Refs tapped *inside* an open
+  focused trigger and restores focus there on close. Refs tapped _inside_ an open
   extract push onto a stack so **‹ Back** returns to the previous entry.
 - **`LibrarySurface`** (`LibrarySurface.tsx`) — the one open surface. ≥ 768 px:
   anchored popover (`placePopover`), max-width ~28 rem, body scrolls. < 768 px:

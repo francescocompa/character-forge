@@ -4,7 +4,13 @@ import { useCharacter } from '../../character/CharacterProvider'
 import { useSessionState } from '../../session/SessionProvider'
 import { CollapsibleSection } from '../Features/CollapsibleSection'
 import { SpellRow } from './SpellRow'
-import { groupSpellsByLevel, isSpellShown, levelLabel, sortedSwaps, sourceIndex } from './spellHelpers'
+import {
+  groupSpellsByLevel,
+  isSpellShown,
+  levelLabel,
+  sortedSwaps,
+  sourceIndex,
+} from './spellHelpers'
 
 /**
  * Build view's explicit swap-history links (T10 IA): fixed-known casters'
@@ -78,7 +84,12 @@ export function SpellList() {
         >
           <ul className="spell-list">
             {group.items.map((spell, i) => (
-              <SpellRow key={spell.ref ?? `${spell.name}-${i}`} spell={spell} sourceIndex={idx} sources={sources} />
+              <SpellRow
+                key={spell.ref ?? `${spell.name}-${i}`}
+                spell={spell}
+                sourceIndex={idx}
+                sources={sources}
+              />
             ))}
           </ul>
         </CollapsibleSection>

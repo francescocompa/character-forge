@@ -10,17 +10,17 @@ Rationale and canon source: `planning/PROJECT-SCOPE.md` §2 (design canon) and
 
 Everything lives in `tokens.css`, grouped with comments:
 
-| Group | Tokens | Used by |
-|---|---|---|
-| Surfaces & ink | `--surface-*`, `--ink-*` | app shell, chip text/backgrounds |
-| Ability colors | `--ability-{str,dex,con,int,wis,cha}` (+ `-soft`) | `AbilityChip`, `SaveDCBadge` |
-| Damage types | `--dmg-*` (13 types + `--dmg-neutral`) | `DamageText` |
-| Semantic | `--adv`, `--dis`, `--recover-{lr,sr,dawn}`, `--cond-*` | `AdvBadge`/`DisBadge`, `RecoverIcon`, `ConditionChip` |
-| Structural | `--lvl-badge-*`, `--future-*` | `LevelBadge`, `FutureWrap` (Build view, D14) |
-| Origin dots | `--origin-1`…`--origin-6` | `OriginDot` (multiclass spell/feature source tags, §2.8) |
-| Focus ring | `--focus-ring*` | any tappable chip |
-| Spacing / radius | `--space-*`, `--radius-*` | all chip layout |
-| Typography | `--font-*`, chrome vs. content roles | `SchoolLabel` (chrome), chip values (content) |
+| Group            | Tokens                                                 | Used by                                                  |
+| ---------------- | ------------------------------------------------------ | -------------------------------------------------------- |
+| Surfaces & ink   | `--surface-*`, `--ink-*`                               | app shell, chip text/backgrounds                         |
+| Ability colors   | `--ability-{str,dex,con,int,wis,cha}` (+ `-soft`)      | `AbilityChip`, `SaveDCBadge`                             |
+| Damage types     | `--dmg-*` (13 types + `--dmg-neutral`)                 | `DamageText`                                             |
+| Semantic         | `--adv`, `--dis`, `--recover-{lr,sr,dawn}`, `--cond-*` | `AdvBadge`/`DisBadge`, `RecoverIcon`, `ConditionChip`    |
+| Structural       | `--lvl-badge-*`, `--future-*`                          | `LevelBadge`, `FutureWrap` (Build view, D14)             |
+| Origin dots      | `--origin-1`…`--origin-6`                              | `OriginDot` (multiclass spell/feature source tags, §2.8) |
+| Focus ring       | `--focus-ring*`                                        | any tappable chip                                        |
+| Spacing / radius | `--space-*`, `--radius-*`                              | all chip layout                                          |
+| Typography       | `--font-*`, chrome vs. content roles                   | `SchoolLabel` (chrome), chip values (content)            |
 
 To change a color: edit its `hsl()` value in `tokens.css` and reload the
 gallery (see below). Nothing else needs to change — components only ever
@@ -30,7 +30,7 @@ reference `var(--token-name)`.
 
 - Ability colors, damage-type colors, advantage/disadvantage colors, and the
   recovery icon vocabulary all trace to the audited paper sheets (scope §2.1,
-  §2.3). Values here are the same hue *anchors*, lifted in lightness / tamed
+  §2.3). Values here are the same hue _anchors_, lifted in lightness / tamed
   in saturation for dark surfaces — not a literal copy of the paper's colors,
   which sit on white.
 - Poison and INT are both "purple" per the paper canon; kept as distinct

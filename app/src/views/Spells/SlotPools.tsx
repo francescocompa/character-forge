@@ -17,7 +17,13 @@ function SlotPoolRow({ pool }: { pool: SlotPool }) {
         <span className="slot-pool__name">{label}</span>
         <RecoverBadges recover={pool.recover} />
       </div>
-      <TrackerTicks kind="slotPool" id={pool.id} total={pool.count} used={used} label={`${label} slots`} />
+      <TrackerTicks
+        kind="slotPool"
+        id={pool.id}
+        total={pool.count}
+        used={used}
+        label={`${label} slots`}
+      />
       {pool.note && (
         <span className="slot-pool__note">
           <MarkupText source={pool.note} />

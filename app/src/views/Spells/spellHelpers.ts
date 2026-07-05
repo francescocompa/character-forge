@@ -1,4 +1,10 @@
-import type { Pool, PoolOption, Spell, SpellSource, SpellSwap } from '@character-forge/schema/types.ts'
+import type {
+  Pool,
+  PoolOption,
+  Spell,
+  SpellSource,
+  SpellSwap,
+} from '@character-forge/schema/types.ts'
 import { isFuture, isVisible, type ViewMode } from '../../character/visibility'
 
 /**
@@ -25,7 +31,7 @@ export function levelLabel(level: number | undefined): string {
   if (level === 0) return 'Cantrips'
   const mod100 = level % 100
   const suffix =
-    mod100 >= 11 && mod100 <= 13 ? 'th' : ['th', 'st', 'nd', 'rd'][level % 10] ?? 'th'
+    mod100 >= 11 && mod100 <= 13 ? 'th' : (['th', 'st', 'nd', 'rd'][level % 10] ?? 'th')
   return `${level}${suffix} level`
 }
 
@@ -45,7 +51,10 @@ export function groupSpellsByLevel(spells: readonly Spell[]): LevelGroup<Spell>[
  * pool entry from the wider class list) land in an `undefined`-level "Other"
  * bucket rather than being silently dropped.
  */
-export function groupPoolOptionsByLevel(pool: Pool, spells: readonly Spell[]): LevelGroup<PoolOption>[] {
+export function groupPoolOptionsByLevel(
+  pool: Pool,
+  spells: readonly Spell[],
+): LevelGroup<PoolOption>[] {
   const levelOf = (option: PoolOption): number | undefined =>
     spells.find((s) => s.ref === option.ref || s.name === option.name)?.level
 

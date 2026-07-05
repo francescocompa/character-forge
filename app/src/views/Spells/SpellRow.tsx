@@ -19,7 +19,11 @@ export interface SpellRowProps {
 }
 
 /** One or two origin ids -> a single origin dot, two-tone when the spell is dual-source (§2.8). */
-function SpellOriginDot({ origins, sourceIndex, sources }: Omit<SpellRowProps, 'spell'> & { origins: string[] }) {
+function SpellOriginDot({
+  origins,
+  sourceIndex,
+  sources,
+}: Omit<SpellRowProps, 'spell'> & { origins: string[] }) {
   const [firstId, secondId] = origins
   if (firstId === undefined) return null
   const nameOf = (id: string) => sources.find((s) => s.id === id)?.name ?? id

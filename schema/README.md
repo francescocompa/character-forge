@@ -72,7 +72,7 @@ currentLevel`; Build view shows everything, grayed + badged (D14).
     Hex).
   - **`role`** — how it's accessed (`prepared` counts against a prepare limit,
     `alwaysPrepared` is free/granted, `innate` is at-will, `known` is a fixed
-    pick, `ritualOnly`). Distinct from `origins` (which *source*).
+    pick, `ritualOnly`). Distinct from `origins` (which _source_).
   - **`poolRef`** — preparedSpells pool membership (optional).
   - **`unlockLevel`** and optional **`swapOutLevel`** — for fixed-known casters
     (Warlock/Sorcerer), the spell is known during `[unlockLevel, swapOutLevel)`

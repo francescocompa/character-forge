@@ -32,7 +32,7 @@ and mechanical decision; you propose, cite, and record.
   **name · source · edition · page** (page if the entry has one). The player
   should always be able to see where a rule came from.
 - **Keep flavor and mechanics separate.** Concept prose can be in Italian; all
-  mechanics are written in English (scope §2.6). Reflavoring is a *labeled*
+  mechanics are written in English (scope §2.6). Reflavoring is a _labeled_
   mechanical operation (`displayName` + optional DM-approved change), never a
   silent rules edit.
 - **Ambiguity goes to the player.** Rules you're unsure of, illegible references,
@@ -66,7 +66,7 @@ repo — it's WotC content and never committed). Use it as your rules source.
   edition is a **per-entry, player-approved** decision, and it must be recorded in
   the chassis doc (the entry names its edition; `sources` must list it). When you
   reach for a cross-edition entry, stop and get explicit approval first, and note
-  *why* (scope §2.7: Vice = 2024 Warlock + 2014 Autognome is the canonical case).
+  _why_ (scope §2.7: Vice = 2024 Warlock + 2014 Autognome is the canonical case).
 - **UA is playtest, not finalized.** Offer UA entries only if the player has said
   UA is in scope, and flag them as playtest every time.
 
@@ -103,7 +103,7 @@ on — you're building the chassis doc section by section (§4 of the format).
    takes it, what it grants **automatically**, and what the player **chooses**
    (fighting style, skills, invocations, spells learned, feats/ASI, mastery
    counts, subclass). Resolve each choice inline; present 2–3 options with cites at
-   each fork. Anything the player defers *and that is above the current level*
+   each fork. Anything the player defers _and that is above the current level_
    becomes `TBD(...)`. Anything at or below the current level must be resolved
    before you write (§6). Note limited-use features with their max + recovery in
    plain words; note attacks (modes, riders, ammo) as they come online.
@@ -160,7 +160,7 @@ change:
   `edition: Homebrew`).
 - **Mark it clearly as homebrew** everywhere it's referenced. Never blend it into
   official content, and never present homebrew as if it were a KB rule.
-- If a homebrew piece is *adapted* from an official entry (a tweaked feat), record
+- If a homebrew piece is _adapted_ from an official entry (a tweaked feat), record
   both the base entry (cited) and the exact change — same discipline as
   reflavoring.
 - If the player is unsure of their own homebrew's wording, `FLAG:` it for the
@@ -188,7 +188,7 @@ actually decided.
 1. **Never write a `character.json`.** The interview produces `*.chassis.md` only.
    Compilation is a separate step and a separate session.
 2. **Never copy WotC text into the chassis doc or this repo.** Name official
-   entries; the compiler pulls their extracts from the KB. Only *homebrew* rules
+   entries; the compiler pulls their extracts from the KB. Only _homebrew_ rules
    text is written into the doc.
 3. **Never mix editions silently.** Cross-edition use is per-entry and
    player-approved, recorded in the doc (§2).

@@ -10,7 +10,10 @@ const GROUPS: { key: keyof ActionEconomy; label: string }[] = [
   { key: 'other', label: 'Other' },
 ]
 
-function hasVisibleItem(items: ActionItem[] | undefined, isVisible: CharacterContextValue['isVisible']) {
+function hasVisibleItem(
+  items: ActionItem[] | undefined,
+  isVisible: CharacterContextValue['isVisible'],
+) {
   return (items ?? []).some((item) => isVisible(item.unlockLevel))
 }
 

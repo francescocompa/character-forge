@@ -13,7 +13,7 @@
 The chassis doc is **human-first**. It is Markdown, not JSON wearing a Markdown
 hat. A person reads it top to bottom and understands the character; the compiler
 reads the same document and never has to guess. Everything the schema needs is
-sourced from here (see the mapping table in §11) — but the *authoring* order and
+sourced from here (see the mapping table in §11) — but the _authoring_ order and
 vocabulary follow how Francesco builds a character on paper: concept and flavor
 first, then the chassis, then level by level, resolving choices as they come.
 
@@ -61,26 +61,26 @@ rest of the document is read against.
 ---
 name: Fenn Larkspur
 player: Francesco
-characterId: fenn-larkspur      # variants of one character share this (D12)
-ruleset: "2024"                  # default edition for entries that don't say otherwise
-sources:                         # which books/editions are allowed in this build
-  - "2024 core"
-  - "2014 core"                  # explicitly allowed → per-entry mixing is OK (see §8)
+characterId: fenn-larkspur # variants of one character share this (D12)
+ruleset: '2024' # default edition for entries that don't say otherwise
+sources: # which books/editions are allowed in this build
+  - '2024 core'
+  - '2014 core' # explicitly allowed → per-entry mixing is OK (see §8)
   - Homebrew
-targetLevel: 5                   # how far the progression is planned (≥ currentLevel)
-currentLevel: 3                  # the level the character is actually played at now
+targetLevel: 5 # how far the progression is planned (≥ currentLevel)
+currentLevel: 3 # the level the character is actually played at now
 ---
 ```
 
-| Field          | Meaning                                                                                             | Maps to                          |
-| -------------- | --------------------------------------------------------------------------------------------------- | -------------------------------- |
-| `name`         | Display name.                                                                                       | `meta.name`                      |
-| `player`       | Optional.                                                                                            | `meta.player`                    |
-| `characterId`  | Stable kebab-case id. **Variants share it** (D12).                                                  | `meta.characterId`               |
-| `ruleset`      | Default edition (`"2024"` \| `"2014"`). Quote it so YAML keeps it a string.                          | per-entry `library.edition`      |
-| `sources`      | Allow-list of books/editions. Mixing 2014 + 2024 is permitted **only** if both are listed (§8).     | compiler's edition filter        |
-| `targetLevel`  | How far progression is written. May exceed `currentLevel` (planned future).                          | bounds `progression[].unlockLevel` |
-| `currentLevel` | The level played now. **The TBD gate (§9) and Level view pivot on this.**                            | `currentLevel`                   |
+| Field          | Meaning                                                                                         | Maps to                            |
+| -------------- | ----------------------------------------------------------------------------------------------- | ---------------------------------- |
+| `name`         | Display name.                                                                                   | `meta.name`                        |
+| `player`       | Optional.                                                                                       | `meta.player`                      |
+| `characterId`  | Stable kebab-case id. **Variants share it** (D12).                                              | `meta.characterId`                 |
+| `ruleset`      | Default edition (`"2024"` \| `"2014"`). Quote it so YAML keeps it a string.                     | per-entry `library.edition`        |
+| `sources`      | Allow-list of books/editions. Mixing 2014 + 2024 is permitted **only** if both are listed (§8). | compiler's edition filter          |
+| `targetLevel`  | How far progression is written. May exceed `currentLevel` (planned future).                     | bounds `progression[].unlockLevel` |
+| `currentLevel` | The level played now. **The TBD gate (§9) and Level view pivot on this.**                       | `currentLevel`                     |
 
 `meta.createdAt` / `updatedAt` are stamped by the compiler, not authored here.
 `meta.variantLabel` comes from the **Variants** section (§10), not frontmatter —
@@ -103,14 +103,14 @@ first-class but never silent).
 ```markdown
 ## Concept & reflavoring
 
-Fenn is a soot-stained wanderer who maps the ash wastes… *(flavor prose, any language)*
+Fenn is a soot-stained wanderer who maps the ash wastes… _(flavor prose, any language)_
 
 ### Reflavoring
 
-| Source entry | Shown as    | Mechanical change            | DM-approved |
-| ------------ | ----------- | ---------------------------- | ----------- |
-| Duskling     | Ashwalker   | Base speed 30 → 35 ft        | yes         |
-| Duskling     | Ashwalker   | (name/flavor only, no mech.) | n/a         |
+| Source entry | Shown as  | Mechanical change            | DM-approved |
+| ------------ | --------- | ---------------------------- | ----------- |
+| Duskling     | Ashwalker | Base speed 30 → 35 ft        | yes         |
+| Duskling     | Ashwalker | (name/flavor only, no mech.) | n/a         |
 ```
 
 - **Name-only reflavor** (no mechanical change): `DM-approved` = `n/a`.
@@ -135,8 +135,8 @@ class subsection is always a list even for a single class.
 ```markdown
 ## Chassis
 
-- **Species:** Duskling → *Ashwalker* (see reflavoring). Darkvision 60 ft.
-- **Background:** Ember Cartographer *(homebrew — see below)*. Grants
+- **Species:** Duskling → _Ashwalker_ (see reflavoring). Darkvision 60 ft.
+- **Background:** Ember Cartographer _(homebrew — see below)_. Grants
   cartographer's tools + the Guiding Flame cantrip.
 
 ### Classes
@@ -149,21 +149,21 @@ starting-vs-multiclass proficiency grants (scope §2.8).
 | 1     | Fighter | 1      | d10     | Eldritch Knight  | 5                   |
 | 2     | Wizard  | 2      | d6      | War Magic        | 2                   |
 
-*Total character level: 3 now, planned to 5.*
+_Total character level: 3 now, planned to 5._
 
 ### Ability scores
 
 Method: **standard array**, arranged as below. `final` = base + noted changes;
 the compiler computes modifiers.
 
-| Ability | Base | Changes                | Final |
-| ------- | ---- | ---------------------- | ----- |
-| STR     | 10   | —                      | 10    |
-| DEX     | 14   | —                      | 14    |
-| CON     | 14   | —                      | 14    |
-| INT     | 16   | +1 (level-4 ASI, TBD)  | 17    |
-| WIS     | 10   | —                      | 10    |
-| CHA     | 8    | —                      | 8     |
+| Ability | Base | Changes               | Final |
+| ------- | ---- | --------------------- | ----- |
+| STR     | 10   | —                     | 10    |
+| DEX     | 14   | —                     | 14    |
+| CON     | 14   | —                     | 14    |
+| INT     | 16   | +1 (level-4 ASI, TBD) | 17    |
+| WIS     | 10   | —                     | 10    |
+| CHA     | 8    | —                     | 8     |
 ```
 
 Notes:
@@ -191,37 +191,37 @@ mastery counts). This is the paper sheet's level column, written out.
 ```markdown
 ## Progression
 
-### Level 1 — Fighter 1 *(starting class)*
+### Level 1 — Fighter 1 _(starting class)_
 
 - **Proficiencies (starting class):** Saves STR, CON. Armor light/medium/heavy,
   shields. Weapons simple, martial. Skills: choose 2 — Athletics, Acrobatics,
-  Intimidation, Survival. → *chosen:* Athletics, Survival.
-- **Fighting Style:** Defense — +1 AC while in armor. *(choice)*
-- **Second Wind** — regain 1d10+3 HP; 2/long rest, regain 1 on short rest. *(auto, limited-use)*
-- **Weapon Masteries:** 2 (see Volatile defaults). *(choice)*
-- **Species — Umbral Step:** move through dim light/darkness without provoking OAs. *(auto)*
-- **Background feat — Tireless Cartographer** *(homebrew feat)*: ignore difficult
-  terrain on a mapped route; +1 INT. *(auto)*
+  Intimidation, Survival. → _chosen:_ Athletics, Survival.
+- **Fighting Style:** Defense — +1 AC while in armor. _(choice)_
+- **Second Wind** — regain 1d10+3 HP; 2/long rest, regain 1 on short rest. _(auto, limited-use)_
+- **Weapon Masteries:** 2 (see Volatile defaults). _(choice)_
+- **Species — Umbral Step:** move through dim light/darkness without provoking OAs. _(auto)_
+- **Background feat — Tireless Cartographer** _(homebrew feat)_: ignore difficult
+  terrain on a mapped route; +1 INT. _(auto)_
 
-### Level 2 — Wizard 1 *(multiclass)*
+### Level 2 — Wizard 1 _(multiclass)_
 
 - **Proficiencies (multiclass grant):** no new saves. Armor none. Weapons daggers,
   quarterstaffs. No skills from this class.
 - **Spellcasting — Wizard:** INT caster. Learns cantrips + 1st-level spells;
   prepares INT mod + wizard level. Slots: see Volatile defaults / spell list.
-- **Arcane Recovery** — once/day on a short rest, recover slots ≤ half wizard level. *(auto, limited-use)*
+- **Arcane Recovery** — once/day on a short rest, recover slots ≤ half wizard level. _(auto, limited-use)_
 
-### Level 3 — Wizard 2  ← currentLevel
+### Level 3 — Wizard 2 ← currentLevel
 
-- **Subclass — War Magic:** advantage on one INT save per turn to resist a spell. *(choice: subclass)*
+- **Subclass — War Magic:** advantage on one INT save per turn to resist a spell. _(choice: subclass)_
 
-### Level 4 — Wizard 3 *(planned)*
+### Level 4 — Wizard 3 _(planned)_
 
-- **ASI:** +1 INT (→17), +1 CON  — TBD(may take a feat instead). *(choice)*
+- **ASI:** +1 INT (→17), +1 CON — TBD(may take a feat instead). _(choice)_
 
-### Level 5 — Fighter 2 *(planned)*
+### Level 5 — Fighter 2 _(planned)_
 
-- **Subclass — Eldritch Knight:** limited wizard spellcasting from the Wizard list. *(choice: subclass)*
+- **Subclass — Eldritch Knight:** limited wizard spellcasting from the Wizard list. _(choice: subclass)_
 - **Bound weapon** action becomes available.
 ```
 
@@ -231,7 +231,7 @@ Rules for a progression block:
   goes to. Tag the `currentLevel` block so the reader sees the play-time line.
 - **`(auto)` vs `(choice)`:** label each grant. Automatic grants come from the
   class/species/background; choices are decisions the player made (and the
-  compiler must be able to see *what* was chosen, resolved inline).
+  compiler must be able to see _what_ was chosen, resolved inline).
 - **Resolve choices inline.** "Fighting Style: Defense", "Skills: Athletics,
   Survival", "prepared: …". An unresolved choice is a `TBD(...)` (§9).
 - **Limited-use features** note their max + recovery in plain words ("2/long rest,
@@ -279,7 +279,7 @@ out anything non-obvious (a reaction spell, a bonus-action feature).
 ## 6. Volatile defaults (pools)
 
 Per D13, swap-at-rest choices — **prepared spells**, **weapon masteries**,
-equipment **loadout** — are *pools*: the compiler embeds the full set of options
+equipment **loadout** — are _pools_: the compiler embeds the full set of options
 (with extracts), and the live selection lives in the session layer. The chassis
 doc records **which choices are pools** and their **starting/default selection**
 only.
@@ -316,17 +316,17 @@ Most of this is captured with the spells (§5), but summarize the **sources** an
 ```markdown
 ### Casting sources
 
-| Source                        | Ability | Save DC | Atk | Prepare rule                | Notes                          |
-| ----------------------------- | ------- | ------- | --- | --------------------------- | ------------------------------ |
-| Wizard                        | INT     | 13      | +5  | INT mod + wizard level      | class caster                   |
-| Ember Cartographer's Compass  | INT     | 14      | +6  | always prepared (innate)    | item source; own DC (homebrew) |
+| Source                       | Ability | Save DC | Atk | Prepare rule             | Notes                          |
+| ---------------------------- | ------- | ------- | --- | ------------------------ | ------------------------------ |
+| Wizard                       | INT     | 13      | +5  | INT mod + wizard level   | class caster                   |
+| Ember Cartographer's Compass | INT     | 14      | +6  | always prepared (innate) | item source; own DC (homebrew) |
 
 ### Slot pools
 
-| Pool         | Source | Spell level | Count | Recovery     | Notes            |
-| ------------ | ------ | ----------- | ----- | ------------ | ---------------- |
-| Wizard Slots | Wizard | 1           | 3     | long rest    | standard         |
-| Arcane Font  | Wizard | 1           | 1     | short rest   | homebrew feat slot |
+| Pool         | Source | Spell level | Count | Recovery   | Notes              |
+| ------------ | ------ | ----------- | ----- | ---------- | ------------------ |
+| Wizard Slots | Wizard | 1           | 3     | long rest  | standard           |
+| Arcane Font  | Wizard | 1           | 1     | short rest | homebrew feat slot |
 ```
 
 DC/attack numbers can be written as decided, or left `TBD(...)` for future levels;
@@ -345,19 +345,23 @@ content (scope §4).
 ```markdown
 ## Homebrew
 
-### Ember Cartographer *(background)*
+### Ember Cartographer _(background)_
+
 Grants cartographer's tools proficiency and the Guiding Flame cantrip (innate,
 INT). Feat: Tireless Cartographer.
-*Full text, exactly as it should appear in the popover…*
+_Full text, exactly as it should appear in the popover…_
 
-### Tireless Cartographer *(feat)*
+### Tireless Cartographer _(feat)_
+
 Ignore difficult terrain while you can see a route you've already mapped; +1 INT.
-*Full text…*
+_Full text…_
 
-### Ashen Bolt *(1st-level spell)*
+### Ashen Bolt _(1st-level spell)_
+
 2d6 fire damage, DEX save for half. …
 
-### Ember Cartographer's Compass *(magic item, attunement)*
+### Ember Cartographer's Compass _(magic item, attunement)_
+
 A brass compass that never loses true north. While attuned, grants the Guiding
 Flame cantrip and empowers Ashen Bolt (its own casting source). …
 ```
@@ -367,7 +371,7 @@ Flame cantrip and empowers Ashen Bolt (its own casting source). …
   versa) is a per-entry, explicitly-listed decision — the entry names its edition,
   and `sources` (§2) must allow it. Record the reason in a note if it's unusual
   (scope §2.7: Vice = 2024 Warlock + 2014 Autognome).
-- **KB entries are *not* copied here.** For official content the doc names the
+- **KB entries are _not_ copied here.** For official content the doc names the
   entry (`Fireball`, `Fighter`) and the compiler pulls the extract from the KB at
   compile time — no WotC text ever lands in the chassis doc or the repo (scope §4).
 
@@ -379,16 +383,16 @@ Undecided choices are marked `TBD(<what's undecided>)`. This is the single
 mechanism for "we haven't decided this yet," and it has **precise compile
 semantics** tied to `currentLevel`:
 
-| Where the TBD sits                        | Compiler behavior                                              |
-| ----------------------------------------- | ------------------------------------------------------------- |
-| **At or below `currentLevel`**            | **Blocking error.** The character is played at this level; an unresolved choice here can't compile. The compiler stops and surfaces it. |
+| Where the TBD sits                        | Compiler behavior                                                                                                                                                                   |
+| ----------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **At or below `currentLevel`**            | **Blocking error.** The character is played at this level; an unresolved choice here can't compile. The compiler stops and surfaces it.                                             |
 | **Above `currentLevel`** (planned future) | **Non-blocking.** It's a future decision; the compiler emits the level's other content and leaves the TBD as a visible "undecided" placeholder in Build view (never in Level view). |
 
 Examples:
 
 ```markdown
-- **ASI (level 4):** TBD(+2 INT vs. a feat)        ← level 4 > currentLevel 3 → OK, planned
-- **Skills (level 1):** choose 2 — TBD             ← level 1 ≤ currentLevel 3 → BLOCKS compile
+- **ASI (level 4):** TBD(+2 INT vs. a feat) ← level 4 > currentLevel 3 → OK, planned
+- **Skills (level 1):** choose 2 — TBD ← level 1 ≤ currentLevel 3 → BLOCKS compile
 ```
 
 So: a TBD is fine for anything you haven't reached yet, and a hard stop for
@@ -411,9 +415,10 @@ only what it changes.
 ```markdown
 ## Variants
 
-Base label: **Battle Mage** *(the build written above)*
+Base label: **Battle Mage** _(the build written above)_
 
 ### Variant — Arcane Trickster
+
 - **Level 5:** Fighter 2 → instead take **Rogue 1** (Arcane Trickster path).
 - **Subclass:** Eldritch Knight → **Arcane Trickster** (unlocks 5).
 - Everything else inherits the base.
@@ -436,33 +441,33 @@ line, scope §1 — derivation happens once, here). This table is the round-trip
 proof for the acceptance criterion; the worked example above compiles to
 [`fixtures/synthetic.character.json`](../fixtures/synthetic.character.json).
 
-| Schema region                     | Sourced from (chassis section)                            | Read / Derived |
-| --------------------------------- | --------------------------------------------------------- | -------------- |
-| `formatVersion`                   | constant (1)                                              | derived        |
-| `meta.name` / `player` / `characterId` | Frontmatter (§2)                                     | read           |
-| `meta.variantLabel`               | Variants base label / variant name (§10)                  | read           |
-| `meta.createdAt` / `updatedAt`    | compile timestamp                                         | derived        |
-| `currentLevel`                    | Frontmatter `currentLevel` (§2)                           | read           |
-| `chassis.species`                 | Chassis · Species + Reflavoring `displayName`/`modifications` (§3–4) | read |
-| `chassis.background`              | Chassis · Background (§4)                                 | read           |
-| `chassis.classes[]`               | Chassis · Classes table — `ref`, `levels`, `hitDie`, `classOrder`, `subclass`+`unlockLevel` (§4) | read |
-| `abilities.*.base`                | Chassis · Ability scores, Base column (§4)                | read           |
-| `abilities.*.final`               | Ability scores, Final column (base + changes) (§4)        | read           |
-| `abilities.*.modifier`            | —                                                         | **derived** from `final` |
-| `stats.*` (AC, HP, init, PB, saves, skills, passives, senses, resistances, languages, proficiencies, hitDice) | Chassis + Progression (proficiency lines, features, items) + KB | **derived** (compiled snapshot at `currentLevel`) |
-| `progression[]`                   | Progression blocks — one item per grant, `kind`/`classRef`/`unlockLevel` (§5) | read (`unlockLevel` from block level) |
-| `actionEconomy`                   | Attacks + action-costing features (§5)                    | **derived** (grouped by economy) |
-| `attacks[]`                       | Attacks rows — modes, `toHit`(+`magicBonus`), `range`, `damage`, `riders`, `consumableRef` (§5) | read |
-| `spellcasting.sources[]`          | Casting sources table (§7); DC/attack               | read (numbers may be derived) |
-| `spellcasting.slotPools[]`        | Slot pools table (§7)                                     | read           |
-| `spellcasting.spells[]`           | Spells (§5) — level, school, C/R, `origins`, `role`, `poolRef`, `unlockLevel`, `swapOutLevel` | read |
-| `spellcasting.swaps[]`            | Fixed-known "drop X / learn Y" lines (§5)                 | read           |
-| `pools{}`                         | Volatile defaults (§6) — `chooseCount`, `defaults`; **options + extracts** | read (defaults) / **derived** (full option set from KB) |
-| `resources[]`                     | Limited-use features' "max + recovery" wording (§5)       | **derived** (structured `recover`) |
-| `consumables[]`                   | Equipment tally items / ammo (§6/§12)                     | read           |
-| `equipment`                       | Equipment (§12) — items, currency, attunement, capacity   | read           |
-| `companions[]`                    | Companions (§12)                                          | read           |
-| `library{}`                       | Homebrew (§8) verbatim **+** KB extracts for every named official entry | read (homebrew) / **derived** (KB pull) |
+| Schema region                                                                                                 | Sourced from (chassis section)                                                                   | Read / Derived                                          |
+| ------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------- |
+| `formatVersion`                                                                                               | constant (1)                                                                                     | derived                                                 |
+| `meta.name` / `player` / `characterId`                                                                        | Frontmatter (§2)                                                                                 | read                                                    |
+| `meta.variantLabel`                                                                                           | Variants base label / variant name (§10)                                                         | read                                                    |
+| `meta.createdAt` / `updatedAt`                                                                                | compile timestamp                                                                                | derived                                                 |
+| `currentLevel`                                                                                                | Frontmatter `currentLevel` (§2)                                                                  | read                                                    |
+| `chassis.species`                                                                                             | Chassis · Species + Reflavoring `displayName`/`modifications` (§3–4)                             | read                                                    |
+| `chassis.background`                                                                                          | Chassis · Background (§4)                                                                        | read                                                    |
+| `chassis.classes[]`                                                                                           | Chassis · Classes table — `ref`, `levels`, `hitDie`, `classOrder`, `subclass`+`unlockLevel` (§4) | read                                                    |
+| `abilities.*.base`                                                                                            | Chassis · Ability scores, Base column (§4)                                                       | read                                                    |
+| `abilities.*.final`                                                                                           | Ability scores, Final column (base + changes) (§4)                                               | read                                                    |
+| `abilities.*.modifier`                                                                                        | —                                                                                                | **derived** from `final`                                |
+| `stats.*` (AC, HP, init, PB, saves, skills, passives, senses, resistances, languages, proficiencies, hitDice) | Chassis + Progression (proficiency lines, features, items) + KB                                  | **derived** (compiled snapshot at `currentLevel`)       |
+| `progression[]`                                                                                               | Progression blocks — one item per grant, `kind`/`classRef`/`unlockLevel` (§5)                    | read (`unlockLevel` from block level)                   |
+| `actionEconomy`                                                                                               | Attacks + action-costing features (§5)                                                           | **derived** (grouped by economy)                        |
+| `attacks[]`                                                                                                   | Attacks rows — modes, `toHit`(+`magicBonus`), `range`, `damage`, `riders`, `consumableRef` (§5)  | read                                                    |
+| `spellcasting.sources[]`                                                                                      | Casting sources table (§7); DC/attack                                                            | read (numbers may be derived)                           |
+| `spellcasting.slotPools[]`                                                                                    | Slot pools table (§7)                                                                            | read                                                    |
+| `spellcasting.spells[]`                                                                                       | Spells (§5) — level, school, C/R, `origins`, `role`, `poolRef`, `unlockLevel`, `swapOutLevel`    | read                                                    |
+| `spellcasting.swaps[]`                                                                                        | Fixed-known "drop X / learn Y" lines (§5)                                                        | read                                                    |
+| `pools{}`                                                                                                     | Volatile defaults (§6) — `chooseCount`, `defaults`; **options + extracts**                       | read (defaults) / **derived** (full option set from KB) |
+| `resources[]`                                                                                                 | Limited-use features' "max + recovery" wording (§5)                                              | **derived** (structured `recover`)                      |
+| `consumables[]`                                                                                               | Equipment tally items / ammo (§6/§12)                                                            | read                                                    |
+| `equipment`                                                                                                   | Equipment (§12) — items, currency, attunement, capacity                                          | read                                                    |
+| `companions[]`                                                                                                | Companions (§12)                                                                                 | read                                                    |
+| `library{}`                                                                                                   | Homebrew (§8) verbatim **+** KB extracts for every named official entry                          | read (homebrew) / **derived** (KB pull)                 |
 
 **Referential integrity** (validator, T04): every `ref` the compiler emits — from
 species/class/subclass names, spell/attack/item/pool/companion entries — must
@@ -487,13 +492,14 @@ that's a **blocking error** (surface it — don't invent the entry).
 | Studded Leather Armor | 1   | 13          | 45 gp  | equipped, carried     |                           |
 | Dagger                | 1   | 1           | 2 gp   | carried               | spare backup              |
 | Ember Compass         | 1   | 1           | 250 gp | equipped, **attuned** | casting source (homebrew) |
-| Ashwalker Cloak       | 1   | 1           | 500 gp | *(unlocks 5)*         | promised on EK training   |
+| Ashwalker Cloak       | 1   | 1           | 500 gp | _(unlocks 5)_         | promised on EK training   |
 
-- **Currency:** 32 gp, 5 sp. *(seeds the session; changes live in-session)*
+- **Currency:** 32 gp, 5 sp. _(seeds the session; changes live in-session)_
 - **Attunement slots:** 3.
-- **Carrying capacity:** 150 lb. *(app shows kg too)*
+- **Carrying capacity:** 150 lb. _(app shows kg too)_
 
 ### Consumables (tallied)
+
 - **Arrows** — max 20; tally after each shot.
 ```
 
@@ -509,7 +515,8 @@ One block per companion — a mini-sheet, not a full character:
 ```markdown
 ## Companions
 
-### Ember Sprite *(familiar)*
+### Ember Sprite _(familiar)_
+
 - **Abilities:** STR 3, DEX 16, CON 10, INT 10, WIS 12, CHA 11
 - **AC 13 · HP 5 · Fly 30 ft**
 - **Saves:** DEX +5 · **Skills:** Stealth +7

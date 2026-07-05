@@ -9,7 +9,10 @@ const baseCharacter = fixture as unknown as CharacterFile
 
 /** A character with a unique id per test, so each test gets its own IndexedDB key. */
 function characterFor(testId: string): CharacterFile {
-  return { ...baseCharacter, meta: { ...baseCharacter.meta, characterId: `${baseCharacter.meta.characterId}-${testId}` } }
+  return {
+    ...baseCharacter,
+    meta: { ...baseCharacter.meta, characterId: `${baseCharacter.meta.characterId}-${testId}` },
+  }
 }
 
 async function flushDebounce() {
@@ -35,7 +38,11 @@ describe('createIndexedDbSessionStore — round trip via fake-indexeddb', () => 
     s1.setCurrentHp(10)
     await flushDebounce()
 
-    const key = sessionKey(character.meta.characterId, character.meta.variantLabel, character.formatVersion)
+    const key = sessionKey(
+      character.meta.characterId,
+      character.meta.variantLabel,
+      character.formatVersion,
+    )
     const saved = await loadSession(key)
     expect(saved?.trackers.resources?.['second-wind']?.used).toBe(1)
     expect(saved?.trackers.hp?.current).toBe(10)
@@ -48,7 +55,11 @@ describe('createIndexedDbSessionStore — round trip via fake-indexeddb', () => 
 
   it('reconciles orphaned refs against the current file on hydration', async () => {
     const character = characterFor('reconcile')
-    const key = sessionKey(character.meta.characterId, character.meta.variantLabel, character.formatVersion)
+    const key = sessionKey(
+      character.meta.characterId,
+      character.meta.variantLabel,
+      character.formatVersion,
+    )
     const s1 = createIndexedDbSessionStore(character)
     await s1.ready
     s1.tick('resource', 'second-wind')
@@ -58,7 +69,10 @@ describe('createIndexedDbSessionStore — round trip via fake-indexeddb', () => 
     const saved = await loadSession(key)
     await saveSession(key, {
       ...saved!,
-      trackers: { ...saved!.trackers, resources: { ...saved!.trackers.resources, ghost: { used: 3 } } },
+      trackers: {
+        ...saved!.trackers,
+        resources: { ...saved!.trackers.resources, ghost: { used: 3 } },
+      },
     })
 
     const s2 = createIndexedDbSessionStore(character)
@@ -69,7 +83,10 @@ describe('createIndexedDbSessionStore — round trip via fake-indexeddb', () => 
 
   it('two variants of the same character persist under independent keys', async () => {
     const character = characterFor('variants')
-    const variant: CharacterFile = { ...character, meta: { ...character.meta, variantLabel: 'Skirmisher' } }
+    const variant: CharacterFile = {
+      ...character,
+      meta: { ...character.meta, variantLabel: 'Skirmisher' },
+    }
     const sA = createIndexedDbSessionStore(character)
     const sB = createIndexedDbSessionStore(variant)
     await Promise.all([sA.ready, sB.ready])

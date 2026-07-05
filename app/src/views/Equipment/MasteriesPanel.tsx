@@ -26,7 +26,9 @@ function MasteryOption({
           type="checkbox"
           checked={selected}
           disabled={!selected && atLimit}
-          onChange={() => (selected ? store.deselect(poolId, option.ref) : store.select(poolId, option.ref))}
+          onChange={() =>
+            selected ? store.deselect(poolId, option.ref) : store.select(poolId, option.ref)
+          }
         />
         <RefLink label={name} onClick={() => openRef(option.ref)} />
       </label>
@@ -51,7 +53,9 @@ function MasteryOption({
 export function MasteriesPanel() {
   const { character } = useCharacter()
   const { loadout } = useSessionState()
-  const poolEntry = Object.entries(character.pools ?? {}).find(([, p]) => p.kind === 'weaponMasteries')
+  const poolEntry = Object.entries(character.pools ?? {}).find(
+    ([, p]) => p.kind === 'weaponMasteries',
+  )
   if (!poolEntry) return null
 
   const [poolId, pool] = poolEntry

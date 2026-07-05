@@ -1,10 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import {
-  draftFromAddition,
-  draftIsValid,
-  draftToAddition,
-  emptyDraft,
-} from './additionDraft'
+import { draftFromAddition, draftIsValid, draftToAddition, emptyDraft } from './additionDraft'
 
 describe('draftToAddition — kind-specific field stripping', () => {
   it('an item keeps quantity/weight/note and never carries limitedUse', () => {
@@ -29,7 +24,12 @@ describe('draftToAddition — kind-specific field stripping', () => {
   })
 
   it('an item defaults quantity to 1 and omits weight when blank/invalid', () => {
-    const out = draftToAddition({ ...emptyDraft('item'), name: 'Torch', quantity: '', weightLb: 'x' })
+    const out = draftToAddition({
+      ...emptyDraft('item'),
+      name: 'Torch',
+      quantity: '',
+      weightLb: 'x',
+    })
     expect(out).toEqual({ kind: 'item', name: 'Torch', quantity: 1 })
   })
 
@@ -52,7 +52,10 @@ describe('draftToAddition — kind-specific field stripping', () => {
   })
 
   it('a note stores its body in summary and derives a short name', () => {
-    const out = draftToAddition({ ...emptyDraft('note'), summary: 'The bridge is trapped near the far side.' })
+    const out = draftToAddition({
+      ...emptyDraft('note'),
+      summary: 'The bridge is trapped near the far side.',
+    })
     expect(out.kind).toBe('note')
     expect(out.summary).toBe('The bridge is trapped near the far side.')
     expect(out.name).toBe('The bridge is trapped near the far side.')
@@ -85,7 +88,13 @@ describe('draftFromAddition — round-trip for editing', () => {
       limitedUse: { max: 3, recover: [{ on: 'dawn', amount: 'all' }] },
       addedAt: '2026-07-05T00:00:00.000Z',
     })
-    expect(draft).toMatchObject({ kind: 'boon', name: 'Blessing', limited: true, uses: '3', recover: 'dawn' })
+    expect(draft).toMatchObject({
+      kind: 'boon',
+      name: 'Blessing',
+      limited: true,
+      uses: '3',
+      recover: 'dawn',
+    })
   })
 
   it('re-serializing an edited draft preserves the limited-use shape', () => {

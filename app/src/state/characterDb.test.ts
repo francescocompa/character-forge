@@ -19,7 +19,10 @@ const variant = syntheticVariant as unknown as CharacterFile
 
 /** A character with a unique id per test, so each test gets its own IndexedDB keys. */
 function withId(character: CharacterFile, testId: string): CharacterFile {
-  return { ...character, meta: { ...character.meta, characterId: `${character.meta.characterId}-${testId}` } }
+  return {
+    ...character,
+    meta: { ...character.meta, characterId: `${character.meta.characterId}-${testId}` },
+  }
 }
 
 function sessionFor(character: CharacterFile): SessionFile {
@@ -95,7 +98,9 @@ describe('characterDb', () => {
     expect(mine.every((r) => r.alias === 'Shared')).toBe(true)
 
     await setCharacterAlias(a.meta.characterId, '')
-    const cleared = (await listStoredCharacters()).filter((r) => r.characterId === a.meta.characterId)
+    const cleared = (await listStoredCharacters()).filter(
+      (r) => r.characterId === a.meta.characterId,
+    )
     expect(cleared.every((r) => r.alias === undefined)).toBe(true)
   })
 })

@@ -27,7 +27,9 @@ function ManageOption({
           type="checkbox"
           checked={selected}
           disabled={!selected && atLimit}
-          onChange={() => (selected ? store.deselect(poolId, option.ref) : store.select(poolId, option.ref))}
+          onChange={() =>
+            selected ? store.deselect(poolId, option.ref) : store.select(poolId, option.ref)
+          }
         />
         <RefLink label={name} onClick={() => openRef(option.ref)} />
       </label>
@@ -52,7 +54,9 @@ export function ManageMode() {
   const { loadout } = useSessionState()
   const sources = character.spellcasting?.sources ?? []
   const spells = character.spellcasting?.spells ?? []
-  const poolEntries = Object.entries(character.pools ?? {}).filter(([, p]) => p.kind === 'preparedSpells')
+  const poolEntries = Object.entries(character.pools ?? {}).filter(
+    ([, p]) => p.kind === 'preparedSpells',
+  )
 
   if (poolEntries.length === 0) {
     return <p className="spells-empty">No preparable spells to manage.</p>
@@ -67,7 +71,11 @@ export function ManageMode() {
         const groups = groupPoolOptionsByLevel(pool, spells)
 
         return (
-          <section key={poolId} className="panel manage-source" aria-label={`${pool.name} selection`}>
+          <section
+            key={poolId}
+            className="panel manage-source"
+            aria-label={`${pool.name} selection`}
+          >
             <div className="manage-source__head">
               <h2 className="panel__title">{pool.name}</h2>
               <span className="manage-source__count">

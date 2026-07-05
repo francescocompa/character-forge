@@ -119,12 +119,16 @@ describe('SheetMarkup — composite lines (snapshots)', () => {
 
   it('renders a mixed-recovery resource line', () => {
     expect(
-      html('Regain {dice:1d10+5} HP. **2** uses per {recover:LR}; regain **1** use on a {recover:SR}.'),
+      html(
+        'Regain {dice:1d10+5} HP. **2** uses per {recover:LR}; regain **1** use on a {recover:SR}.',
+      ),
     ).toMatchSnapshot()
   })
 
   it('renders a reflavored feature with a library link', () => {
-    expect(html('{ref:fey-pact|Fey Pact}: {adv} on {save:WIS} against being {cond:charmed}')).toMatchSnapshot()
+    expect(
+      html('{ref:fey-pact|Fey Pact}: {adv} on {save:WIS} against being {cond:charmed}'),
+    ).toMatchSnapshot()
   })
 })
 

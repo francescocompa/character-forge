@@ -4,7 +4,10 @@ import { CollapsibleSection } from './CollapsibleSection'
 import { FeatureList } from './ProgressionRow'
 
 /** "Background" for a classless feat/ASI, or the granting class's name otherwise. */
-function originTag(item: ProgressionItem, nameOf: (ref?: string, displayName?: string) => string): string {
+function originTag(
+  item: ProgressionItem,
+  nameOf: (ref?: string, displayName?: string) => string,
+): string {
   return item.classRef ? nameOf(item.classRef) : 'Background'
 }
 

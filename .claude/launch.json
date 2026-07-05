@@ -4,27 +4,14 @@
     {
       "name": "app-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "dev",
-        "--workspace",
-        "app"
-      ],
+      "runtimeArgs": ["run", "dev", "--workspace", "app"],
       "port": 5173,
       "autoPort": true
     },
     {
       "name": "app-preview",
       "runtimeExecutable": "npm",
-      "runtimeArgs": [
-        "run",
-        "preview",
-        "--workspace",
-        "app",
-        "--",
-        "--port",
-        "4173"
-      ],
+      "runtimeArgs": ["run", "preview", "--workspace", "app", "--", "--port", "4173"],
       "port": 4173,
       "autoPort": true
     }

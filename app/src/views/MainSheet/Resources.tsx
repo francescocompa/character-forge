@@ -18,10 +18,18 @@ export function RecoverBadges({ recover }: { recover: RecoverModel }) {
       {recover.map((rule, i) => {
         const icon = REST_ICON[rule.on]
         const amount =
-          rule.amount === 'all' ? '' : typeof rule.amount === 'number' ? `+${rule.amount}` : rule.amount
+          rule.amount === 'all'
+            ? ''
+            : typeof rule.amount === 'number'
+              ? `+${rule.amount}`
+              : rule.amount
         return (
           <span key={i} className="recover-badge">
-            {icon ? <RecoverIcon when={icon} /> : <span className="recover-badge__other">{rule.on}</span>}
+            {icon ? (
+              <RecoverIcon when={icon} />
+            ) : (
+              <span className="recover-badge__other">{rule.on}</span>
+            )}
             {amount && <span className="recover-badge__amount">{amount}</span>}
           </span>
         )
@@ -78,7 +86,12 @@ function ConsumableRow({ id, name, max }: { id: string; name: string; max?: numb
   return (
     <li className="consumable">
       <span className="consumable__name">{name}</span>
-      <Counter count={count} max={max} label={name} onDelta={(d) => store.adjustConsumable(id, d)} />
+      <Counter
+        count={count}
+        max={max}
+        label={name}
+        onDelta={(d) => store.adjustConsumable(id, d)}
+      />
     </li>
   )
 }
@@ -107,7 +120,11 @@ export function ResourcesPanel() {
           <button type="button" className="rest-btn" onClick={() => store.applyLongRest()}>
             <RecoverIcon when="LR" /> Long rest
           </button>
-          <button type="button" className="rest-btn rest-btn--undo" onClick={() => store.undoLast()}>
+          <button
+            type="button"
+            className="rest-btn rest-btn--undo"
+            onClick={() => store.undoLast()}
+          >
             Undo
           </button>
         </div>

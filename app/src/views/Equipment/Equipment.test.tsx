@@ -70,7 +70,7 @@ describe('Equipment — synthetic multiclass fixture (Level view, default)', () 
   })
 
   it('shows the rest-rule note as an informational aside, never blocking', () => {
-    expect(html).toContain("won&#x27;t stop you")
+    expect(html).toContain('won&#x27;t stop you')
   })
 
   it('renders attunement slots: one filled, two empty (max 3)', () => {
@@ -147,7 +147,7 @@ describe('Equipment — session-layer edits reflect in the view', () => {
     expect(html).toContain('aria-label="Remove Potion of Climbing (found)"')
   })
 
-  it('adds an item addition\'s weight to the carried total', () => {
+  it("adds an item addition's weight to the carried total", () => {
     const store = createSessionEngine(character, seedSessionState(character))
     const before = render('level', store)
     // Baseline carried weight is 20 lb (see the weight test above).

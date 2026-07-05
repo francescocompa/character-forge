@@ -56,9 +56,7 @@ describe('checkSanity', () => {
       spellcasting: {
         sources: [{ id: 'warlock', name: 'Warlock', ability: 'CHA', saveDc: 13, attackMod: 5 }],
         slotPools: [],
-        spells: [
-          { name: 'Hex', level: 1, origins: ['warlock'], unlockLevel: 3, swapOutLevel: 3 },
-        ],
+        spells: [{ name: 'Hex', level: 1, origins: ['warlock'], unlockLevel: 3, swapOutLevel: 3 }],
       },
     })
     expect(checkSanity(file, 100)).toContainEqual(

@@ -18,7 +18,9 @@ type Mode = 'play' | 'manage'
 export function Spells() {
   const { character } = useCharacter()
   const [mode, setMode] = useState<Mode>('play')
-  const hasPreparablePool = Object.values(character.pools ?? {}).some((p) => p.kind === 'preparedSpells')
+  const hasPreparablePool = Object.values(character.pools ?? {}).some(
+    (p) => p.kind === 'preparedSpells',
+  )
 
   if (!character.spellcasting) {
     return (

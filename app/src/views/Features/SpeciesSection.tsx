@@ -28,7 +28,11 @@ export function SpeciesSection({ traits }: { traits: ProgressionItem[] }) {
       title={
         <span className="chassis-section__heading">
           <RefLink label={name} onClick={() => openRef(species.ref)} />
-          {entry && <span className="chassis-section__source">{sourceTag(entry.edition, entry.source)}</span>}
+          {entry && (
+            <span className="chassis-section__source">
+              {sourceTag(entry.edition, entry.source)}
+            </span>
+          )}
         </span>
       }
       className="chassis-section"

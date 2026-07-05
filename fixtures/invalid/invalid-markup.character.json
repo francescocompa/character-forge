@@ -142,7 +142,10 @@
       "range": "5 ft",
       "damage": "{dmg:slashing|1d8+2}",
       "riders": [
-        { "name": "Riposte", "summary": "{note:on parry} deal {dice:1d4} extra with your {ref:longsword}" }
+        {
+          "name": "Riposte",
+          "summary": "{note:on parry} deal {dice:1d4} extra with your {ref:longsword}"
+        }
       ],
       "unlockLevel": 1
     },
@@ -277,7 +280,14 @@
       "unlockLevel": 1
     }
   ],
-  "consumables": [{ "id": "arrows", "name": "Arrows", "max": 20, "notes": "{note:ranged ammo} tally after each shot" }],
+  "consumables": [
+    {
+      "id": "arrows",
+      "name": "Arrows",
+      "max": 20,
+      "notes": "{note:ranged ammo} tally after each shot"
+    }
+  ],
   "equipment": {
     "items": [
       {
@@ -332,8 +342,17 @@
       "maxHp": { "value": 5 },
       "speeds": [{ "type": "fly", "value": 30 }],
       "saves": [{ "ability": "DEX", "modifier": 5, "proficient": true }],
-      "skills": [{ "name": "Stealth", "ability": "DEX", "proficiency": "proficient", "modifier": 7 }],
-      "attacks": [{ "name": "Ember Touch", "toHit": { "modifier": 4 }, "range": "5 ft", "damage": "{dmg:fire|1d4}" }],
+      "skills": [
+        { "name": "Stealth", "ability": "DEX", "proficiency": "proficient", "modifier": 7 }
+      ],
+      "attacks": [
+        {
+          "name": "Ember Touch",
+          "toHit": { "modifier": 4 },
+          "range": "5 ft",
+          "damage": "{dmg:fire|1d4}"
+        }
+      ],
       "features": [
         {
           "name": "Flicker",

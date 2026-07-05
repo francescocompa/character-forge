@@ -9,7 +9,9 @@ import {
   sourceIndex,
 } from './spellHelpers'
 
-function spell(overrides: Partial<Spell> & Pick<Spell, 'name' | 'level' | 'origins' | 'unlockLevel'>): Spell {
+function spell(
+  overrides: Partial<Spell> & Pick<Spell, 'name' | 'level' | 'origins' | 'unlockLevel'>,
+): Spell {
   return { role: 'known', ...overrides }
 }
 
@@ -61,7 +63,7 @@ describe('groupPoolOptionsByLevel', () => {
 })
 
 describe('sourceIndex', () => {
-  it("maps each source id to its declaration-order palette index", () => {
+  it('maps each source id to its declaration-order palette index', () => {
     const sources: SpellSource[] = [
       { id: 'wizard', name: 'Wizard', ability: 'INT', saveDc: 13, attackMod: 5 },
       { id: 'ember-charm', name: 'Compass', ability: 'INT', saveDc: 14, attackMod: 6 },
@@ -74,12 +76,24 @@ describe('sourceIndex', () => {
 
 describe('isSpellShown', () => {
   it('always shows non-prepared roles once unlocked', () => {
-    const s = spell({ name: 'Innate Spark', level: 0, role: 'innate', origins: ['wizard'], unlockLevel: 1 })
+    const s = spell({
+      name: 'Innate Spark',
+      level: 0,
+      role: 'innate',
+      origins: ['wizard'],
+      unlockLevel: 1,
+    })
     expect(isSpellShown(s, 3, 'level', [])).toBe(true)
   })
 
   it('always shows a prepared spell with no poolRef (schema: absent poolRef = always available)', () => {
-    const s = spell({ name: 'Loose Prep', level: 1, role: 'prepared', origins: ['wizard'], unlockLevel: 1 })
+    const s = spell({
+      name: 'Loose Prep',
+      level: 1,
+      role: 'prepared',
+      origins: ['wizard'],
+      unlockLevel: 1,
+    })
     expect(isSpellShown(s, 3, 'level', [])).toBe(true)
   })
 

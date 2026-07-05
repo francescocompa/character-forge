@@ -179,7 +179,10 @@ export interface SessionEngine extends SessionStore {
 }
 
 /** Builds the synchronous mutation engine. Callers supply the starting state (fresh seed or hydrated). */
-export function createSessionEngine(character: CharacterFile, initialState: SessionFile): SessionEngine {
+export function createSessionEngine(
+  character: CharacterFile,
+  initialState: SessionFile,
+): SessionEngine {
   // `state` is the live working copy (mutated in place); `snapshot` is the
   // immutable value handed to callers. `snapshot` changes reference only on
   // commit, which is what makes it a valid `useSyncExternalStore` getSnapshot.
@@ -249,13 +252,16 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
       for (const group of character.stats.hitDice ?? []) {
         for (const rule of group.recover ?? []) {
           if (rule.on === 'long') {
-            hitDice[group.classRef] = { spent: recoverUsed(hitDice[group.classRef]?.spent ?? 0, rule) }
+            hitDice[group.classRef] = {
+              spent: recoverUsed(hitDice[group.classRef]?.spent ?? 0, rule),
+            }
           }
         }
       }
       // HP to max: the active override (rolled/hand-edited, F2) takes precedence
       // over the compiled value when set.
-      const compiledMax = typeof character.stats.maxHp.value === 'number' ? character.stats.maxHp.value : 0
+      const compiledMax =
+        typeof character.stats.maxHp.value === 'number' ? character.stats.maxHp.value : 0
       const maxHp = state.trackers.maxHpOverride ?? compiledMax
       state.trackers.hp = { current: maxHp, temp: 0 }
       state.trackers.deathSaves = { successes: 0, failures: 0 }
@@ -268,7 +274,9 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
       if (!addition.limitedUse) continue
       for (const rule of addition.limitedUse.recover) {
         if (ruleApplies(rule, kind)) {
-          additionUses[addition.id] = { used: recoverUsed(additionUses[addition.id]?.used ?? 0, rule) }
+          additionUses[addition.id] = {
+            used: recoverUsed(additionUses[addition.id]?.used ?? 0, rule),
+          }
         }
       }
     }
@@ -355,14 +363,18 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
           return
         }
         const bag =
-          kind === 'slotPool' ? (state.trackers.slotPools ??= {}) : (state.trackers.resources ??= {})
+          kind === 'slotPool'
+            ? (state.trackers.slotPools ??= {})
+            : (state.trackers.resources ??= {})
         bag[id] = { used: Math.max(0, (bag[id]?.used ?? 0) - 1) }
       })
     },
     spendHitDie(classRef) {
       mutate(() => {
         const bag = (state.trackers.hitDice ??= {})
-        bag[classRef] = { spent: clamp((bag[classRef]?.spent ?? 0) + 1, 0, hitDiceMax.get(classRef)) }
+        bag[classRef] = {
+          spent: clamp((bag[classRef]?.spent ?? 0) + 1, 0, hitDiceMax.get(classRef)),
+        }
       })
     },
     regainHitDie(classRef) {

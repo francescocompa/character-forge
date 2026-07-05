@@ -26,9 +26,7 @@ export function RecoverIcon({ when }: { when: RecoverTrigger }) {
       aria-label={LABEL[when]}
       fill="var(--chip-fg)"
     >
-      {when === 'LR' && (
-        <path d="M9.5 2a6 6 0 1 0 4.5 9.9A5 5 0 0 1 9.5 2Z" />
-      )}
+      {when === 'LR' && <path d="M9.5 2a6 6 0 1 0 4.5 9.9A5 5 0 0 1 9.5 2Z" />}
       {when === 'SR' && <circle cx="8" cy="8" r="4" />}
       {when === 'Dawn' && (
         <>

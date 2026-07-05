@@ -35,7 +35,5 @@ export function OriginDot({ label, index, secondaryIndex }: OriginDotProps) {
     )
   }
   const style: CSSVarStyle = { '--chip-fg': originColor(index) }
-  return (
-    <span className="origin-dot" style={style} role="img" aria-label={label} title={label} />
-  )
+  return <span className="origin-dot" style={style} role="img" aria-label={label} title={label} />
 }

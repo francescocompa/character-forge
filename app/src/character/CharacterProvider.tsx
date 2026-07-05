@@ -42,7 +42,11 @@ export interface CharacterProviderProps {
   initialViewMode?: ViewMode
 }
 
-export function CharacterProvider({ character, children, initialViewMode }: CharacterProviderProps) {
+export function CharacterProvider({
+  character,
+  children,
+  initialViewMode,
+}: CharacterProviderProps) {
   const characterId = character.meta.characterId
   const [viewMode, setViewModeState] = useState<ViewMode>(
     () => modeMemory.get(characterId) ?? initialViewMode ?? 'level',
@@ -72,7 +76,7 @@ export function CharacterProvider({ character, children, initialViewMode }: Char
       toggleViewMode,
       isVisible: (unlockLevel?: number) => isVisible(unlockLevel, currentLevel, viewMode),
       isFuture: (unlockLevel?: number) => isFuture(unlockLevel, currentLevel),
-      nameOf: (ref, displayName) => displayName ?? (ref ? library[ref]?.name ?? ref : ''),
+      nameOf: (ref, displayName) => displayName ?? (ref ? (library[ref]?.name ?? ref) : ''),
     }
   }, [character, currentLevel, viewMode, setViewMode, toggleViewMode])
 

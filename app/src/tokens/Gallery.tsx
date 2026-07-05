@@ -166,8 +166,8 @@ function PopoverSection() {
   return (
     <Section title="Library popovers (T07)">
       <div style={{ maxWidth: '52ch', lineHeight: 1.6 }}>
-        Tap a term to open its extract — anchored popover on desktop, bottom
-        sheet under 768 px. Inline markup refs:{' '}
+        Tap a term to open its extract — anchored popover on desktop, bottom sheet under 768 px.
+        Inline markup refs:{' '}
         <SheetMarkup
           source="Your {ref:moonlit-brand|Moonlit Brand} pairs with {ref:gloaming-step|Gloaming Step}; artisans lean on {ref:sootwright-cunning|Sootwright Cunning}."
           onRef={openRef}
@@ -248,7 +248,8 @@ function GalleryContent() {
 
       <Section title="Recovery icons">
         <span>
-          2/<RecoverIcon when="LR" /> +1 on <RecoverIcon when="SR" />
+          2/
+          <RecoverIcon when="LR" /> +1 on <RecoverIcon when="SR" />
         </span>
         <RecoverIcon when="Dawn" />
       </Section>

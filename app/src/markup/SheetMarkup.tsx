@@ -61,7 +61,8 @@ function renderTag(name: string, args: string[], onRef?: (refKey: string) => voi
       return isAbility(args[0]) ? <AbilityChip ability={args[0]} /> : fallback(name, args)
     case 'save': {
       const [ability, dc] = args
-      if (!isAbility(ability) || (dc !== undefined && !INTEGER.test(dc))) return fallback(name, args)
+      if (!isAbility(ability) || (dc !== undefined && !INTEGER.test(dc)))
+        return fallback(name, args)
       return <SaveDCBadge ability={ability} dc={dc !== undefined ? Number(dc) : undefined} />
     }
     case 'dmg': {
@@ -81,7 +82,11 @@ function renderTag(name: string, args: string[], onRef?: (refKey: string) => voi
     case 'recover':
       return isRecoverTrigger(args[0]) ? <RecoverIcon when={args[0]} /> : fallback(name, args)
     case 'lvl':
-      return INTEGER.test(args[0] ?? '') ? <LevelBadge level={Number(args[0])} /> : fallback(name, args)
+      return INTEGER.test(args[0] ?? '') ? (
+        <LevelBadge level={Number(args[0])} />
+      ) : (
+        fallback(name, args)
+      )
     case 'ref': {
       const key = args[0]
       if (!key) return fallback(name, args)

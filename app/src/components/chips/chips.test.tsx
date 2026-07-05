@@ -97,7 +97,7 @@ describe('OriginDot', () => {
     expect(originColor(0)).toBe(originColor(6))
   })
 
-  it('renders a two-tone, bordered dot for a dual-source spell (§2.8, e.g. Vice\'s Hex)', () => {
+  it("renders a two-tone, bordered dot for a dual-source spell (§2.8, e.g. Vice's Hex)", () => {
     const html = renderToStaticMarkup(
       <OriginDot label="Wizard + Ember Cartographer's Compass" index={0} secondaryIndex={1} />,
     )
@@ -114,9 +114,9 @@ describe('SchoolLabel', () => {
 
 describe('RefLink', () => {
   it('renders a button when tappable, plain text otherwise', () => {
-    expect(renderToStaticMarkup(<RefLink label="Mind Sliver" onClick={() => undefined} />)).toContain(
-      '<button',
-    )
+    expect(
+      renderToStaticMarkup(<RefLink label="Mind Sliver" onClick={() => undefined} />),
+    ).toContain('<button')
     expect(renderToStaticMarkup(<RefLink label="Mind Sliver" />)).not.toContain('<button')
   })
 })
