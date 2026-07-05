@@ -3,6 +3,37 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T19 compile recipe (chassis doc → character.json), proven on Vice
+
+The compiler itself — instructions a cold Claude session follows to turn a
+`*.chassis.md` into a validated, self-contained `*.character.json`. Docs only —
+no code touched. Proven by recompiling Vice to a file mechanically equivalent to
+the T03 ground truth (the M3 milestone check).
+
+- **`pipeline/compile.md`**: the recipe. Inputs (chassis doc, KB path,
+  `currentLevel`, optional session file for adopting `additions[]`); retrieval
+  discipline (MANIFEST-first, edition filter, verbatim extracts, no paraphrase);
+  the **compression style guide** (§6) — action-economy-first, keep every number,
+  drop flavor, resolve choices inline, colour with markup, plus the honesty rule —
+  with 6–8 worked before/after examples (invented content, repo-safe); pool
+  embedding (D13); multiclass duties (D11 — class order, per-class hit dice,
+  per-source spellcasting, coexisting slot pools, origin tags); variants (D12);
+  progression + `unlockLevel`/`TBD` semantics; computation duties (scores, PB,
+  saves, skills, AC/HP by the doc's method, per-source DC/attack, structured
+  mixed recovery); library assembly + referential integrity; the ≤ 5 MB budget +
+  lore-first trimming; the validator loop + self-review checklist; and the
+  **level-up path** (§16 — bump level + class levels, resolve that level's TBDs,
+  recompile, adopt session additions).
+- **`pipeline/proof-vice-diff.md`**: the T19 proof. Recompiling Vice from a
+  freshly-written `vice.chassis.md` reproduces the T03 file with **0 structural or
+  computed-value differences** (874 leaf paths, 0 added/removed); the only deltas
+  are re-authored summary wording (mechanically equivalent, human-reviewed). Both
+  files validate green. One recipe gap found and fixed (level-up must bump class
+  `levels` with `currentLevel`); the Vice 2 → 3 level-up path exercised once.
+- Repo-safe by construction: the chassis doc, recompiled file, and level-3 dry run
+  live in the local data home (`Characters/`), never here; `proof-vice-diff.md`
+  describes differences only and holds no WotC text (scope §4).
+
 ## 2026-07-05 — T18 pipeline front door (interview + chassis format)
 
 The pipeline's authoring layer: how a build idea becomes a `*.chassis.md`, and
@@ -127,8 +158,8 @@ belong, and export for adoption at the next recompile.
 
 - **Contract** (`session.schema.json` + `types.ts`): `Addition` extended with
   kind-specific fields — `quantity`/`weightLb` (item), `limitedUse` (boon: max
-  + a `RecoverModel`, mirrored into the session schema). Boon use-counts live in
-  `trackers.additions`, ticked and rested like any resource.
+  - a `RecoverModel`, mirrored into the session schema). Boon use-counts live in
+    `trackers.additions`, ticked and rested like any resource.
 - **Engine** (`sessionEngine.ts`): `updateAddition` (edit in place, clamps live
   uses if the cap shrinks), `tickAddition`/`untickAddition`, `removeAddition`
   now clears the boon's uses, and `applyRest` recovers limited-use boons on
@@ -177,7 +208,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   fired `on:'long'` rules, so Vice's Pact Magic slots (encoded `on:'short'`
   only, per the 2024 "Short or Long Rest" text) never refilled on a long rest.
   Rest semantics are the engine's to own — files encode each feature's
-  *shortest* recovering rest; a long rest is a superset (`ruleApplies`).
+  _shortest_ recovering rest; a long rest is a superset (`ruleApplies`).
 - **Companions now rest with the character.** `applyRest` ignored companions
   entirely: Tiresia's HP stayed damaged after a long rest and companion
   `resources` recover rules never fired. Long rest restores companion HP to
@@ -230,7 +261,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   a checkbox + number input showing both the active override and the compiled
   value.
 - **Hit-dice long-rest recovery, schema addition**: `HitDiceGroup.recover?:
-  RecoverModel` (character.schema.json + types.ts) — the compiler pre-resolves
+RecoverModel` (character.schema.json + types.ts) — the compiler pre-resolves
   how many hit dice a long rest regains per class (no hardcoded "half your hit
   dice, minimum 1" in the engine); both synthetic fixtures updated with a
   concrete rule per class group.
@@ -390,9 +421,9 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   `progression[]` into the Features IA. Documents the modeling convention this
   task needed (the schema has no per-item "which section" field): `classRef`
   sorts an item into that class's section; among classless items, `kind:
-  'feature'` is a species trait (only species grants classless features —
+'feature'` is a species trait (only species grants classless features —
   2024-style backgrounds grant proficiencies + a feat, not features); `kind:
-  'feat' | 'asi'` always lands in the top-level Feats section regardless of
+'feat' | 'asi'` always lands in the top-level Feats section regardless of
   `classRef`. No schema change — this is a rendering-layer convention the
   compiler (T18/T19) should also follow when it starts emitting real files.
 - `app/src/views/Features/`: one collapsible section per class (level badge,
@@ -472,7 +503,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
 
 - `app/src/library/LibraryProvider.tsx`: `LibraryProvider` holds the character's
   `library` map and owns the single open surface; `useLibrary().openRef(refKey,
-  anchorEl?)` opens an extract. Views wire `SheetMarkup`'s `onRef` (key only) to
+anchorEl?)` opens an extract. Views wire `SheetMarkup`'s `onRef` (key only) to
   it once — `openRef` then anchors the popover to the focused trigger and returns
   focus there on close. Refs tapped inside an open extract push onto a stack so
   "‹ Back" walks back rather than closing.
