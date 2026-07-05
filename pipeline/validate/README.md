@@ -94,6 +94,63 @@ To check a real character file locally (never commit one — see the repo's
 npx character-forge-validate ~/Documents/D&D/D&D\ Character\ Builder/Characters/vice.character.json
 ```
 
+## `kb-diff` — the second bin (T20)
+
+The same workspace ships `character-forge-kb-diff`, the drift detector behind
+[`pipeline/kb-audit.md`](../kb-audit.md). It is _not_ a validation layer — it
+compares a compiled character's embedded `library` extracts against the current
+knowledge base and reports what has gone stale since compile time (decision D5).
+
+```sh
+npx character-forge-kb-diff <file.character.json> --kb <kb-path> [--json]
+```
+
+`--kb` is the directory holding `MANIFEST.json`. For every non-Homebrew extract
+it finds the manifest entry by `name` + `edition` (`source` then `type` break
+ties), reads the `## <name>` block out of the entry's file, whitespace-normalises
+both sides, and classifies:
+
+| Status             | Meaning                                                                       |
+| ------------------ | ----------------------------------------------------------------------------- |
+| `unchanged`        | Embedded text matches the KB block.                                           |
+| `changed`          | Text differs — a unified diff (`--- embedded` → `+++ kb`, context 3) is set.  |
+| `missing-from-kb`  | The manifest points at a file with no top-level `## <name>` block.            |
+| `not-in-manifest`  | No KB entry shares this name + edition (class-feature sub-extract, reflavor). |
+| `homebrew-skipped` | Homebrew entry — never checked (no KB source; scope §4).                      |
+
+Exit code `0` when nothing needs action (no `changed`, no `missing-from-kb`);
+`1` otherwise. `not-in-manifest` alone does not fail the run — those entries are
+expected. Homebrew is skipped by construction, so kb-diff never reads or emits
+Homebrew text.
+
+### `kb-diff --json` output shape
+
+```ts
+interface KbDiffReport {
+  file: string
+  kbPath: string
+  counts: Record<KbDiffStatus, number> // one key per status above
+  clean: boolean // true iff counts.changed === 0 && counts['missing-from-kb'] === 0
+  entries: Array<{
+    key: string // the library key
+    name: string
+    edition: string
+    type: string
+    source: string
+    status: KbDiffStatus
+    file?: string // KB file the entry resolved to (when a manifest match was found)
+    diff?: string // unified diff, present only when status === 'changed'
+    note?: string // disambiguation / why-unfindable explanation
+  }>
+}
+```
+
+`--json` prints exactly this via `JSON.stringify(report, null, 2)`; the
+kb-audit recipe reads it to drive triage. Unit tests
+(`src/kbDiff.test.ts`) exercise all five statuses against
+`fixtures/synthetic.character.json` + `fixtures/fake-kb/` (invented content, a
+seeded `changed` case and a seeded `missing` case).
+
 ## Layout
 
 ```
@@ -107,6 +164,8 @@ pipeline/validate/
 │   ├── sanity.ts          layer 4
 │   ├── walk.ts            generic string-leaf walker shared by layers 2 and 3
 │   ├── paths.ts           ajv-error → friendly-path formatting
+│   ├── kbDiff.ts          kb-diff core: manifest lookup, block extract, diff (T20)
+│   ├── kbDiff.cli.ts      kb-diff bin: args, human/--json output, exit code (T20)
 │   └── types.ts           ValidationIssue / ValidationResult
 └── *.test.ts              vitest suite (also under src/)
 ```

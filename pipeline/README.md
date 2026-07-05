@@ -2,7 +2,7 @@
 
 Claude-facing docs that turn a build idea into a validated, self-contained
 character file, plus the validator CLI. The app never runs any of this — the
-pipeline is how a `*.character.json` gets *made*; the app only *reads* the result
+pipeline is how a `*.character.json` gets _made_; the app only _reads_ the result
 (schema/README "the two files, and who writes them").
 
 ## The three steps
@@ -19,7 +19,7 @@ pipeline is how a `*.character.json` gets *made*; the app only *reads* the resul
    co-writes a **chassis document** ([`chassis-format.md`](chassis-format.md)):
    the human-readable build spec (concept, chassis, level-by-level progression,
    pools, equipment, companions, variants). Produces `Characters/<name>.chassis.md`.
-   *Never writes a character file.* Optional — a person can hand-write the chassis
+   _Never writes a character file._ Optional — a person can hand-write the chassis
    doc instead, following the format.
 
 2. **Compile** — [`compile.md`](compile.md) (T19). A Claude Code session reads the
@@ -40,16 +40,30 @@ corrected extract) to re-check and refresh the embedded `library` extracts in
 already-compiled characters — a diff/refresh, so a fixed rule propagates without a
 full recompile.
 
+Two pieces work together:
+
+- **`kb-diff`** — the script (`character-forge-kb-diff`, in
+  [`validate/`](validate/)). Mechanical: for every non-Homebrew `library` extract
+  it locates the current KB entry via `MANIFEST.json` and reports
+  `unchanged` / `changed` (with a unified diff) / `missing-from-kb` /
+  `not-in-manifest` / `homebrew-skipped`. Makes no edits. `--json` for tooling.
+- **`kb-audit.md`** — the recipe. A Claude Code session runs kb-diff over
+  `Characters/`, triages each `changed` (cosmetic → refresh; substantive rules
+  change → spell out the consequence and ask Francesco), flags the missing/
+  unfindable ones without ever deleting an extract, then refreshes the approved
+  entries, fixes the summaries/stats derived from them, re-runs the validator,
+  and records an audit note.
+
 ## The documents
 
-| Doc                                      | Step      | What it governs                                              |
-| ---------------------------------------- | --------- | ----------------------------------------------------------- |
-| [`interview.md`](interview.md)           | interview | How Claude co-writes a chassis doc with the player.         |
-| [`chassis-format.md`](chassis-format.md) | interview | The `*.chassis.md` format + the field→schema mapping.       |
-| [`compile.md`](compile.md)               | compile   | Chassis doc → `character.json` recipe (T19).                |
-| [`kb-audit.md`](kb-audit.md)             | maintain  | Refresh embedded extracts when the KB changes (T20).        |
-| [`validate/`](validate/)                 | validate  | The schema + integrity + markup CLI (T04).                  |
-| [`examples/`](examples/)                 | reference | A worked chassis doc from a dry-run interview (synthetic).  |
+| Doc                                      | Step      | What it governs                                            |
+| ---------------------------------------- | --------- | ---------------------------------------------------------- |
+| [`interview.md`](interview.md)           | interview | How Claude co-writes a chassis doc with the player.        |
+| [`chassis-format.md`](chassis-format.md) | interview | The `*.chassis.md` format + the field→schema mapping.      |
+| [`compile.md`](compile.md)               | compile   | Chassis doc → `character.json` recipe (T19).               |
+| [`kb-audit.md`](kb-audit.md)             | maintain  | Refresh embedded extracts when the KB changes (T20).       |
+| [`validate/`](validate/)                 | validate  | The schema + integrity + markup CLI (T04).                 |
+| [`examples/`](examples/)                 | reference | A worked chassis doc from a dry-run interview (synthetic). |
 
 The contract these all code against is [`schema/`](../schema/README.md) — where a
 pipeline doc and the schema disagree, the schema wins.

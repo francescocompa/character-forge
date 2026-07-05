@@ -3,6 +3,41 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T20 kb-audit (extract-drift diff + refresh recipe)
+
+The maintenance path for decision D5: characters embed the KB's full text at
+compile time, so when the KB is re-compiled those copies can go stale. This batch
+adds the tooling to find and fix that drift.
+
+- **`pipeline/validate/src/kbDiff.ts` + `kbDiff.cli.ts`** — the
+  `character-forge-kb-diff` bin (second bin in the validate workspace). For every
+  non-Homebrew `library` extract it resolves the current KB entry via
+  `MANIFEST.json` (match on `name` + `edition`; `source` then `type` break ties),
+  reads the `## <name>` block out of the entry's file, whitespace-normalises both
+  sides, and classifies `unchanged` / `changed` (with a context-3 unified diff) /
+  `missing-from-kb` / `not-in-manifest` / `homebrew-skipped`. Dependency-free LCS
+  diff. `--json` report documented in `pipeline/validate/README.md`; exit 0 when
+  nothing needs action. Never reads or emits Homebrew text (scope §4).
+- **`pipeline/kb-audit.md`** — the recipe: run kb-diff over `Characters/`, triage
+  each `changed` (cosmetic/boilerplate → refresh; substantive rules change → spell
+  out the mechanical consequence + the summaries/stats it invalidates, and ask
+  Francesco), flag missing/unfindable without ever deleting an extract, then
+  refresh + fix derived numbers + re-validate (T04) + record an audit note.
+- **`fixtures/fake-kb/`** — a tiny invented-content KB mirroring the synthetic
+  fixture's non-Homebrew entries, seeding one of each status. `kbDiff.test.ts`
+  (17 tests) exercises all five plus the pure helpers.
+- Docs: `pipeline/README.md`, `pipeline/validate/README.md`, `fixtures/README.md`.
+- **Real run (acceptance):** kb-diff on the local Vice file against the current KB
+  (v2.31.0) — 25 `unchanged` (all spells + the Autognome species, verbatim match),
+  4 `changed` (invocation extracts where the compiler intentionally dropped the
+  KB's `Prerequisite:`/`Type:` boilerplate — mechanical body identical, benign),
+  1 `missing-from-kb` (the Warlock class overview is a `#`-level heading in a
+  composite class file, not a top-level `##` block), 10 `not-in-manifest` (class/
+  subclass features and one reflavored subclass name — the KB doesn't index these
+  individually), 5 Homebrew skipped. No stale rules text; the deltas are the
+  compiler's deliberate compression, not KB drift. (Run described only; no WotC
+  text in this repo — scope §4.)
+
 ## 2026-07-05 — T18 pipeline front door (interview + chassis format)
 
 The pipeline's authoring layer: how a build idea becomes a `*.chassis.md`, and
@@ -127,8 +162,8 @@ belong, and export for adoption at the next recompile.
 
 - **Contract** (`session.schema.json` + `types.ts`): `Addition` extended with
   kind-specific fields — `quantity`/`weightLb` (item), `limitedUse` (boon: max
-  + a `RecoverModel`, mirrored into the session schema). Boon use-counts live in
-  `trackers.additions`, ticked and rested like any resource.
+  - a `RecoverModel`, mirrored into the session schema). Boon use-counts live in
+    `trackers.additions`, ticked and rested like any resource.
 - **Engine** (`sessionEngine.ts`): `updateAddition` (edit in place, clamps live
   uses if the cap shrinks), `tickAddition`/`untickAddition`, `removeAddition`
   now clears the boon's uses, and `applyRest` recovers limited-use boons on
@@ -177,7 +212,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   fired `on:'long'` rules, so Vice's Pact Magic slots (encoded `on:'short'`
   only, per the 2024 "Short or Long Rest" text) never refilled on a long rest.
   Rest semantics are the engine's to own — files encode each feature's
-  *shortest* recovering rest; a long rest is a superset (`ruleApplies`).
+  _shortest_ recovering rest; a long rest is a superset (`ruleApplies`).
 - **Companions now rest with the character.** `applyRest` ignored companions
   entirely: Tiresia's HP stayed damaged after a long rest and companion
   `resources` recover rules never fired. Long rest restores companion HP to
@@ -230,7 +265,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   a checkbox + number input showing both the active override and the compiled
   value.
 - **Hit-dice long-rest recovery, schema addition**: `HitDiceGroup.recover?:
-  RecoverModel` (character.schema.json + types.ts) — the compiler pre-resolves
+RecoverModel` (character.schema.json + types.ts) — the compiler pre-resolves
   how many hit dice a long rest regains per class (no hardcoded "half your hit
   dice, minimum 1" in the engine); both synthetic fixtures updated with a
   concrete rule per class group.
@@ -390,9 +425,9 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
   `progression[]` into the Features IA. Documents the modeling convention this
   task needed (the schema has no per-item "which section" field): `classRef`
   sorts an item into that class's section; among classless items, `kind:
-  'feature'` is a species trait (only species grants classless features —
+'feature'` is a species trait (only species grants classless features —
   2024-style backgrounds grant proficiencies + a feat, not features); `kind:
-  'feat' | 'asi'` always lands in the top-level Feats section regardless of
+'feat' | 'asi'` always lands in the top-level Feats section regardless of
   `classRef`. No schema change — this is a rendering-layer convention the
   compiler (T18/T19) should also follow when it starts emitting real files.
 - `app/src/views/Features/`: one collapsible section per class (level badge,
@@ -472,7 +507,7 @@ as T24), current tab shell stays, Vecna reserved for dice faces.
 
 - `app/src/library/LibraryProvider.tsx`: `LibraryProvider` holds the character's
   `library` map and owns the single open surface; `useLibrary().openRef(refKey,
-  anchorEl?)` opens an extract. Views wire `SheetMarkup`'s `onRef` (key only) to
+anchorEl?)` opens an extract. Views wire `SheetMarkup`'s `onRef` (key only) to
   it once — `openRef` then anchors the popover to the focused trigger and returns
   focus there on close. Refs tapped inside an open extract push onto a stack so
   "‹ Back" walks back rather than closing.

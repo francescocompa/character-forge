@@ -1,0 +1,88 @@
+{
+  "generatedFrom": "synthetic test knowledge base — invented content only (repo is public)",
+  "generatedAt": "2026-07-05",
+  "scope": "Tiny fake KB for kb-diff unit tests. Mirrors the non-Homebrew library entries of fixtures/synthetic.character.json so the tool has unchanged/changed/missing/not-in-manifest cases to classify. Contains NO WotC text.",
+  "totalEntries": 10,
+  "entries": [
+    {
+      "name": "Duskling",
+      "type": "species",
+      "edition": "2014",
+      "source": "Test",
+      "page": 1,
+      "file": "2014/species.md"
+    },
+    {
+      "name": "Fighter",
+      "type": "class",
+      "edition": "2024",
+      "source": "Test",
+      "page": 10,
+      "file": "2024/classes.md"
+    },
+    {
+      "name": "Wizard",
+      "type": "class",
+      "edition": "2024",
+      "source": "Test",
+      "page": 20,
+      "file": "2024/classes.md"
+    },
+    {
+      "name": "Eldritch Knight",
+      "type": "subclass",
+      "edition": "2024",
+      "source": "Test",
+      "page": 12,
+      "file": "2024/classes.md"
+    },
+    {
+      "name": "War Magic",
+      "type": "subclass",
+      "edition": "2024",
+      "source": "Test",
+      "page": 22,
+      "file": "2024/classes.md"
+    },
+    {
+      "name": "Shield",
+      "type": "spell",
+      "edition": "2024",
+      "source": "Test",
+      "page": 30,
+      "file": "2024/spells.md"
+    },
+    {
+      "name": "Longsword",
+      "type": "item",
+      "edition": "2014",
+      "source": "Test",
+      "page": 40,
+      "file": "2014/equipment.md"
+    },
+    {
+      "name": "Studded Leather Armor",
+      "type": "item",
+      "edition": "2014",
+      "source": "Test",
+      "page": 41,
+      "file": "2014/equipment.md"
+    },
+    {
+      "name": "Dagger",
+      "type": "item",
+      "edition": "2014",
+      "source": "Test",
+      "page": 42,
+      "file": "2014/equipment.md"
+    },
+    {
+      "name": "Shortbow",
+      "type": "item",
+      "edition": "2014",
+      "source": "Test",
+      "page": 43,
+      "file": "2014/equipment.md"
+    }
+  ]
+}

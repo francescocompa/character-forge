@@ -8,4 +8,6 @@ Synthetic test characters only — invented homebrew content, never WotC text (s
   - `invalid-markup.character.json` — `{a:XXX}` is not a valid ability abbreviation.
   - `invalid-sanity.character.json` — `currentLevel` exceeds the sum of `chassis.classes[].levels`.
 
-Run `npx character-forge-validate fixtures/synthetic.character.json` (or any of the above) from the repo root to see the four layers in action; see `pipeline/validate/README.md` for the CLI and `--json` output format.
+- `fake-kb/` — a tiny stand-in knowledge base (a `MANIFEST.json` + a few markdown files, all invented content) for the `kb-diff` tests (T20). Its entries mirror the non-Homebrew `library` entries of `synthetic.character.json` so the tool has one of every classification to make: identical bodies (`unchanged`), an edited Duskling block (`changed`), a `Shortbow` the manifest lists but the file omits (`missing-from-kb`), and `Incense` left out of the manifest entirely (`not-in-manifest`). Contains no WotC text.
+
+Run `npx character-forge-validate fixtures/synthetic.character.json` (or any of the above) from the repo root to see the four layers in action; see `pipeline/validate/README.md` for the CLI and `--json` output format. `npx character-forge-kb-diff fixtures/synthetic.character.json --kb fixtures/fake-kb` shows the drift report.
