@@ -3,6 +3,42 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T23 monster-forge design-system alignment
+
+Finishes the offshoot restyle: the component-level skins now match
+monster-forge, so the two apps read as siblings on one DS — with
+character-forge's arcane-indigo accent, never terracotta. Token-first; the
+sheet-canon ability/damage/origin/recovery grammar is untouched.
+
+- **`app/src/tokens/tokens.css`**: new shared tokens — `--accent-2` amber (the
+  secondary voice for section titles) + `--accent-2-soft`, `--surface-panel3`,
+  `--border-hover`, `--scrim`, `--shadow-pop`, `--radius-xl`, `--check-mask`
+  (checkbox tick), `--letter-spacing-title`, and `color-scheme: dark` on
+  `:root`. Cleared the stale "provisional accent" note (indigo is confirmed).
+- **`app/src/components/primitives.css`** (new, imported once in `main.tsx`):
+  the shared DS layer — global hygiene (tap-highlight, `accent-color`, dark
+  scrollbars), the `.panel`/`.panel__title` **SectionCard** (title now amber),
+  `.section-div`, the text-input well + accent-focus base, the monster-forge
+  **custom checkbox** (accent fill + masked white tick), the `.is-selected`
+  card pattern (colored border + faint tint, no glow), and a reduced-motion
+  guard. Reused app-wide — no per-view forks.
+- **Section titles → amber**: `.panel__title` (moved out of `mainSheet.css`)
+  and `.gear-section__title`. Field micro-labels stay dim — only titles take
+  the accent-2 voice.
+- **Selected states → border + tint**: `.manage-option--selected` and
+  `.mastery-option--selected` drop the outline glow for the `--sel-accent`
+  border + `color-mix` tint.
+- **Overlay chrome**: library popover, manage/add dialogs and the update toast
+  now share `--scrim`, `--shadow-pop`, and `--radius-xl`; the toast picks up
+  the accent ring on the `--in` well.
+- **Stepper**: `.step-btn` hover adopts the panel3 lift + accent glyph; the ±
+  layout and 44px mobile tap targets are kept deliberately over mf's 20px
+  column (usability note in T23).
+- No component imports monster-forge files; ability/damage/origin colors
+  unchanged; focus-visible, ≥44px targets, and reduced-motion intact.
+  `verify` green (213 app tests). Verified across all five views + shell +
+  library surface at 1280px and 375px.
+
 ## 2026-07-05 — T18 pipeline front door (interview + chassis format)
 
 The pipeline's authoring layer: how a build idea becomes a `*.chassis.md`, and

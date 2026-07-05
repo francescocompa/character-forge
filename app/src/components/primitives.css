@@ -1,0 +1,167 @@
+/*
+ * Shared DS primitives (T23 — monster-forge design-system alignment).
+ *
+ * character-forge is a visual offshoot of monster-forge; this file holds the
+ * component-level skins the two apps share, so a section block, input, checkbox,
+ * or selected card reads identically in both (with character-forge's indigo
+ * accent, never terracotta). It is the single home for these skins — views
+ * consume the classes here rather than forking their own.
+ *
+ * Tokens only (scope §12.3). Imported once in main.tsx, after tokens + global,
+ * so every class is available app-wide regardless of which view mounts first.
+ * The sheet-canon ability/damage/origin/recovery grammar stays in chips.css —
+ * it is character-forge's own and is deliberately not touched here.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Global hygiene — the monster-forge baseline (tap highlight, native accent,
+ * dark scrollbars). color-scheme:dark lives on :root in tokens.css.
+ * ------------------------------------------------------------------------- */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+input,
+select,
+textarea {
+  accent-color: var(--accent);
+}
+
+::-webkit-scrollbar {
+  width: 11px;
+  height: 11px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--surface-panel3);
+  border-radius: 6px;
+  border: 3px solid var(--surface-bg);
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---------------------------------------------------------------------------
+ * Section block — the shared "SectionCard" (monster-forge fieldset.fieldset).
+ * Panel surface, 1px hairline, card radius; title = the amber secondary voice
+ * (fs-title), sub-heads dim (fs-sub). Consumed as `.panel` / `.panel__title`
+ * across MainSheet, Spells, Equipment.
+ * ------------------------------------------------------------------------- */
+.panel {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.panel__title {
+  margin: 0;
+  font-size: var(--font-size-chrome);
+  letter-spacing: var(--letter-spacing-title);
+  font-weight: var(--weight-chrome);
+  text-transform: uppercase;
+  color: var(--accent-2);
+}
+
+/* Divider between stacked sub-sections (monster-forge .section-div). */
+.section-div {
+  border: none;
+  border-top: 1px solid var(--border-subtle);
+  margin: var(--space-4) 0 var(--space-3);
+}
+
+/* ---------------------------------------------------------------------------
+ * Text inputs / textarea — the --in well, hairline, accent focus border.
+ * Element-level base so every field converges; per-view class rules only add
+ * sizing/layout on top. (Checkbox/radio opt out — skinned below.)
+ * ------------------------------------------------------------------------- */
+input:not([type='checkbox']):not([type='radio']),
+textarea {
+  background: var(--surface-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  color: var(--ink-primary);
+  font: inherit;
+  transition: border-color 0.12s ease;
+}
+input:not([type='checkbox']):not([type='radio']):hover,
+textarea:hover {
+  border-color: var(--border-hover);
+}
+input:not([type='checkbox']):not([type='radio']):focus,
+textarea:focus {
+  border-color: var(--accent);
+  outline: none;
+}
+/* Keep autofilled fields on the dark well instead of the UA yellow wash. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 40px var(--surface-input) inset !important;
+  -webkit-text-fill-color: var(--ink-primary) !important;
+  caret-color: var(--ink-primary);
+}
+
+/* ---------------------------------------------------------------------------
+ * Checkbox — monster-forge's custom skin: accent fill + white masked tick,
+ * hairline that lifts to accent on hover. Replaces the default UA box for the
+ * ManageMode / maxHP-override / gear / mastery / add-dialog checkboxes.
+ * ------------------------------------------------------------------------- */
+input[type='checkbox'] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  flex: none;
+  border: 1px solid var(--border-subtle);
+  border-radius: 4px;
+  background: var(--surface-input);
+  position: relative;
+  cursor: pointer;
+  vertical-align: middle;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease;
+}
+input[type='checkbox']:hover {
+  border-color: var(--accent);
+}
+input[type='checkbox']:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+input[type='checkbox']:checked::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  -webkit-mask: var(--check-mask) center / 11px no-repeat;
+  mask: var(--check-mask) center / 11px no-repeat;
+}
+input[type='checkbox']:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* ---------------------------------------------------------------------------
+ * Selected state — 1px colored border + faint accent tint, no glow
+ * (monster-forge --sel-accent). Applied to loadout / ManageMode options.
+ * ------------------------------------------------------------------------- */
+.is-selected {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-raised));
+}
+
+/* ---------------------------------------------------------------------------
+ * Reduced motion — drop the border-color transitions introduced above.
+ * ------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  input,
+  textarea,
+  input[type='checkbox'] {
+    transition: none;
+  }
+}

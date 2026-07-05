@@ -298,11 +298,14 @@
 .manage-option {
   padding: var(--space-2);
   border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   background: var(--surface-overlay);
 }
 
+/* Selected = colored border + faint accent tint, no glow (--sel-accent). */
 .manage-option--selected {
-  outline: 1px solid var(--focus-ring-color);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-overlay));
 }
 
 .manage-option__row {

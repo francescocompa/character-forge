@@ -13,10 +13,11 @@
   gap: var(--space-3);
   max-width: calc(100vw - 2 * var(--space-4));
   padding: var(--space-3) var(--space-4);
-  background: var(--surface-overlay);
-  border: 1px solid var(--border-subtle);
+  /* monster-forge toast: the --in well ringed by the accent, elevated. */
+  background: var(--surface-input);
+  border: 1px solid var(--accent);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 28px rgb(0 0 0 / 45%);
+  box-shadow: var(--shadow-pop);
   color: var(--ink-primary);
 }
 .pwa-toast__msg {

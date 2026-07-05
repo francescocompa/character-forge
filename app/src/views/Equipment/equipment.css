@@ -24,10 +24,10 @@
 .gear-section__title {
   margin: 0;
   font-size: var(--font-size-chrome);
-  letter-spacing: var(--letter-spacing-chrome);
+  letter-spacing: var(--letter-spacing-title);
   font-weight: var(--weight-chrome);
   text-transform: uppercase;
-  color: var(--ink-muted);
+  color: var(--accent-2);
 }
 
 .gear-item-list {
@@ -139,11 +139,14 @@
 .mastery-option {
   padding: var(--space-2);
   border-radius: var(--radius-sm);
+  border: 1px solid transparent;
   background: var(--surface-overlay);
 }
 
+/* Selected = colored border + faint accent tint, no glow (--sel-accent). */
 .mastery-option--selected {
-  outline: 1px solid var(--focus-ring-color);
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 9%, var(--surface-overlay));
 }
 
 .mastery-option__row {

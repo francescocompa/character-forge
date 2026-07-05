@@ -9,6 +9,9 @@ import '@fontsource/inter/600.css'
 import '@fontsource/inter/700.css'
 import './tokens/tokens.css'
 import './app/global.css'
+// Shared DS primitives (section blocks, inputs, checkbox, selected state) —
+// imported once so every view gets the same monster-forge-aligned skins.
+import './components/primitives.css'
 
 const root = document.getElementById('root')
 if (!root) throw new Error('Root element #root not found')

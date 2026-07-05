@@ -109,7 +109,7 @@
 .add-overlay {
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 55%);
+  background: var(--scrim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -119,7 +119,8 @@
 .add-sheet {
   background: var(--surface-raised);
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-pop);
   width: 100%;
   max-width: 30rem;
   max-height: 90vh;
