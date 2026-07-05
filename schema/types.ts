@@ -503,6 +503,8 @@ export interface Trackers {
   currency?: Currency
   conditions?: string[]
   inspiration?: boolean
+  /** Spent uses per limited-use boon addition, keyed by Addition.id. */
+  additions?: Record<string, { used: number }>
   /** Player override for max HP (rolled/hand-edited), takes precedence over the
    *  compiled `stats.maxHp` (T03 review item F2). Absent = use the compiled value. */
   maxHpOverride?: number
@@ -519,7 +521,14 @@ export interface Addition {
   id: string
   kind: 'item' | 'boon' | 'note'
   name: string
+  /** Boon mechanics, an item's note, or a note's body (sheet-markup). */
   summary?: Markup
+  /** Item additions: stack count (joins the carried-weight total). */
+  quantity?: number
+  /** Item additions: per-unit weight in lb. */
+  weightLb?: number
+  /** Boon additions: tracked uses (max + recovery), ticked like any resource. */
+  limitedUse?: { max: number; recover: RecoverModel }
   addedAt: string
 }
 
@@ -590,9 +599,16 @@ export interface SessionStore {
   applyShortRest(): void
   applyLongRest(): void
 
-  // -- additions ----------------------------------------------------------
+  // -- additions (D2: in-session boons / found items / notes) -------------
+  /** Create an addition; returns its generated id. */
   addAddition(addition: Omit<Addition, 'id' | 'addedAt'>): string
+  /** Edit an addition in place (id/addedAt are immutable). Clamps boon uses if `max` shrinks. */
+  updateAddition(id: string, patch: Partial<Omit<Addition, 'id' | 'addedAt'>>): void
   removeAddition(id: string): void
+  /** Spend one use of a limited-use boon addition; clamps at its `max`. */
+  tickAddition(id: string): void
+  /** Regain one use of a limited-use boon addition; clamps at 0. */
+  untickAddition(id: string): void
 
   // -- history ------------------------------------------------------------
   /** Undo the last mutating operation. */

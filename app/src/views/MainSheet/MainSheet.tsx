@@ -5,6 +5,7 @@ import { DefensesBlock, SensesBlock } from './Defenses'
 import { ResourcesPanel } from './Resources'
 import { AttacksPanel } from './Attacks'
 import { ActionsSlot } from './ActionsSlot'
+import { SessionNotesCard } from '../../session/additions'
 import './mainSheet.css'
 
 /**
@@ -33,6 +34,7 @@ export function MainSheet() {
           <SkillsBlock />
           <DefensesBlock />
           <SensesBlock />
+          <SessionNotesCard />
         </div>
       </div>
     </div>

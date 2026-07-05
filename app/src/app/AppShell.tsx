@@ -2,7 +2,8 @@ import { useState } from 'react'
 import type { CharacterFile } from '@character-forge/schema/types.ts'
 import { LibraryProvider } from '../library'
 import { CharacterProvider, useCharacter } from '../character/CharacterProvider'
-import { SessionProvider } from '../session/SessionProvider'
+import { SessionProvider, useSession } from '../session/SessionProvider'
+import { AdditionsProvider, useAdditions, downloadSession } from '../session/additions'
 import { MainSheet } from '../views/MainSheet'
 import { Features } from '../views/Features'
 import { Spells } from '../views/Spells'
@@ -45,6 +46,32 @@ function ViewModeToggle() {
   )
 }
 
+/** In-session actions: add a boon/item/note, or export the session file (D2, T15). */
+function SessionActions() {
+  const { character } = useCharacter()
+  const { openAdd } = useAdditions()
+  const store = useSession()
+  return (
+    <div className="app-shell__actions">
+      <button
+        type="button"
+        className="shell-btn shell-btn--add"
+        aria-label="Add item, boon, or note"
+        onClick={() => openAdd()}
+      >
+        + Add
+      </button>
+      <button
+        type="button"
+        className="shell-btn"
+        onClick={() => downloadSession(character, store.getState())}
+      >
+        Export session
+      </button>
+    </div>
+  )
+}
+
 function Shell() {
   const { character } = useCharacter()
   const [tab, setTab] = useState<Tab>('main')
@@ -57,7 +84,10 @@ function Shell() {
         <div className="app-shell__brand">
           <span className="app-shell__title">{character.meta.name}</span>
         </div>
-        <ViewModeToggle />
+        <div className="app-shell__topbar-tools">
+          <SessionActions />
+          <ViewModeToggle />
+        </div>
       </div>
 
       <nav className="app-shell__tabs" role="tablist" aria-label="Sheet sections">
@@ -96,7 +126,9 @@ export function AppShell({ character }: { character: CharacterFile }) {
     <LibraryProvider library={character.library}>
       <CharacterProvider character={character}>
         <SessionProvider character={character}>
-          <Shell />
+          <AdditionsProvider>
+            <Shell />
+          </AdditionsProvider>
         </SessionProvider>
       </CharacterProvider>
     </LibraryProvider>

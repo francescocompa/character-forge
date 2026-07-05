@@ -1,0 +1,56 @@
+{
+  "formatVersion": 1,
+  "characterId": "fenn-larkspur",
+  "variantLabel": "Battle Mage",
+  "characterFormatVersion": 1,
+  "updatedAt": "2026-07-05T12:00:00.000Z",
+  "trackers": {
+    "hp": { "current": 18, "temp": 0 },
+    "deathSaves": { "successes": 0, "failures": 0 },
+    "slotPools": { "wizard-1": { "used": 1 } },
+    "resources": { "second-wind": { "used": 1 } },
+    "hitDice": { "wizard": { "spent": 1 } },
+    "consumables": { "arrows": { "count": 17 } },
+    "currency": { "gp": 40, "sp": 5 },
+    "conditions": [],
+    "inspiration": false,
+    "additions": {
+      "add-boon-1": { "used": 1 }
+    }
+  },
+  "loadout": {
+    "pools": {
+      "wizard-prepared": { "selected": ["mending-charm", "ashen-bolt"] }
+    },
+    "equipped": {}
+  },
+  "additions": [
+    {
+      "id": "add-boon-1",
+      "kind": "boon",
+      "name": "Blessing of the Archivist",
+      "summary": "Once, deal an extra {dmg:radiant|1d4} on a hit; the target must make a {save:WIS|13}.",
+      "limitedUse": {
+        "max": 2,
+        "recover": [{ "on": "long", "amount": "all" }]
+      },
+      "addedAt": "2026-07-05T11:30:00.000Z"
+    },
+    {
+      "id": "add-item-1",
+      "kind": "item",
+      "name": "Everburning lantern",
+      "summary": "Sheds bright light in a 30 ft radius; never runs out.",
+      "quantity": 1,
+      "weightLb": 2,
+      "addedAt": "2026-07-05T11:40:00.000Z"
+    },
+    {
+      "id": "add-note-1",
+      "kind": "note",
+      "name": "The far bridge span is trapped.",
+      "summary": "The far bridge span is trapped — heard the guards mention a pressure plate.",
+      "addedAt": "2026-07-05T11:50:00.000Z"
+    }
+  ]
+}

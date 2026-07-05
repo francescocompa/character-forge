@@ -2,7 +2,7 @@ import { MarkupText } from '../../library'
 import { useCharacter } from '../../character/CharacterProvider'
 import { useSessionState } from '../../session/SessionProvider'
 import { lbToKg } from '../MainSheet/format'
-import { pushDragLiftLb, totalCarriedWeightLb } from './equipmentHelpers'
+import { itemAdditionsWeightLb, pushDragLiftLb, totalCarriedWeightLb } from './equipmentHelpers'
 
 function WeightStat({ label, lb }: { label: string; lb: number }) {
   return (
@@ -23,10 +23,11 @@ function WeightStat({ label, lb }: { label: string; lb: number }) {
  */
 export function CapacityPanel() {
   const { character, currentLevel } = useCharacter()
-  const { loadout } = useSessionState()
+  const { loadout, additions } = useSessionState()
   const items = character.equipment?.items ?? []
   const capacityLb = character.equipment?.carryingCapacity?.lb
-  const totalLb = totalCarriedWeightLb(items, currentLevel, loadout.equipped)
+  const totalLb =
+    totalCarriedWeightLb(items, currentLevel, loadout.equipped) + itemAdditionsWeightLb(additions)
 
   return (
     <section className="panel capacity" aria-label="Weight and carrying capacity">

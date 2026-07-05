@@ -5,6 +5,7 @@ import fixture from '../../../../fixtures/synthetic.character.json'
 import { LibraryProvider } from '../../library'
 import { CharacterProvider } from '../../character/CharacterProvider'
 import { SessionProvider } from '../../session/SessionProvider'
+import { AdditionsProvider } from '../../session/additions'
 import type { ViewMode } from '../../character/visibility'
 import { createSessionEngine, seedSessionState } from '../../state/sessionEngine'
 import type { SessionStore } from '@character-forge/schema/types.ts'
@@ -17,7 +18,9 @@ function render(viewMode: ViewMode = 'level', store?: SessionStore): string {
     <LibraryProvider library={character.library}>
       <CharacterProvider character={character} initialViewMode={viewMode}>
         <SessionProvider character={character} store={store}>
-          <Equipment />
+          <AdditionsProvider>
+            <Equipment />
+          </AdditionsProvider>
         </SessionProvider>
       </CharacterProvider>
     </LibraryProvider>,
@@ -127,11 +130,30 @@ describe('Equipment — session-layer edits reflect in the view', () => {
     expect(html).toContain('Dagger')
   })
 
-  it('renders a seeded in-session "found item" addition with its session marker', () => {
+  it('renders a seeded in-session "found item" addition with its session marker, qty/weight, and edit/remove', () => {
     const store = createSessionEngine(character, seedSessionState(character))
-    store.addAddition({ kind: 'item', name: 'Potion of Climbing (found)', summary: 'Found in a cache.' })
+    store.addAddition({
+      kind: 'item',
+      name: 'Potion of Climbing (found)',
+      summary: 'Found in a cache.',
+      quantity: 2,
+      weightLb: 0.5,
+    })
     const html = render('level', store)
     expect(html).toContain('Potion of Climbing (found)')
-    expect(html).toContain('gear-item__session-marker')
+    expect(html).toContain('session-marker')
+    expect(html).toContain('×2')
+    expect(html).toContain('0.5 lb')
+    expect(html).toContain('aria-label="Remove Potion of Climbing (found)"')
+  })
+
+  it('adds an item addition\'s weight to the carried total', () => {
+    const store = createSessionEngine(character, seedSessionState(character))
+    const before = render('level', store)
+    // Baseline carried weight is 20 lb (see the weight test above).
+    expect(before).toContain('20 lb')
+    store.addAddition({ kind: 'item', name: 'Anvil', quantity: 1, weightLb: 10 })
+    const after = render('level', store)
+    expect(after).toContain('30 lb')
   })
 })

@@ -1,4 +1,4 @@
-import type { CharacterFile, Currency, Item } from '@character-forge/schema/types.ts'
+import type { Addition, CharacterFile, Currency, Item } from '@character-forge/schema/types.ts'
 
 /**
  * Pure helpers for the Equipment view (T11). The schema has no per-item
@@ -62,6 +62,18 @@ export function totalCarriedWeightLb(
     if ((item.unlockLevel ?? 1) > currentLevel) return sum
     const { carried } = effectiveState(item, overrides?.[item.id])
     return carried ? sum + (item.weightLb ?? 0) * item.quantity : sum
+  }, 0)
+}
+
+/**
+ * Weight of in-session found items (D2, T15). They have no equipped/carried
+ * toggle — a found item is on you — so all of them count, quantity x per-unit
+ * weight. Non-item additions (boons, notes) are weightless.
+ */
+export function itemAdditionsWeightLb(additions: readonly Addition[] | undefined): number {
+  return (additions ?? []).reduce((sum, a) => {
+    if (a.kind !== 'item') return sum
+    return sum + (a.weightLb ?? 0) * (a.quantity ?? 1)
   }, 0)
 }
 

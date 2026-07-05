@@ -3,6 +3,7 @@ import { FutureWrap, RefLink } from '../../components/chips'
 import { MarkupText, useLibrary } from '../../library'
 import { useCharacter } from '../../character/CharacterProvider'
 import { useSession, useSessionState } from '../../session/SessionProvider'
+import { AdditionControls, SessionMarker } from '../../session/additions'
 import { effectiveState, groupItems } from './equipmentHelpers'
 
 function ItemRowBody({ item }: { item: Item }) {
@@ -66,16 +67,20 @@ function ItemRow({ item }: { item: Item }) {
   )
 }
 
-/** An in-session found item (T15 lands the add-UI; this renders whatever the SessionStore already holds). */
+/** An in-session found item (D2, T15): quantity/weight join the sheet, a note if given, with edit/remove. */
 function AdditionRow({ addition }: { addition: Addition }) {
+  const quantity = addition.quantity ?? 1
   return (
     <li className="gear-item-wrap">
       <div className="gear-item gear-item--addition">
         <div className="gear-item__head">
           <span className="gear-item__name">{addition.name}</span>
-          <span className="gear-item__session-marker" title="Added this session">
-            session
-          </span>
+          {quantity > 1 && <span className="gear-item__qty">×{quantity}</span>}
+          {addition.weightLb !== undefined && (
+            <span className="gear-item__weight">{addition.weightLb} lb</span>
+          )}
+          <SessionMarker />
+          <AdditionControls addition={addition} />
         </div>
         {addition.summary && (
           <div className="gear-item__summary">

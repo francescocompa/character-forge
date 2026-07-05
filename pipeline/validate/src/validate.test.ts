@@ -35,6 +35,15 @@ describe('validateFile — synthetic fixtures', () => {
   })
 })
 
+describe('validateFile — session files (T15 in-session additions)', () => {
+  it('passes the synthetic session fixture (all three addition kinds) with no errors', () => {
+    const result = validateFile(fixture('synthetic.session.json'))
+    expect(result.kind).toBe('session')
+    expect(result.errorCount).toBe(0)
+    expect(result.valid).toBe(true)
+  })
+})
+
 describe('validateFile — invalid fixtures (one broken layer each)', () => {
   it('fails invalid-schema.character.json with a schema-layer error naming the path', () => {
     const result = validateFile(fixture('invalid/invalid-schema.character.json'))

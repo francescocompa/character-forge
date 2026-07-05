@@ -1,4 +1,5 @@
 import { useCharacter } from '../../character/CharacterProvider'
+import { SessionBoonsSection } from '../../session/additions'
 import { ClassSection } from './ClassSection'
 import { SpeciesSection } from './SpeciesSection'
 import { BackgroundSection } from './BackgroundSection'
@@ -26,6 +27,7 @@ export function Features() {
       <SpeciesSection traits={groups.speciesTraits} />
       <BackgroundSection backgroundFeat={backgroundFeat} />
       <FeatsSection feats={groups.feats} />
+      <SessionBoonsSection />
     </div>
   )
 }

@@ -20,6 +20,7 @@ coverage/
 *.character.json
 !fixtures/**/*.character.json
 *.session.json
+!fixtures/**/*.session.json
 *.chassis.md
 dnd-5e-knowledge-base*/
 kb-*/

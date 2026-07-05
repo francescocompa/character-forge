@@ -104,16 +104,8 @@
 .gear-item--addition {
   border: 1px dashed var(--border-subtle);
 }
-
-.gear-item__session-marker {
-  font-size: var(--font-size-chrome);
-  letter-spacing: var(--letter-spacing-chrome);
-  text-transform: uppercase;
-  color: var(--ink-muted);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-pill);
-  padding: 0 var(--space-2);
-}
+/* The "session" marker + edit/remove controls are shared across all addition
+ * kinds — their styles live in session/additions/additions.css. */
 
 /* --- weapon masteries (mirrors Spells' manage mode, T10) ------------------ */
 .masteries__head {

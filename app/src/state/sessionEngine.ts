@@ -260,6 +260,18 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
       state.trackers.hp = { current: maxHp, temp: 0 }
       state.trackers.deathSaves = { successes: 0, failures: 0 }
     }
+    // Limited-use boon additions (D2) recover like any resource, on their own
+    // RecoverModel — the boon carries its rules with it (there's no character-file
+    // entry to read them from).
+    const additionUses = (state.trackers.additions ??= {})
+    for (const addition of state.additions ?? []) {
+      if (!addition.limitedUse) continue
+      for (const rule of addition.limitedUse.recover) {
+        if (ruleApplies(rule, kind)) {
+          additionUses[addition.id] = { used: recoverUsed(additionUses[addition.id]?.used ?? 0, rule) }
+        }
+      }
+    }
     // Companions rest with the character: their resources follow the same
     // rules, and a long rest restores their HP to the compiled max.
     for (const sheet of character.companions ?? []) {
@@ -436,9 +448,38 @@ export function createSessionEngine(character: CharacterFile, initialState: Sess
       })
       return id
     },
+    updateAddition(id, patch) {
+      mutate(() => {
+        const additions = (state.additions ??= [])
+        const addition = additions.find((a) => a.id === id)
+        if (!addition) return
+        Object.assign(addition, patch)
+        // If the boon's cap shrank (or its limited-use was removed), clamp the
+        // live use count so it never exceeds the new max.
+        const uses = state.trackers.additions
+        if (uses?.[id]) {
+          const max = addition.limitedUse?.max ?? 0
+          uses[id] = { used: clamp(uses[id].used, 0, max) }
+        }
+      })
+    },
     removeAddition(id) {
       mutate(() => {
         state.additions = (state.additions ?? []).filter((a) => a.id !== id)
+        if (state.trackers.additions) delete state.trackers.additions[id]
+      })
+    },
+    tickAddition(id) {
+      mutate(() => {
+        const bag = (state.trackers.additions ??= {})
+        const max = (state.additions ?? []).find((a) => a.id === id)?.limitedUse?.max
+        bag[id] = { used: clamp((bag[id]?.used ?? 0) + 1, 0, max) }
+      })
+    },
+    untickAddition(id) {
+      mutate(() => {
+        const bag = (state.trackers.additions ??= {})
+        bag[id] = { used: Math.max(0, (bag[id]?.used ?? 0) - 1) }
       })
     },
 

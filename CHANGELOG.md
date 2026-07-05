@@ -3,6 +3,34 @@
 Newest batch first. One entry per task/batch; reference the planning task ids
 (T01–T22) where applicable.
 
+## 2026-07-05 — T15 in-session additions (boons / found items / notes)
+
+Mid-session captures (D2): the DM grants a boon, the party finds an item, a
+detail needs noting. All land in the session layer, render inline where they
+belong, and export for adoption at the next recompile.
+
+- **Contract** (`session.schema.json` + `types.ts`): `Addition` extended with
+  kind-specific fields — `quantity`/`weightLb` (item), `limitedUse` (boon: max
+  + a `RecoverModel`, mirrored into the session schema). Boon use-counts live in
+  `trackers.additions`, ticked and rested like any resource.
+- **Engine** (`sessionEngine.ts`): `updateAddition` (edit in place, clamps live
+  uses if the cap shrinks), `tickAddition`/`untickAddition`, `removeAddition`
+  now clears the boon's uses, and `applyRest` recovers limited-use boons on
+  their own rule (long includes short).
+- **Add / edit flow**: one bottom-sheet dialog (`session/additions/`), reached
+  from a global **+ Add** in the shell and from each row's **Edit** — kind
+  switch, kind-specific fields, a live `SheetMarkup` preview that flags bad
+  markup but still saves it as plain text. Built for one-handed use at 375 px.
+- **Display**: items → Equipment (qty/weight join the carried total), boons →
+  Features (own ticks + recover badge), notes → a Main-sheet card; all wear a
+  subtle "session" marker with Edit/Remove.
+- **Export**: **Export session** downloads `<name>.session.json` (the file a
+  compile session reads to adopt additions). Menu placement is provisional —
+  T16 owns the character-management chrome.
+- Tests: engine additions block, `additionDraft`/`sessionExport` unit tests, a
+  synthetic `fixtures/synthetic.session.json` the T04 validator checks clean
+  (app 197, schema 41, validate 31 — all green).
+
 ## 2026-07-04 — offshoot decisions locked + ability/death-save alignment
 
 Francesco confirmed the offshoot direction: **accent = arcane indigo

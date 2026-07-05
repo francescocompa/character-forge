@@ -1,0 +1,352 @@
+/*
+ * In-session additions (T15): the add/edit dialog, the shared "session" marker
+ * and edit/remove controls, and the boon/note surfaces. Tokens only. The dialog
+ * is a centered card on desktop and a bottom sheet on mobile, sized for
+ * one-handed reach at 375 px.
+ */
+
+/* --- session marker + row controls -------------------------------------- */
+.session-marker {
+  font-size: var(--font-size-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  text-transform: uppercase;
+  font-weight: var(--weight-chrome);
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: var(--radius-sm);
+  padding: 1px var(--space-2);
+}
+
+.addition-controls {
+  display: inline-flex;
+  gap: var(--space-1);
+  margin-left: auto;
+}
+.addition-btn {
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  min-height: 2rem;
+}
+.addition-btn:hover {
+  color: var(--ink-primary);
+  background: var(--surface-overlay);
+}
+.addition-btn--remove:hover {
+  color: var(--bad);
+}
+.addition-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* --- session boons (Features) ------------------------------------------- */
+.boon-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.boon__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+.boon__name {
+  font-weight: 700;
+}
+.boon__summary {
+  margin-top: var(--space-1);
+  color: var(--ink-secondary);
+}
+.boon__track {
+  margin-top: var(--space-2);
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* --- session notes (Main) ----------------------------------------------- */
+.session-notes__head {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.session-notes__list {
+  list-style: none;
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.session-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-left: 2px solid var(--accent-soft);
+  background: var(--surface-raised);
+  border-radius: var(--radius-sm);
+}
+.session-note__body {
+  flex: 1;
+  color: var(--ink-secondary);
+  white-space: pre-wrap;
+}
+
+/* --- add / edit dialog --------------------------------------------------- */
+.add-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 55%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  z-index: 100;
+}
+.add-sheet {
+  background: var(--surface-raised);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  width: 100%;
+  max-width: 30rem;
+  max-height: 90vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-4);
+}
+.add-sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.add-sheet__title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+.add-sheet__close {
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  font-size: 1rem;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border-radius: var(--radius-sm);
+}
+.add-sheet__close:hover {
+  color: var(--ink-primary);
+  background: var(--surface-overlay);
+}
+
+.add-kinds {
+  display: flex;
+  gap: var(--space-1);
+  padding: 2px;
+  background: var(--surface-bg);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+}
+.add-kind {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--ink-secondary);
+  border-radius: var(--radius-pill);
+  padding: var(--space-2);
+  min-height: 2.5rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+.add-kind.is-active {
+  background: var(--surface-overlay);
+  color: var(--ink-primary);
+  box-shadow: inset 0 0 0 1px var(--border-subtle);
+}
+.add-kind:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.add-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+.add-row {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+}
+.add-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+.add-field--narrow {
+  flex: 0 0 6rem;
+}
+.add-field__label {
+  font-size: var(--font-size-sm);
+  color: var(--ink-secondary);
+  font-weight: 600;
+}
+.add-input {
+  font: inherit;
+  color: var(--ink-primary);
+  background: var(--surface-input);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2);
+  min-height: 2.75rem;
+  /* Keep number inputs from overflowing a narrow column (their intrinsic width
+   * ignores the flex basis otherwise). */
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+.add-input:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+.add-textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+  font-family: inherit;
+}
+
+.add-limited {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+.add-check {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-weight: 600;
+  color: var(--ink-secondary);
+}
+.add-recover {
+  display: flex;
+  gap: var(--space-1);
+  flex-wrap: wrap;
+}
+.add-recover__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-input);
+  color: var(--ink-secondary);
+  border-radius: var(--radius-pill);
+  padding: var(--space-1) var(--space-3);
+  min-height: 2.5rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+.add-recover__btn.is-active {
+  background: var(--surface-overlay);
+  color: var(--ink-primary);
+  box-shadow: inset 0 0 0 1px var(--accent-soft);
+}
+.add-recover__btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+.add-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: var(--surface-bg);
+  border: 1px dashed var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+.add-preview__label {
+  font-size: var(--font-size-chrome);
+  letter-spacing: var(--letter-spacing-chrome);
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  font-weight: var(--weight-chrome);
+}
+.add-preview__body {
+  color: var(--ink-primary);
+  white-space: pre-wrap;
+}
+.add-preview__warn {
+  font-size: var(--font-size-sm);
+  color: var(--warn);
+}
+
+.add-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+  position: sticky;
+  bottom: 0;
+  background: var(--surface-raised);
+  padding-top: var(--space-2);
+}
+.add-btn {
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-input);
+  color: var(--ink-secondary);
+  border-radius: var(--radius-md);
+  padding: var(--space-2) var(--space-5);
+  min-height: 2.75rem;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+.add-btn--primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--ink-on-accent);
+}
+.add-btn--primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.add-btn--primary:not(:disabled):hover {
+  background: var(--accent-hover);
+}
+.add-btn:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Bottom-sheet on phones: full-width, docked to the bottom, thumb-reachable. */
+@media (max-width: 768px) {
+  .add-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .add-sheet {
+    max-width: none;
+    max-height: 92vh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  }
+  .add-btn {
+    flex: 1;
+  }
+}

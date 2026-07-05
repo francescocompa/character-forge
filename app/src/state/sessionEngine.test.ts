@@ -326,6 +326,85 @@ describe('temp HP, currency, conditions, inspiration, equipped, additions', () =
   })
 })
 
+describe('limited-use boon additions (T15)', () => {
+  const boon = {
+    kind: 'boon' as const,
+    name: 'Blessing of the Archivist',
+    summary: 'Deal an extra {dmg:radiant|1d4} on your next hit.',
+    limitedUse: { max: 1, recover: [{ on: 'long' as const, amount: 'all' as const }] },
+  }
+
+  it('ticks a boon use, clamps at its max, and unticks to zero', () => {
+    const s = store()
+    const id = s.addAddition(boon)
+    s.tickAddition(id)
+    s.tickAddition(id) // max 1 → clamps
+    expect(s.getState().trackers.additions?.[id]?.used).toBe(1)
+    s.untickAddition(id)
+    s.untickAddition(id) // clamps at 0
+    expect(s.getState().trackers.additions?.[id]?.used).toBe(0)
+  })
+
+  it('a long rest restores a boon that recovers on long rest', () => {
+    const s = store()
+    const id = s.addAddition(boon)
+    s.tickAddition(id)
+    expect(s.getState().trackers.additions?.[id]?.used).toBe(1)
+    s.applyLongRest()
+    expect(s.getState().trackers.additions?.[id]?.used).toBe(0)
+  })
+
+  it('a short rest does NOT restore a long-rest-only boon', () => {
+    const s = store()
+    const id = s.addAddition(boon)
+    s.tickAddition(id)
+    s.applyShortRest()
+    expect(s.getState().trackers.additions?.[id]?.used).toBe(1)
+  })
+
+  it('a long rest also restores a short-rest boon (long includes short)', () => {
+    const s = store()
+    const id = s.addAddition({
+      ...boon,
+      limitedUse: { max: 2, recover: [{ on: 'short', amount: 'all' }] },
+    })
+    s.tickAddition(id)
+    s.tickAddition(id)
+    s.applyLongRest()
+    expect(s.getState().trackers.additions?.[id]?.used).toBe(0)
+  })
+
+  it('edits an addition in place and clamps live uses when the max shrinks', () => {
+    const s = store()
+    const id = s.addAddition({ ...boon, limitedUse: { max: 3, recover: boon.limitedUse.recover } })
+    s.tickAddition(id)
+    s.tickAddition(id)
+    s.tickAddition(id) // used 3
+    s.updateAddition(id, { name: 'Waning blessing', limitedUse: { max: 1, recover: boon.limitedUse.recover } })
+    expect(s.getState().additions?.[0].name).toBe('Waning blessing')
+    expect(s.getState().trackers.additions?.[id]?.used).toBe(1) // clamped to new max
+  })
+
+  it('removing an addition clears its tracked uses too', () => {
+    const s = store()
+    const id = s.addAddition(boon)
+    s.tickAddition(id)
+    s.removeAddition(id)
+    expect(s.getState().additions).toEqual([])
+    expect(s.getState().trackers.additions?.[id]).toBeUndefined()
+  })
+
+  it('stores item additions with quantity and weight verbatim', () => {
+    const s = store()
+    const id = s.addAddition({ kind: 'item', name: 'Potion of healing', quantity: 3, weightLb: 0.5 })
+    expect(s.getState().additions?.find((a) => a.id === id)).toMatchObject({
+      kind: 'item',
+      quantity: 3,
+      weightLb: 0.5,
+    })
+  })
+})
+
 describe('formula resolution edge cases', () => {
   it('resolves a "PB" formula token and falls back to undefined for an unrecognized formula', () => {
     const withFormulaResource: CharacterFile = {
